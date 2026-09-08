@@ -864,17 +864,34 @@
     // ==========================================
     // SUPABASE TRANSACTIONS SYNC ENGINE
     // ==========================================
+    async function ensurePublicUserExists(user) {
+      if (!supabaseClient || !user) return;
+      try {
+        const username = user.user_metadata?.full_name || user.email?.split('@')[0] || 'User';
+        await supabaseClient.from('users').upsert({
+          id: user.id,
+          username: username,
+          phone_number: '-',
+          password_hash: '-'
+        });
+      } catch (e) {
+        console.warn("Public user upsert notice:", e);
+      }
+    }
+
     async function fetchTransactionsFromSupabase() {
       const user = getCurrentUser();
       if (!supabaseClient || !user) {
         updateSyncStatusUI(false, 'Belum Login (Lokal)');
         return;
       }
+      await ensurePublicUserExists(user);
       try {
         updateSyncStatusUI(false, 'Menyinkronkan...');
         const { data, error } = await supabaseClient
           .from('transactions')
           .select('*')
+          .eq('user_id', user.id)
           .order('date', { ascending: false });
 
         if (error) {
@@ -884,18 +901,13 @@
         }
 
         const cloudData = data || [];
-        let userCloudRows = cloudData;
-        if (cloudData.length > 0 && cloudData[0].user_id !== undefined) {
-          userCloudRows = cloudData.filter(d => d.user_id === user.id);
-        }
-
-        const formattedCloudRows = userCloudRows.map(item => ({
+        const formattedCloudRows = cloudData.map(item => ({
           id: String(item.id || Date.now()),
           date: item.date,
           type: item.type,
-          category: item.category || detectCategory(item.desc, item.type),
+          category: detectCategory(item.description || item.desc, item.type),
           amount: Number(item.amount),
-          desc: item.desc
+          desc: item.description || item.desc
         }));
 
         // Cek data lokal yang belum masuk ke cloud Supabase (migrasi otomatis antar device)
@@ -930,22 +942,20 @@
     async function syncItemToSupabase(item) {
       const user = getCurrentUser();
       if (!supabaseClient || !user) return;
+      await ensurePublicUserExists(user);
       try {
         const payload = {
+          user_id: user.id,
           date: item.date,
           type: item.type,
           amount: item.amount,
-          desc: item.desc
+          description: item.desc
         };
-        if (user.id) payload.user_id = user.id;
 
         const { error } = await supabaseClient.from('transactions').insert([payload]);
-        if (error && error.message && error.message.includes('user_id')) {
-          delete payload.user_id;
-          await supabaseClient.from('transactions').insert([payload]);
-        }
+        if (error) console.warn("Supabase insert notice:", error.message);
       } catch (err) {
-        console.warn("Supabase insert notice:", err);
+        console.warn("Supabase insert error:", err);
       }
     }
 
@@ -953,9 +963,15 @@
       const user = getCurrentUser();
       if (!supabaseClient || !user) return;
       try {
-        let { error } = await supabaseClient.from('transactions').delete().eq('id', id);
-        if (error && item) {
-          await supabaseClient.from('transactions').delete().match({ desc: item.desc, date: item.date, amount: item.amount });
+        if (id && id.includes('-')) {
+          await supabaseClient.from('transactions').delete().eq('id', id);
+        } else if (item) {
+          await supabaseClient.from('transactions').delete().match({
+            user_id: user.id,
+            date: item.date,
+            description: item.desc,
+            amount: item.amount
+          });
         }
       } catch (err) {
         console.warn("Supabase delete notice:", err);
@@ -1206,7 +1222,11 @@
     // INDONESIAN NUMBER PARSER ENGINE
     function parseNominal(str) {
       if (!str) return 0;
-      let raw = str.toLowerCase().replace(/rp|rupiah/gi, '').trim();
+      let raw = str.toLowerCase()
+        .replace(/tanggal\s*\d{1,2}/gi, '')
+        .replace(/tahun\s*\d{4}/gi, '')
+        .replace(/rp|rupiah/gi, '')
+        .trim();
 
       let formattedMatches = raw.match(/\b\d{1,3}(\.\d{3})+(,\d+)?\b|\b\d{1,3}(,\d{3})+(\.\d+)?\b/g);
       if (formattedMatches && formattedMatches.length > 0) {
@@ -1645,15 +1665,36 @@
         return;
       }
 
-      if (cmd.includes('baca') || cmd.includes('bacakan') || cmd.includes('spill') || cmd.includes('cek') || cmd.includes('lihat') || cmd.includes('berapa')) {
+      if (cmd.includes('grafik') || cmd.includes('chart')) {
+        let scope = 'bulan';
+        if (cmd.includes('hari')) scope = 'hari';
+        if (cmd.includes('tahun')) scope = 'tahun';
+        showChartModal(scope);
+        return;
+      }
+
+      // Deteksi Perintah Cek / Spill / Baca Laporan
+      const nominal = parseNominal(cmd);
+      const isExplicitReadout = cmd.includes('baca') || cmd.includes('bacakan') || cmd.includes('spill') || 
+                                cmd.includes('cek') || cmd.includes('lihat') || cmd.includes('berapa') || 
+                                cmd.includes('laporan') || cmd.includes('total');
+      const isQueryWithoutNominal = (nominal === 0) && (
+        cmd.includes('pengeluaran') || cmd.includes('pemasukan') || cmd.includes('transaksi') || cmd.includes('catatan')
+      );
+
+      if (isExplicitReadout || isQueryWithoutNominal) {
         executeVoiceReadout(cmd);
         return;
       }
 
-      if (cmd.includes('pemasukan') || cmd.includes('masuk') || cmd.includes('dapet') || cmd.includes('dapat') ||
-          cmd.includes('pengeluaran') || cmd.includes('keluar') || cmd.includes('beli') || cmd.includes('bayar')) {
+      // Deteksi Pencatatan Transaksi Baru (jika ada nominal)
+      if (nominal > 0) {
+        let type = 'pengeluaran';
+        if (cmd.includes('pemasukan') || cmd.includes('masuk') || cmd.includes('dapet') || cmd.includes('dapat') || 
+            cmd.includes('gaji') || cmd.includes('thr') || cmd.includes('transferan') || cmd.includes('honor') || cmd.includes('bonus')) {
+          type = 'pemasukan';
+        }
         
-        let type = (cmd.includes('pemasukan') || cmd.includes('masuk') || cmd.includes('dapet') || cmd.includes('dapat')) ? 'pemasukan' : 'pengeluaran';
         let { amount, desc, date } = extractTransactionDetails(cmd, type);
 
         if (amount > 0) {
@@ -1674,21 +1715,10 @@
           let dateLabel = (date === getLocalDateStr()) ? "hari ini" : `tanggal ${date}`;
           speak(`Siap! Udah dicatat ${type} ${desc} kategori ${category} sebesar ${amount.toLocaleString('id-ID')} rupiah untuk ${dateLabel}.`);
           return;
-        } else {
-          speak("Nominal angkanya belum ketangkap nih. Coba sebutkan nominalnya, misalnya: Beli kopi lima belas ribu.");
-          return;
         }
       }
 
-      if (cmd.includes('grafik') || cmd.includes('chart')) {
-        let scope = 'bulan';
-        if (cmd.includes('hari')) scope = 'hari';
-        if (cmd.includes('tahun')) scope = 'tahun';
-        showChartModal(scope);
-        return;
-      }
-
-      speak("Perintah suara belum dikenali nih gaes. Coba cek tombol Panduan Suara Lengkap ya!");
+      speak("Nominal angkanya belum ketangkap nih. Coba sebutkan nominalnya, misalnya: Kemarin beli bensin lima puluh ribu.");
     }
 
     // Popup Chart
