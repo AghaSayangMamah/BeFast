@@ -71,7 +71,11 @@
         </div>
       </div>
     </div>
-  </header>
+  <div class="flex items-center gap-2 ml-auto">
+  <button id="loginBtn" class="px-3 py-2 bg-blue-500 text-white rounded-lg text-xs font-bold hover:bg-blue-600 transition">Login</button>
+  <button id="signupBtn" class="px-3 py-2 bg-green-500 text-white rounded-lg text-xs font-bold hover:bg-green-600 transition">Sign Up</button>
+</div>
+</header>
 
   <main class="max-w-4xl mx-auto px-4 space-y-6">
 
@@ -229,6 +233,30 @@
       </div>
     </div>
   </div>
+<!-- Login Modal -->
+<div id="loginModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4">
+  <div class="card-style w-full max-w-md p-6 relative">
+    <h3 class="text-lg font-bold mb-4">Login</h3>
+    <input id="loginEmail" type="email" placeholder="Email" class="w-full p-2 mb-2 rounded border" />
+    <input id="loginPassword" type="password" placeholder="Password" class="w-full p-2 mb-4 rounded border" />
+    <div class="flex justify-end gap-2">
+      <button onclick="closeLoginModal()" class="px-3 py-1 bg-gray-300 rounded">Batal</button>
+      <button onclick="handleLogin()" class="px-3 py-1 bg-blue-500 text-white rounded">Login</button>
+    </div>
+  </div>
+</div>
+<!-- Sign Up Modal -->
+<div id="signupModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4">
+  <div class="card-style w-full max-w-md p-6 relative">
+    <h3 class="text-lg font-bold mb-4">Sign Up</h3>
+    <input id="signupEmail" type="email" placeholder="Email" class="w-full p-2 mb-2 rounded border" />
+    <input id="signupPassword" type="password" placeholder="Password" class="w-full p-2 mb-4 rounded border" />
+    <div class="flex justify-end gap-2">
+      <button onclick="closeSignupModal()" class="px-3 py-1 bg-gray-300 rounded">Batal</button>
+      <button onclick="handleSignup()" class="px-3 py-1 bg-green-500 text-white rounded">Daftar</button>
+    </div>
+  </div>
+</div>
 
   <!-- MODAL POP UP GRAFIK -->
   <div id="chartModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4">
@@ -260,6 +288,94 @@
     let transactions = [];
     let modalTimer = null;
     let chartInstance = null;
+
+// ==============================
+// Authentication Helpers (Supabase)
+// ==============================
+function openLoginModal() { document.getElementById('loginModal').classList.remove('hidden'); }
+function closeLoginModal() { document.getElementById('loginModal').classList.add('hidden'); }
+function openSignupModal() { document.getElementById('signupModal').classList.remove('hidden'); }
+function closeSignupModal() { document.getElementById('signupModal').classList.add('hidden'); }
+
+async function handleLogin() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  if (error) {
+    alert('Login gagal: ' + error.message);
+  } else {
+    localStorage.setItem('bf_user', JSON.stringify(data.user));
+    closeLoginModal();
+    updateAuthUI();
+    speak('Login berhasil! Selamat datang.');
+  }
+}
+
+async function handleSignup() {
+  const email = document.getElementById('signupEmail').value.trim();
+  const password = document.getElementById('signupPassword').value;
+  const { data, error } = await supabase.auth.signUp({ email, password });
+  if (error) {
+    alert('Daftar gagal: ' + error.message);
+  } else {
+    // Supabase mengirim email verifikasi, tapi untuk demo kita langsung login
+    const { error: loginErr } = await supabase.auth.signInWithPassword({ email, password });
+    if (loginErr) {
+      alert('Login setelah daftar gagal: ' + loginErr.message);
+    } else {
+      localStorage.setItem('bf_user', JSON.stringify(data.user));
+      closeSignupModal();
+      updateAuthUI();
+      speak('Pendaftaran berhasil! Selamat datang.');
+    }
+  }
+}
+
+function logout() {
+  supabase.auth.signOut();
+  localStorage.removeItem('bf_user');
+  updateAuthUI();
+  speak('Anda telah keluar.');
+}
+
+function updateAuthUI() {
+  const user = localStorage.getItem('bf_user');
+  const loginBtn = document.getElementById('loginBtn');
+  const signupBtn = document.getElementById('signupBtn');
+  if (user) {
+    if (loginBtn) loginBtn.style.display = 'none';
+    if (signupBtn) signupBtn.style.display = 'none';
+    // optional: show greeting
+    let greet = document.getElementById('greeting');
+    if (!greet) {
+      greet = document.createElement('span');
+      greet.id = 'greeting';
+      greet.className = 'ml-4 text-sm text-white';
+      greet.innerText = 'Halo, ' + JSON.parse(user).email;
+      const header = document.querySelector('header .max-w-4xl');
+      if (header) header.appendChild(greet);
+      const logoutBtn = document.createElement('button');
+      logoutBtn.innerText = 'Logout';
+      logoutBtn.className = 'ml-2 px-3 py-1 bg-red-500 text-white rounded text-xs';
+      logoutBtn.onclick = logout;
+      header.appendChild(logoutBtn);
+    }
+  } else {
+    if (loginBtn) loginBtn.style.display = 'inline-block';
+    if (signupBtn) signupBtn.style.display = 'inline-block';
+    const greet = document.getElementById('greeting');
+    if (greet) greet.remove();
+  }
+}
+
+// Attach event listeners for login/signup buttons
+document.addEventListener('DOMContentLoaded', () => {
+  const loginBtn = document.getElementById('loginBtn');
+  const signupBtn = document.getElementById('signupBtn');
+  if (loginBtn) loginBtn.addEventListener('click', openLoginModal);
+  if (signupBtn) signupBtn.addEventListener('click', openSignupModal);
+  updateAuthUI();
+});
 
     // Fetch data from Supabase DB
     async function fetchTransactions() {
@@ -354,6 +470,12 @@
     }
 
     document.getElementById('btnMic').addEventListener('click', () => {
+      // Pastikan pengguna sudah login sebelum mengaktifkan mikrofon
+      const user = localStorage.getItem('bf_user');
+      if (!user) {
+        openLoginModal();
+        return;
+      }
       if (!recognition) return;
       if (isListening) recognition.stop();
       else recognition.start();
