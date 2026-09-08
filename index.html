@@ -1,421 +1,308 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BeFast - Best Financial Assistant</title>
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Chart.js CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <!-- FontAwesome Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- Supabase JS SDK -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MyBeFast - Auth Nomor HP</title>
+  
+  <!-- Menggunakan Supabase JS Library v1 (Sangat Stabil untuk HTML Langsung) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1"></script>
   
   <style>
-    .theme-pastel { --bg-main: #95ff69; --card-bg: #ffffff; --primary: #10b981; --text-main: #064e3b; }
-    .theme-sunset { --bg-main: #fff645; --card-bg: #ffffff; --primary: #f97316; --text-main: #431407; }
-    .theme-berry  { --bg-main: #c963cf; --card-bg: #ffffff; --primary: #ec4899; --text-main: #831843; }
-    .theme-neon   { --bg-main: #0f172a; --card-bg: #1e293b; --primary: #06b6d4; --text-main: #f8fafc; }
-
-    body { background-color: var(--bg-main); color: var(--text-main); transition: all 0.3s ease; font-family: 'Segoe UI', Roboto, sans-serif; }
-    .card-style { background-color: var(--card-bg); border-radius: 1rem; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); }
-    .mic-active { animation: pulse 1.5s infinite; }
-    @keyframes pulse {
-      0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
-      70% { transform: scale(1.08); box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); }
-      100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+    * {
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
-    .hidden-app { display: none !important; }
+    body {
+      background-color: #eef2f7;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+    }
+    .card {
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 380px;
+    }
+    h2, h3 {
+      text-align: center;
+      color: #333;
+      margin-top: 0;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #444;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+    input:focus {
+      border-color: #007bff;
+      outline: none;
+    }
+    button {
+      width: 100%;
+      padding: 11px;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    button:disabled {
+      background-color: #cccccc;
+      cursor: not-allowed;
+    }
+    .btn-danger {
+      background-color: #dc3545;
+      margin-top: 15px;
+    }
+    .btn-danger:hover {
+      background-color: #bd2130;
+    }
+    .switch-mode {
+      text-align: center;
+      margin-top: 15px;
+      font-size: 13px;
+    }
+    .switch-mode a {
+      color: #007bff;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .info-box {
+      background: #f8f9fa;
+      border: 1px solid #dee2e6;
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    .hidden {
+      display: none;
+    }
   </style>
 </head>
-<body class="theme-pastel min-h-screen pb-12">
+<body>
 
-  <!-- AUTH SECTION (LOGIN / SIGNUP) -->
-  <div id="authSection" class="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-[100] p-4">
-    <div class="card-style w-full max-w-md p-8">
-      <div class="text-center mb-8">
-        <div class="w-16 h-16 bg-emerald-500 text-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-          <i class="fa-solid fa-wallet text-3xl"></i>
-        </div>
-        <h2 id="authTitle" class="text-2xl font-bold">Selamat Datang di BeFast</h2>
-        <p id="authSubtitle" class="text-sm opacity-60">Silakan login untuk kelola keuanganmu</p>
-      </div>
+  <div class="card">
+    <h2>MyBeFast</h2>
 
-      <!-- Form Login -->
-      <form id="loginForm" class="space-y-4">
-        <div>
-          <label class="block text-xs font-bold mb-1 uppercase">Username atau No. HP</label>
-          <input type="text" id="loginIdentifier" class="w-full p-3 rounded-xl border bg-gray-50 outline-none focus:ring-2 focus:ring-emerald-500 text-black" placeholder="Contoh: budi123" required>
-        </div>
-        <div>
-          <label class="block text-xs font-bold mb-1 uppercase">Password</label>
-          <input type="password" id="loginPassword" class="w-full p-3 rounded-xl border bg-gray-50 outline-none focus:ring-2 focus:ring-emerald-500 text-black" placeholder="••••••••" required>
-        </div>
-        <button type="submit" class="w-full py-3 bg-emerald-500 text-white font-bold rounded-xl hover:bg-emerald-600 transition shadow-lg">Masuk Sekarang</button>
-      </form>
-
-      <!-- Form Signup (Hidden by default) -->
-      <form id="signupForm" class="space-y-4 hidden">
-        <div>
-          <label class="block text-xs font-bold mb-1 uppercase">Username</label>
-          <input type="text" id="regUsername" class="w-full p-3 rounded-xl border bg-gray-50 outline-none focus:ring-2 focus:ring-emerald-500 text-black" placeholder="budi123" required>
-        </div>
-        <div>
-          <label class="block text-xs font-bold mb-1 uppercase">Nomor Telepon</label>
-          <input type="tel" id="regPhone" class="w-full p-3 rounded-xl border bg-gray-50 outline-none focus:ring-2 focus:ring-emerald-500 text-black" placeholder="0812..." required>
-        </div>
-        <div>
-          <label class="block text-xs font-bold mb-1 uppercase">Password</label>
-          <input type="password" id="regPassword" class="w-full p-3 rounded-xl border bg-gray-50 outline-none focus:ring-2 focus:ring-emerald-500 text-black" placeholder="••••••••" required>
-        </div>
-        <button type="submit" class="w-full py-3 bg-blue-500 text-white font-bold rounded-xl hover:bg-blue-600 transition shadow-lg">Daftar Akun</button>
-      </form>
-
-      <div class="mt-6 text-center text-sm">
-        <p id="switchAuthText">Belum punya akun? <a href="#" onclick="toggleAuth(true)" class="text-emerald-600 font-bold">Daftar Disini</a></p>
-      </div>
-    </div>
+    <!-- FORM PENDAFTARAN -->
+<div id="box-register">
+  <h3>Daftar Baru</h3>
+  <div class="form-group">
+    <label>Nama Lengkap</label>
+    <input type="text" id="reg-nama" placeholder="Masukkan nama" />
   </div>
-
-  <!-- MAIN APP SECTION -->
-  <div id="mainApp" class="hidden-app">
-    <header class="p-4 shadow-sm card-style rounded-none mb-6">
-      <div class="max-w-4xl mx-auto flex justify-between items-center flex-wrap gap-3">
-        <div class="flex items-center gap-3">
-          <div class="p-3 bg-emerald-500 text-white rounded-2xl shadow-lg">
-            <i class="fa-solid fa-wallet text-2xl"></i>
-          </div>
-          <div>
-            <h1 class="text-xl font-bold">BeFast</h1>
-            <p class="text-xs opacity-75" id="userWelcome">Halo, User!</p>
-          </div>
-        </div>
-        
-        <div class="flex items-center gap-2">
-          <button onclick="openGuideModal()" class="px-3 py-2 bg-lime-500 text-white rounded-lg text-xs font-bold hover:bg-amber-600 transition flex items-center gap-1.5 shadow">
-            <i class="fa-solid fa-comments"></i> Panduan
-          </button>
-          <select id="skinSelect" class="p-2 rounded-lg text-sm bg-gray-100 text-gray-800 border font-medium outline-none">
-            <option value="theme-pastel">Mint</option>
-            <option value="theme-sunset">Sunset</option>
-            <option value="theme-berry">Berry</option>
-            <option value="theme-neon">Neon</option>
-          </select>
-          <button onclick="logout()" class="px-3 py-2 bg-red-500 text-white rounded-lg text-xs font-bold hover:bg-red-600 transition">
-            <i class="fa-solid fa-right-from-bracket"></i>
-          </button>
-        </div>
-      </div>
-    </header>
-
-    <main class="max-w-4xl mx-auto px-4 space-y-6">
-      <!-- Voice Control Center -->
-      <section class="card-style p-6 text-center">
-        <h2 class="text-lg font-semibold mb-1">VOICE ASSISTANT</h2>
-        <p id="speechStatus" class="text-sm text-gray-500 mb-4">Klik mic lalu ngomong santai aja!</p>
-        <button id="btnMic" class="w-20 h-20 bg-emerald-500 text-white rounded-full text-3xl shadow-xl hover:bg-emerald-600 transition flex items-center justify-center mx-auto mb-4">
-          <i class="fa-solid fa-microphone"></i>
-        </button>
-        <div class="bg-gray-100/70 p-3 rounded-xl max-w-lg mx-auto border">
-          <p id="transcriptText" class="text-sm italic font-medium">"Belum ada ucapan..."</p>
-        </div>
-      </section>
-
-      <!-- Input Manual -->
-      <section class="card-style p-6">
-        <form id="manualForm" onsubmit="addManualTransaction(event)" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3">
-          <div>
-            <label class="block text-xs font-semibold opacity-80 mb-1">Jenis</label>
-            <select id="manualType" class="w-full p-2.5 rounded-lg border text-xs bg-gray-50 text-gray-800 font-medium">
-              <option value="pengeluaran">Pengeluaran</option>
-              <option value="pemasukan">Pemasukan</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-xs font-semibold opacity-80 mb-1">Tanggal</label>
-            <input type="date" id="manualDate" class="w-full p-2.5 rounded-lg border text-xs bg-gray-50 text-gray-800" required>
-          </div>
-          <div class="md:col-span-1">
-            <label class="block text-xs font-semibold opacity-80 mb-1">Keterangan</label>
-            <input type="text" id="manualDesc" placeholder="Beli Kopi" class="w-full p-2.5 rounded-lg border text-xs bg-gray-50 text-gray-800" required>
-          </div>
-          <div>
-            <label class="block text-xs font-semibold opacity-80 mb-1">Nominal (Rp)</label>
-            <input type="number" id="manualAmount" placeholder="25000" class="w-full p-2.5 rounded-lg border text-xs bg-gray-50 text-gray-800" required>
-          </div>
-          <div class="flex items-end">
-            <button type="submit" class="w-full p-2.5 bg-emerald-500 text-white rounded-lg text-xs font-bold hover:bg-emerald-600">Tambah</button>
-          </div>
-        </form>
-      </section>
-
-      <!-- Stats -->
-      <section class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div class="card-style p-5 border-l-4 border-green-500">
-          <div class="text-xs text-gray-500 font-bold uppercase mb-1">Pemasukan</div>
-          <div id="cardIncome" class="text-2xl font-black text-green-600">Rp 0</div>
-        </div>
-        <div class="card-style p-5 border-l-4 border-red-500">
-          <div class="text-xs text-gray-500 font-bold uppercase mb-1">Pengeluaran</div>
-          <div id="cardExpense" class="text-2xl font-black text-red-600">Rp 0</div>
-        </div>
-        <div class="card-style p-5 border-l-4 border-blue-500">
-          <div class="text-xs text-gray-500 font-bold uppercase mb-1">Saldo</div>
-          <div id="cardBalance" class="text-2xl font-black text-blue-600">Rp 0</div>
-        </div>
-      </section>
-
-      <!-- Table -->
-      <section class="card-style p-6">
-        <div class="flex justify-between items-center mb-4">
-          <h3 class="text-md font-bold">Daftar Transaksi</h3>
-          <button onclick="showChartModal('bulan')" class="px-3 py-1.5 bg-indigo-500 text-white rounded-lg text-xs font-semibold">Lihat Grafik</button>
-        </div>
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-sm">
-            <thead>
-              <tr class="border-b text-xs uppercase opacity-70">
-                <th class="p-2">Tanggal</th>
-                <th class="p-2">Jenis</th>
-                <th class="p-2">Keterangan</th>
-                <th class="p-2 text-right">Jumlah</th>
-                <th class="p-2 text-center">Aksi</th>
-              </tr>
-            </thead>
-            <tbody id="transactionList"></tbody>
-          </table>
-        </div>
-      </section>
-    </main>
+  <div class="form-group">
+    <label>Nomor HP</label>
+    <input type="tel" id="reg-hp" placeholder="Contoh: 08123456789" />
   </div>
-
-  <!-- MODAL PANDUAN (Content truncated for brevity, same as your original) -->
-  <div id="guideModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4">
-    <div class="card-style w-full max-w-4xl p-6 relative max-h-[90vh] overflow-y-auto">
-      <h3 class="font-bold text-lg mb-4">Panduan Suara</h3>
-      <p class="text-sm">Contoh: "Beli bakso dua puluh ribu" atau "Pemasukan gaji lima juta"</p>
-      <button onclick="closeGuideModal()" class="mt-4 px-4 py-2 bg-emerald-500 text-white rounded">Tutup</button>
-    </div>
+  <div class="form-group">
+    <label>Password</label>
+    <input type="password" id="reg-pass" placeholder="Minimal 6 karakter" />
   </div>
-
-  <!-- MODAL CHART -->
-  <div id="chartModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4">
-    <div class="card-style w-full max-w-md p-6 relative">
-      <div class="flex justify-between items-center mb-4">
-        <h3 id="modalTitle" class="font-bold text-lg">Grafik</h3>
-        <button onclick="closeChartModal()" class="text-gray-400"><i class="fa-solid fa-xmark"></i></button>
-      </div>
-      <div class="h-64"><canvas id="financeChart"></canvas></div>
-      <div id="aiAdvice" class="p-3 bg-indigo-50 mt-4 rounded text-xs"></div>
-    </div>
+  <button id="btn-reg" onclick="prosesDaftar()">Daftar & Masuk</button>
+  <div class="switch-mode">
+    Sudah punya akun? <a href="javascript:void(0)" onclick="tampilLogin()">Login</a>
   </div>
+</div>
+
+<!-- FORM LOGIN -->
+<div id="box-login" class="hidden">
+  <h3>Login</h3>
+  <div class="form-group">
+    <label>Nomor HP</label>
+    <input type="tel" id="login-hp" placeholder="Contoh: 08123456789" />
+  </div>
+  <div class="form-group">
+    <label>Password</label>
+    <input type="password" id="login-pass" placeholder="Password kamu" />
+  </div>
+  <button id="btn-login" onclick="prosesLogin()">Masuk</button>
+  <div class="switch-mode">
+    Belum ada akun? <a href="javascript:void(0)" onclick="tampilDaftar()">Daftar Akun</a>
+  </div>
+</div>
+
+<!-- TAMPILAN JIKA SUDAH LOGIN -->
+<div id="box-user" class="hidden">
+  <h3>Sesi Aktif</h3>
+  <div class="info-box" id="detail-user">
+    Memuat data...
+  </div>
+  <button class="btn-danger" onclick="prosesLogout()">Keluar (Logout)</button>
+</div>
 
   <script>
-    // --- KONFIGURASI SUPABASE ---
-    const SUPABASE_URL = "https://cpxtmplxgharspotisti.supabase.co";
-    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNweHRtcGx4Z2hhcnNwb3Rpc3RpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4NzA5MTAsImV4cCI6MjEwNDQ0NjkxMH0.vR9BY365MPGD9h71_IieYVGH_d7-ow_ZjOUOY7RbO-s";
-    const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    // =========================================================
+    // ISIKAN KREDENSIAL SUPABASE MILIKMU DI SINI:
+    // =========================================================
+    const SUPABASE_URL = 'https://bsrmljvtyqrzplivfbti.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJzcm1sanZ0eXFyenBsaXZmYnRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4ODQ5MjIsImV4cCI6MjEwNDQ2MDkyMn0.s9ECW3fEOrkrwO6mQyELSVrad1AyrsJ77acTJvW_Sn4';
 
-    // --- STATE MANAGEMENT ---
-    let currentUser = JSON.parse(localStorage.getItem('befast_user')) || null;
-    let transactions = [];
-    let chartInstance = null;
+    // Inisialisasi Supabase SDK v1
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // --- AUTH LOGIC ---
-    function toggleAuth(isSignup) {
-      document.getElementById('loginForm').classList.toggle('hidden', isSignup);
-      document.getElementById('signupForm').classList.toggle('hidden', !isSignup);
-      document.getElementById('authTitle').innerText = isSignup ? "Buat Akun Baru" : "Selamat Datang di BeFast";
-      document.getElementById('authSubtitle').innerText = isSignup ? "Daftar untuk mulai mencatat" : "Silakan login untuk kelola keuanganmu";
-      document.getElementById('switchAuthText').innerHTML = isSignup ? 
-        'Sudah punya akun? <a href="#" onclick="toggleAuth(false)" class="text-emerald-600 font-bold">Login Disini</a>' :
-        'Belum punya akun? <a href="#" onclick="toggleAuth(true)" class="text-emerald-600 font-bold">Daftar Disini</a>';
+    // Fungsi mengubah No HP ke Email Internal
+    function ubahKeEmail(nohp) {
+      const hpBersih = nohp.replace(/[^0-9]/g, '');
+      return `${hpBersih}@mybefast.com`;
     }
 
-    document.getElementById('signupForm').onsubmit = async (e) => {
-      e.preventDefault();
-      const username = document.getElementById('regUsername').value;
-      const phone = document.getElementById('regPhone').value;
-      const password = document.getElementById('regPassword').value;
+    // Toggle Tampilan
+    function tampilLogin() {
+      document.getElementById('box-register').classList.add('hidden');
+      document.getElementById('box-login').classList.remove('hidden');
+    }
 
-      // Cek duplikasi
-      const { data: existing } = await _supabase.from('users').select('*')
-        .or(`username.eq.${username},phone_number.eq.${phone}`);
-      
-      if (existing && existing.length > 0) {
-        alert("Username atau No. HP sudah terdaftar!");
+    function tampilDaftar() {
+      document.getElementById('box-login').classList.add('hidden');
+      document.getElementById('box-register').classList.remove('hidden');
+    }
+
+    // 1. FUNGSI DAFTAR (TETAP BISA TANPA OTP)
+    async function prosesDaftar() {
+      const nama = document.getElementById('reg-nama').value.trim();
+      const hp = document.getElementById('reg-hp').value.trim();
+      const pass = document.getElementById('reg-pass').value;
+      const btn = document.getElementById('btn-reg');
+
+      if (!nama || !hp || !pass) {
+        alert('Semua kolom wajib diisi!');
         return;
       }
 
-      const { data, error } = await _supabase.from('users').insert([{
-        username, phone_number: phone, password_hash: password
-      }]).select();
+      btn.disabled = true;
+      btn.innerText = 'Memproses...';
 
-      if (error) alert("Gagal daftar!");
-      else {
-        alert("Pendaftaran Berhasil! Silakan Login.");
-        toggleAuth(false);
-      }
-    };
+      const emailInternal = ubahKeEmail(hp);
 
-    document.getElementById('loginForm').onsubmit = async (e) => {
-      e.preventDefault();
-      const identifier = document.getElementById('loginIdentifier').value;
-      const password = document.getElementById('loginPassword').value;
-
-      const { data, error } = await _supabase.from('users')
-        .select('*')
-        .or(`username.eq.${identifier},phone_number.eq.${identifier}`)
-        .eq('password_hash', password)
-        .single();
-
-      if (data) {
-        currentUser = data;
-        localStorage.setItem('befast_user', JSON.stringify(data));
-        checkSession();
-      } else {
-        alert("Login Gagal! Cek kembali kredensial Anda.");
-      }
-    };
-
-    function logout() {
-      localStorage.removeItem('befast_user');
-      currentUser = null;
-      location.reload();
-    }
-
-    function checkSession() {
-      if (currentUser) {
-        document.getElementById('authSection').classList.add('hidden');
-        document.getElementById('mainApp').classList.remove('hidden-app');
-        document.getElementById('userWelcome').innerText = `Halo, ${currentUser.username}!`;
-        loadTransactions();
-      }
-    }
-
-    // --- DATA LOGIC (SUPABASE) ---
-    async function loadTransactions() {
-      const { data, error } = await _supabase
-        .from('transactions')
-        .select('*')
-        .eq('user_id', currentUser.id)
-        .order('date', { ascending: false });
-
-      if (data) {
-        transactions = data;
-        renderData();
-      }
-    }
-
-    async function addTransactionToDB(payload) {
-      const { data, error } = await _supabase
-        .from('transactions')
-        .insert([{ ...payload, user_id: currentUser.id }]);
-      
-      if (!error) loadTransactions();
-    }
-
-    async function deleteItem(id) {
-      const { error } = await _supabase.from('transactions').delete().eq('id', id);
-      if (!error) loadTransactions();
-    }
-
-    // --- ORIGINAL APP LOGIC (ADAPTED) ---
-    function renderData() {
-      const tbody = document.getElementById('transactionList');
-      tbody.innerHTML = '';
-      let inc = 0, exp = 0;
-
-      transactions.forEach(t => {
-        if (t.type === 'pemasukan') inc += t.amount;
-        else exp += t.amount;
-
-        tbody.innerHTML += `
-          <tr class="border-b hover:bg-black/5">
-            <td class="p-2 text-xs opacity-75 font-mono">${t.date}</td>
-            <td class="p-2"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${t.type === 'pemasukan' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">${t.type.toUpperCase()}</span></td>
-            <td class="p-2 font-medium">${t.description}</td>
-            <td class="p-2 text-right font-bold ${t.type === 'pemasukan' ? 'text-green-600' : 'text-red-600'}">Rp ${t.amount.toLocaleString('id-ID')}</td>
-            <td class="p-2 text-center">
-               <button onclick="deleteItem('${t.id}')" class="text-red-500"><i class="fa-solid fa-trash"></i></button>
-            </td>
-          </tr>`;
+      // Register ke Auth Supabase
+      const { user, error: errorAuth } = await supabaseClient.auth.signUp({
+        email: emailInternal,
+        password: pass,
       });
 
-      document.getElementById('cardIncome').innerText = `Rp ${inc.toLocaleString('id-ID')}`;
-      document.getElementById('cardExpense').innerText = `Rp ${exp.toLocaleString('id-ID')}`;
-      document.getElementById('cardBalance').innerText = `Rp ${(inc - exp).toLocaleString('id-ID')}`;
-    }
+      if (errorAuth) {
+        alert('Gagal Daftar: ' + errorAuth.message);
+        btn.disabled = false;
+        btn.innerText = 'Daftar & Masuk';
+        return;
+      }
 
-    function addManualTransaction(e) {
-      e.preventDefault();
-      const payload = {
-        type: document.getElementById('manualType').value,
-        date: document.getElementById('manualDate').value,
-        description: document.getElementById('manualDesc').value,
-        amount: parseInt(document.getElementById('manualAmount').value)
-      };
-      addTransactionToDB(payload);
-      e.target.reset();
-      document.getElementById('manualDate').value = new Date().toISOString().split('T')[0];
-    }
+      // Simpan data rapi ke tabel profiles
+      if (user) {
+        const { error: errorProfile } = await supabaseClient
+          .from('profiles')
+          .insert([
+            { id: user.id, phone_number: hp, full_name: nama }
+          ]);
 
-    // --- VOICE COMMAND LOGIC (ADAPTED) ---
-    // (Fungsi parseNominal dan extractTransactionDetails tetap sama, hanya panggil addTransactionToDB)
-    function processVoiceCommand(cmd) {
-        // Logika parsing suara sama seperti kode lama Anda...
-        // Setelah dapat detail, panggil:
-        // addTransactionToDB({ type, date, description, amount });
-        
-        // Contoh sederhana integrasi:
-        if (cmd.includes('beli') || cmd.includes('pengeluaran')) {
-            let amount = 50000; // Contoh dummy parsing
-            addTransactionToDB({
-                type: 'pengeluaran',
-                date: new Date().toISOString().split('T')[0],
-                description: 'Input Suara',
-                amount: amount
-            });
-            speak("Catatan pengeluaran berhasil disimpan ke database cloud!");
+        if (errorProfile) {
+          alert('Pendaftaran Auth berhasil, tapi gagal simpan tabel profil: ' + errorProfile.message);
+        } else {
+          alert('Pendaftaran Berhasil!');
         }
+        
+        cekSesiUser();
+      }
+
+      btn.disabled = false;
+      btn.innerText = 'Daftar & Masuk';
     }
 
-    // TTS & Speech Recognition Initialization
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    let recognition = null;
-    if (SpeechRecognition) {
-      recognition = new SpeechRecognition();
-      recognition.lang = 'id-ID';
-      recognition.onresult = (e) => {
-        const cmd = e.results[0][0].transcript.toLowerCase();
-        document.getElementById('transcriptText').innerText = `"${cmd}"`;
-        processVoiceCommand(cmd);
-      };
-      document.getElementById('btnMic').onclick = () => recognition.start();
+    // 2. FUNGSI LOGIN
+    async function prosesLogin() {
+      const hp = document.getElementById('login-hp').value.trim();
+      const pass = document.getElementById('login-pass').value;
+      const btn = document.getElementById('btn-login');
+
+      if (!hp || !pass) {
+        alert('Isi Nomor HP dan Password!');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerText = 'Memuat...';
+
+      const emailInternal = ubahKeEmail(hp);
+
+      const { user, error } = await supabaseClient.auth.signIn({
+        email: emailInternal,
+        password: pass,
+      });
+
+      if (error) {
+        alert('Login Gagal: ' + error.message);
+      } else {
+        alert('Login Berhasil!');
+        cekSesiUser();
+      }
+
+      btn.disabled = false;
+      btn.innerText = 'Masuk';
     }
 
-    function speak(text) {
-      const u = new SpeechSynthesisUtterance(text);
-      u.lang = 'id-ID';
-      window.speechSynthesis.speak(u);
+    // 3. CEK STATUS USER
+    async function cekSesiUser() {
+      const user = supabaseClient.auth.user();
+
+      if (user) {
+        // Ambil profil dari tabel
+        const { data: profile } = await supabaseClient
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+
+        document.getElementById('box-register').classList.add('hidden');
+        document.getElementById('box-login').classList.add('hidden');
+        document.getElementById('box-user').classList.remove('hidden');
+
+        document.getElementById('detail-user').innerHTML = `
+          <strong>Status:</strong> Terautentikasi<br>
+          <strong>Nama:</strong> ${profile ? profile.full_name : '-'}<br>
+          <strong>No HP:</strong> ${profile ? profile.phone_number : '-'}<br>
+          <strong>User ID:</strong> ${user.id}
+        `;
+      } else {
+        document.getElementById('box-user').classList.add('hidden');
+        document.getElementById('box-register').classList.remove('hidden');
+      }
     }
 
-    function openGuideModal() { document.getElementById('guideModal').classList.remove('hidden'); }
-    function closeGuideModal() { document.getElementById('guideModal').classList.add('hidden'); }
-    
-    // Skin Init
-    document.getElementById('skinSelect').onchange = (e) => {
-      document.body.className = `${e.target.value} min-h-screen pb-12`;
-    };
+    // 4. LOGOUT
+    async function prosesLogout() {
+      await supabaseClient.auth.signOut();
+      alert('Berhasil Logout');
+      cekSesiUser();
+    }
 
-    // Modal Chart logic ... (Sama seperti kode lama Anda)
-
-    window.onload = () => {
-      checkSession();
-      document.getElementById('manualDate').value = new Date().toISOString().split('T')[0];
-    };
+    // Jalankan otomatis saat halaman dimuat
+    cekSesiUser();
   </script>
 </body>
 </html>
