@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MyBeFast - Auth Nomor HP</title>
+  <title>MyBeFast App</title>
   
   <!-- Load Supabase JS SDK v2 -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -15,25 +15,26 @@
     }
     body {
       background-color: #f4f6f9;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+    }
+
+    /* === TAMPILAN LOGIN / REGISTER === */
+    .auth-wrapper {
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
-      margin: 0;
       padding: 20px;
     }
-    .container {
+    .auth-card {
       background: #ffffff;
       padding: 30px;
       border-radius: 12px;
       box-shadow: 0 4px 15px rgba(0,0,0,0.1);
       width: 100%;
       max-width: 400px;
-    }
-    h2, h3 {
-      text-align: center;
-      color: #333;
-      margin-top: 0;
     }
     .form-group {
       margin-bottom: 15px;
@@ -53,9 +54,6 @@
       font-size: 14px;
       outline: none;
     }
-    input:focus {
-      border-color: #007bff;
-    }
     button {
       width: 100%;
       padding: 12px;
@@ -67,106 +65,158 @@
       font-weight: bold;
       cursor: pointer;
     }
-    button:hover {
-      background-color: #0056b3;
-    }
-    button:disabled {
-      background-color: #aaa;
-      cursor: not-allowed;
-    }
-    .btn-danger {
-      background-color: #dc3545;
-      margin-top: 15px;
-    }
-    .btn-danger:hover {
-      background-color: #bd2130;
-    }
+    button:hover { background-color: #0056b3; }
+    button:disabled { background-color: #aaa; cursor: not-allowed; }
     .toggle-link {
       text-align: center;
       margin-top: 15px;
       font-size: 14px;
     }
-    .toggle-link a {
-      color: #007bff;
-      text-decoration: none;
-      font-weight: bold;
+    .toggle-link a { color: #007bff; text-decoration: none; font-weight: bold; }
+
+    /* === TAMPILAN DASHBOARD APLIKASI UTAMA === */
+    .app-header {
+      background-color: #007bff;
+      color: white;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
-    .status-card {
-      background-color: #e9ecef;
-      padding: 15px;
-      border-radius: 6px;
-      margin-top: 20px;
-      font-size: 14px;
-      word-break: break-all;
+    .app-header h1 { margin: 0; font-size: 20px; }
+    .btn-logout {
+      background-color: #dc3545;
+      width: auto;
+      padding: 8px 15px;
+      font-size: 13px;
     }
-    .hidden {
-      display: none;
+    .btn-logout:hover { background-color: #bd2130; }
+    .app-container {
+      max-width: 1000px;
+      margin: 30px auto;
+      padding: 0 20px;
     }
+    .welcome-card {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      margin-bottom: 20px;
+    }
+    .content-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+    .feature-card {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      border-top: 4px solid #007bff;
+    }
+
+    .hidden { display: none !important; }
   </style>
 </head>
 <body>
 
-  <div class="container">
-    <h2>MyBeFast Auth</h2>
+  <!-- ========================================================= -->
+  <!-- MODUL 1: HALAMAN AUTH (LOGIN & DAFTAR)                   -->
+  <!-- ========================================================= -->
+  <div id="auth-section" class="auth-wrapper">
+    <div class="auth-card">
+      <h2 style="text-align: center;">MyBeFast</h2>
 
-    <!-- FORM REGISTER -->
-    <div id="register-box">
-      <h3>Daftar Akun Baru</h3>
-      <div class="form-group">
-        <label for="reg-name">Nama Lengkap</label>
-        <input type="text" id="reg-name" placeholder="Masukkan nama lengkap" />
+      <!-- FORM REGISTER -->
+      <div id="register-box">
+        <h3>Daftar Akun Baru</h3>
+        <div class="form-group">
+          <label>Nama Lengkap</label>
+          <input type="text" id="reg-name" placeholder="Masukkan nama lengkap" />
+        </div>
+        <div class="form-group">
+          <label>Nomor HP</label>
+          <input type="tel" id="reg-phone" placeholder="Contoh: 08123456789" />
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="reg-password" placeholder="Minimal 6 karakter" />
+        </div>
+        <button id="btn-register" onclick="signUpWithPhone()">Daftar & Masuk</button>
+        <div class="toggle-link">
+          Sudah punya akun? <a href="javascript:void(0)" onclick="showLogin()">Login di sini</a>
+        </div>
       </div>
-      <div class="form-group">
-        <label for="reg-phone">Nomor HP</label>
-        <input type="tel" id="reg-phone" placeholder="Contoh: 08123456789" />
-      </div>
-      <div class="form-group">
-        <label for="reg-password">Password</label>
-        <input type="password" id="reg-password" placeholder="Minimal 6 karakter" />
-      </div>
-      <button id="btn-register" onclick="signUpWithPhone()">Daftar & Masuk</button>
-      <div class="toggle-link">
-        Sudah punya akun? <a href="javascript:void(0)" onclick="showLogin()">Login di sini</a>
-      </div>
-    </div>
 
-    <!-- FORM LOGIN -->
-    <div id="login-box" class="hidden">
-      <h3>Login</h3>
-      <div class="form-group">
-        <label for="login-phone">Nomor HP</label>
-        <input type="tel" id="login-phone" placeholder="Contoh: 08123456789" />
+      <!-- FORM LOGIN -->
+      <div id="login-box" class="hidden">
+        <h3>Login</h3>
+        <div class="form-group">
+          <label>Nomor HP</label>
+          <input type="tel" id="login-phone" placeholder="Contoh: 08123456789" />
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="login-password" placeholder="Masukkan password" />
+        </div>
+        <button id="btn-login" onclick="signInWithPhone()">Masuk Aplikasi</button>
+        <div class="toggle-link">
+          Belum punya akun? <a href="javascript:void(0)" onclick="showRegister()">Daftar di sini</a>
+        </div>
       </div>
-      <div class="form-group">
-        <label for="login-password">Password</label>
-        <input type="password" id="login-password" placeholder="Masukkan password" />
-      </div>
-      <button id="btn-login" onclick="signInWithPhone()">Masuk</button>
-      <div class="toggle-link">
-        Belum punya akun? <a href="javascript:void(0)" onclick="showRegister()">Daftar di sini</a>
-      </div>
-    </div>
-
-    <!-- DASHBOARD STATUS USER -->
-    <div id="user-box" class="hidden">
-      <h3>Status Sesi</h3>
-      <div class="status-card" id="user-info">
-        Memuat data...
-      </div>
-      <button class="btn-danger" onclick="signOut()">Logout</button>
     </div>
   </div>
 
+
+  <!-- ========================================================= -->
+  <!-- MODUL 2: HALAMAN APLIKASI UTAMA (DASHBOARD)               -->
+  <!-- ========================================================= -->
+  <div id="app-section" class="hidden">
+    <!-- Navbar Header -->
+    <header class="app-header">
+      <h1>Dashboard MyBeFast</h1>
+      <button class="btn-logout" onclick="signOut()">Keluar (Logout)</button>
+    </header>
+
+    <!-- Content Aplikasi -->
+    <div class="app-container">
+      <div class="welcome-card">
+        <h2>Selamat Datang, <span id="user-display-name">...</span>!</h2>
+        <p>Nomor Terdaftar: <strong id="user-display-phone">-</strong></p>
+        <p>Status Akun: <span style="color: green; font-weight: bold;">Terautentikasi (Supabase)</span></p>
+      </div>
+
+      <!-- Contoh Area Fitur Aplikasi Utama -->
+      <h3>Layanan Aplikasi</h3>
+      <div class="content-grid">
+        <div class="feature-card">
+          <h4>Fitur 1: Layanan Cepat</h4>
+          <p>Area fitur utama aplikasi kamu bisa dimasukkan di sini.</p>
+        </div>
+        <div class="feature-card">
+          <h4>Fitur 2: Riwayat Transaksi</h4>
+          <p>Data aktivitas pengguna yang terhubung dengan Supabase.</p>
+        </div>
+        <div class="feature-card">
+          <h4>Fitur 3: Pengaturan</h4>
+          <p>Kelola konfigurasi dan profil akun kamu di sini.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ========================================================= -->
+  <!-- SCRIPT LOGIKA APLIKASI & SUPABASE                        -->
+  <!-- ========================================================= -->
   <script>
-    // =========================================================
     // ISIKAN KREDENSIAL SUPABASE MILIKMU DI SINI:
-    // =========================================================
     const SUPABASE_URL = 'https://cpxtmplxgharspotisti.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNweHRtcGx4Z2hhcnNwb3Rpc3RpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4NzA5MTAsImV4cCI6MjEwNDQ0NjkxMH0.vR9BY365MPGD9h71_IieYVGH_d7-ow_ZjOUOY7RbO-s';
 
     let supabaseClient = null;
 
-    // Inisialisasi Klien Supabase (Nama variabel diubah agar tidak bentrok)
     try {
       if (!SUPABASE_URL.includes('YOUR_PROJECT_ID')) {
         supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -177,13 +227,13 @@
       console.error('Gagal inisialisasi Supabase:', err);
     }
 
-    // Convert No HP ke Email internal
+    // Convert No HP ke Email internal Supabase
     function phoneToEmail(phone) {
       const cleanPhone = phone.replace(/[^0-9]/g, '');
       return `${cleanPhone}@mybefast.com`;
     }
 
-    // Navigation Toggle
+    // Toggle Form Login / Register
     function showLogin() {
       document.getElementById('register-box').classList.add('hidden');
       document.getElementById('login-box').classList.remove('hidden');
@@ -194,10 +244,10 @@
       document.getElementById('register-box').classList.remove('hidden');
     }
 
-    // 1. FUNGSI REGISTRASI
+    // 1. REGISTRASI
     async function signUpWithPhone() {
       if (!supabaseClient) {
-        alert('Kredensial Supabase belum diisi di dalam kode!');
+        alert('Kredensial Supabase belum diisi!');
         return;
       }
 
@@ -217,7 +267,7 @@
 
         const email = phoneToEmail(phone);
 
-        // A. Buat akun di Auth
+        // Register ke Supabase Auth
         const { data: authData, error: authError } = await supabaseClient.auth.signUp({
           email: email,
           password: password,
@@ -225,7 +275,7 @@
 
         if (authError) throw authError;
 
-        // B. Simpan data ke tabel profiles
+        // Simpan Profil ke Tabel Supabase
         if (authData.user) {
           const { error: profileError } = await supabaseClient
             .from('profiles')
@@ -233,19 +283,18 @@
 
           if (profileError) throw profileError;
 
-          alert('Pendaftaran Berhasil! Kamu otomatis masuk.');
+          alert('Pendaftaran Berhasil!');
           checkUser();
         }
       } catch (err) {
         alert('Gagal Daftar: ' + err.message);
-        console.error(err);
       } finally {
         btn.disabled = false;
         btn.innerText = 'Daftar & Masuk';
       }
     }
 
-    // 2. FUNGSI LOGIN
+    // 2. LOGIN
     async function signInWithPhone() {
       if (!supabaseClient) {
         alert('Kredensial Supabase belum diisi!');
@@ -274,46 +323,44 @@
 
         if (error) throw error;
 
-        alert('Login Berhasil!');
         checkUser();
       } catch (err) {
         alert('Login Gagal: ' + err.message);
       } finally {
         btn.disabled = false;
-        btn.innerText = 'Masuk';
+        btn.innerText = 'Masuk Aplikasi';
       }
     }
 
-    // 3. FUNGSI CEK SESI
+    // 3. FUNGSI PENGECEKAN SESI & PERPINDAHAN HALAMAN
     async function checkUser() {
       if (!supabaseClient) return;
 
       const { data: { user } } = await supabaseClient.auth.getUser();
 
       if (user) {
+        // Ambil Profil dari Supabase
         const { data: profile } = await supabaseClient
           .from('profiles')
           .select('*')
           .eq('id', user.id)
           .single();
 
-        document.getElementById('register-box').classList.add('hidden');
-        document.getElementById('login-box').classList.add('hidden');
-        document.getElementById('user-box').classList.remove('hidden');
+        // Tampilkan data user di dashboard aplikasi
+        document.getElementById('user-display-name').innerText = profile?.full_name || 'Pengguna';
+        document.getElementById('user-display-phone').innerText = profile?.phone_number || '-';
 
-        document.getElementById('user-info').innerHTML = `
-          <strong>Status:</strong> Terautentikasi<br>
-          <strong>Nama:</strong> ${profile?.full_name || '-'}<br>
-          <strong>No. HP:</strong> ${profile?.phone_number || '-'}<br>
-          <strong>ID User:</strong> ${user.id}
-        `;
+        // PINDAH TAMPILAN: Sembunyikan Form Login, Tampilkan Aplikasi Utama
+        document.getElementById('auth-section').classList.add('hidden');
+        document.getElementById('app-section').classList.remove('hidden');
       } else {
-        document.getElementById('user-box').classList.add('hidden');
-        document.getElementById('register-box').classList.remove('hidden');
+        // TAMPILAN LOGIN: Tampilkan Form Auth, Sembunyikan Aplikasi Utama
+        document.getElementById('app-section').classList.add('hidden');
+        document.getElementById('auth-section').classList.remove('hidden');
       }
     }
 
-    // 4. FUNGSI LOGOUT
+    // 4. LOGOUT
     async function signOut() {
       if (!supabaseClient) return;
       await supabaseClient.auth.signOut();
@@ -321,7 +368,7 @@
       checkUser();
     }
 
-    // Jalankan pengecekan sesi saat halaman dibuka
+    // Jalankan pengecekan sesi saat aplikasi dibuka
     checkUser();
   </script>
 </body>
