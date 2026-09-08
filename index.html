@@ -3,9 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login & Register - MyBeFast</title>
-  <!-- Load Supabase JS SDK -->
+  <title>MyBeFast - Auth Nomor HP</title>
+  
+  <!-- Load Supabase JS SDK v2 -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
   <style>
     * {
       box-sizing: border-box;
@@ -64,21 +66,17 @@
       font-size: 15px;
       font-weight: bold;
       cursor: pointer;
-      transition: background-color 0.2s;
     }
     button:hover {
       background-color: #0056b3;
     }
-    .btn-secondary {
-      background-color: #6c757d;
-      margin-top: 10px;
-    }
-    .btn-secondary:hover {
-      background-color: #5a6268;
+    button:disabled {
+      background-color: #aaa;
+      cursor: not-allowed;
     }
     .btn-danger {
       background-color: #dc3545;
-      margin-top: 10px;
+      margin-top: 15px;
     }
     .btn-danger:hover {
       background-color: #bd2130;
@@ -126,9 +124,9 @@
         <label for="reg-password">Password</label>
         <input type="password" id="reg-password" placeholder="Minimal 6 karakter" />
       </div>
-      <button onclick="signUpWithPhone()">Daftar & Masuk</button>
+      <button id="btn-register" onclick="signUpWithPhone()">Daftar & Masuk</button>
       <div class="toggle-link">
-        Sudah punya akun? <a href="#" onclick="showLogin()">Login di sini</a>
+        Sudah punya akun? <a href="javascript:void(0)" onclick="showLogin()">Login di sini</a>
       </div>
     </div>
 
@@ -143,15 +141,15 @@
         <label for="login-password">Password</label>
         <input type="password" id="login-password" placeholder="Masukkan password" />
       </div>
-      <button onclick="signInWithPhone()">Masuk</button>
+      <button id="btn-login" onclick="signInWithPhone()">Masuk</button>
       <div class="toggle-link">
-        Belum punya akun? <a href="#" onclick="showRegister()">Daftar di sini</a>
+        Belum punya akun? <a href="javascript:void(0)" onclick="showRegister()">Daftar di sini</a>
       </div>
     </div>
 
-    <!-- DASHBOARD / STATUS AKUN -->
+    <!-- DASHBOARD STATUS USER -->
     <div id="user-box" class="hidden">
-      <h3>Info Sesi Aktif</h3>
+      <h3>Status Sesi</h3>
       <div class="status-card" id="user-info">
         Memuat data...
       </div>
@@ -160,21 +158,32 @@
   </div>
 
   <script>
-    // ==========================================
-    // CONFIG: GANTI DENGAN KREDENSIAL SUPABASE-MU
-    // ==========================================
+    // =========================================================
+    // ISIKAN KREDENSIAL SUPABASE MILIKMU DI SINI:
+    // =========================================================
     const SUPABASE_URL = 'https://cpxtmplxgharspotisti.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNweHRtcGx4Z2hhcnNwb3Rpc3RpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4NzA5MTAsImV4cCI6MjEwNDQ0NjkxMH0.vR9BY365MPGD9h71_IieYVGH_d7-ow_ZjOUOY7RbO-s';
 
-    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    let supabaseClient = null;
 
-    // Fungsi konversi nomor HP ke format email internal Supabase
+    // Inisialisasi Klien Supabase (Nama variabel diubah agar tidak bentrok)
+    try {
+      if (!SUPABASE_URL.includes('YOUR_PROJECT_ID')) {
+        supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      } else {
+        console.warn('Peringatan: URL Supabase belum diisi dengan benar!');
+      }
+    } catch (err) {
+      console.error('Gagal inisialisasi Supabase:', err);
+    }
+
+    // Convert No HP ke Email internal
     function phoneToEmail(phone) {
       const cleanPhone = phone.replace(/[^0-9]/g, '');
       return `${cleanPhone}@mybefast.com`;
     }
 
-    // Toggle Tampilan Form
+    // Navigation Toggle
     function showLogin() {
       document.getElementById('register-box').classList.add('hidden');
       document.getElementById('login-box').classList.remove('hidden');
@@ -185,79 +194,104 @@
       document.getElementById('register-box').classList.remove('hidden');
     }
 
-    // 1. DAFTAR BARU
+    // 1. FUNGSI REGISTRASI
     async function signUpWithPhone() {
+      if (!supabaseClient) {
+        alert('Kredensial Supabase belum diisi di dalam kode!');
+        return;
+      }
+
       const name = document.getElementById('reg-name').value.trim();
       const phone = document.getElementById('reg-phone').value.trim();
       const password = document.getElementById('reg-password').value;
+      const btn = document.getElementById('btn-register');
 
       if (!name || !phone || !password) {
-        alert('Semua kolom wajib diisi!');
+        alert('Harap isi semua kolom!');
         return;
       }
 
-      const email = phoneToEmail(phone);
+      try {
+        btn.disabled = true;
+        btn.innerText = 'Memproses...';
 
-      // Mendaftar ke Supabase Auth
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email: email,
-        password: password,
-      });
+        const email = phoneToEmail(phone);
 
-      if (authError) {
-        alert('Gagal Daftar: ' + authError.message);
-        return;
-      }
+        // A. Buat akun di Auth
+        const { data: authData, error: authError } = await supabaseClient.auth.signUp({
+          email: email,
+          password: password,
+        });
 
-      // Menyimpan detail ke tabel profiles
-      const user = authData.user;
-      if (user) {
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .insert([{ id: user.id, phone_number: phone, full_name: name }]);
+        if (authError) throw authError;
 
-        if (profileError) {
-          alert('Gagal simpan profil: ' + profileError.message);
-          return;
+        // B. Simpan data ke tabel profiles
+        if (authData.user) {
+          const { error: profileError } = await supabaseClient
+            .from('profiles')
+            .insert([{ id: authData.user.id, phone_number: phone, full_name: name }]);
+
+          if (profileError) throw profileError;
+
+          alert('Pendaftaran Berhasil! Kamu otomatis masuk.');
+          checkUser();
         }
-
-        alert('Pendaftaran berhasil! Kamu langsung login.');
-        checkUser();
+      } catch (err) {
+        alert('Gagal Daftar: ' + err.message);
+        console.error(err);
+      } finally {
+        btn.disabled = false;
+        btn.innerText = 'Daftar & Masuk';
       }
     }
 
-    // 2. LOGIN
+    // 2. FUNGSI LOGIN
     async function signInWithPhone() {
+      if (!supabaseClient) {
+        alert('Kredensial Supabase belum diisi!');
+        return;
+      }
+
       const phone = document.getElementById('login-phone').value.trim();
       const password = document.getElementById('login-password').value;
+      const btn = document.getElementById('btn-login');
 
       if (!phone || !password) {
-        alert('Nomor HP dan Password harus diisi!');
+        alert('Isi Nomor HP dan Password!');
         return;
       }
 
-      const email = phoneToEmail(phone);
+      try {
+        btn.disabled = true;
+        btn.innerText = 'Memuat...';
 
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: email,
-        password: password,
-      });
+        const email = phoneToEmail(phone);
 
-      if (error) {
-        alert('Login Gagal: ' + error.message);
-      } else {
+        const { error } = await supabaseClient.auth.signInWithPassword({
+          email: email,
+          password: password,
+        });
+
+        if (error) throw error;
+
         alert('Login Berhasil!');
         checkUser();
+      } catch (err) {
+        alert('Login Gagal: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerText = 'Masuk';
       }
     }
 
-    // 3. CEK STATUS LOGIN
+    // 3. FUNGSI CEK SESI
     async function checkUser() {
-      const { data: { user } } = await supabase.auth.getUser();
+      if (!supabaseClient) return;
+
+      const { data: { user } } = await supabaseClient.auth.getUser();
 
       if (user) {
-        // Ambil data profil dari tabel
-        const { data: profile } = await supabase
+        const { data: profile } = await supabaseClient
           .from('profiles')
           .select('*')
           .eq('id', user.id)
@@ -268,6 +302,7 @@
         document.getElementById('user-box').classList.remove('hidden');
 
         document.getElementById('user-info').innerHTML = `
+          <strong>Status:</strong> Terautentikasi<br>
           <strong>Nama:</strong> ${profile?.full_name || '-'}<br>
           <strong>No. HP:</strong> ${profile?.phone_number || '-'}<br>
           <strong>ID User:</strong> ${user.id}
@@ -278,14 +313,15 @@
       }
     }
 
-    // 4. LOGOUT
+    // 4. FUNGSI LOGOUT
     async function signOut() {
-      await supabase.auth.signOut();
+      if (!supabaseClient) return;
+      await supabaseClient.auth.signOut();
       alert('Berhasil Logout');
       checkUser();
     }
 
-    // Cek status login saat halaman pertama kali dimuat
+    // Jalankan pengecekan sesi saat halaman dibuka
     checkUser();
   </script>
 </body>
