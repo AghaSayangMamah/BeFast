@@ -115,7 +115,7 @@
       <h3 class="text-md font-bold mb-4 flex items-center gap-2">
         <i class="fa-solid fa-pen-to-square text-emerald-500"></i> Input Transaksi Manual
       </h3>
-      <form id="manualForm" onsubmit="addManualTransaction(event)" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3">
+      <form id="manualForm" onsubmit="addManualTransaction(event)" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-3">
         <div>
           <label class="block text-xs font-semibold opacity-80 mb-1">Jenis</label>
           <select id="manualType" class="w-full p-2.5 rounded-lg border text-xs bg-gray-50 text-gray-800 font-medium focus:ring-2 focus:ring-emerald-500 outline-none">
@@ -127,7 +127,21 @@
           <label class="block text-xs font-semibold opacity-80 mb-1">Tanggal</label>
           <input type="date" id="manualDate" class="w-full p-2.5 rounded-lg border text-xs bg-gray-50 text-gray-800 font-medium focus:ring-2 focus:ring-emerald-500 outline-none" required>
         </div>
-        <div class="md:col-span-1">
+        <div>
+          <label class="block text-xs font-semibold opacity-80 mb-1">Kategori</label>
+          <select id="manualCategory" class="w-full p-2.5 rounded-lg border text-xs bg-gray-50 text-gray-800 font-medium focus:ring-2 focus:ring-emerald-500 outline-none">
+            <option value="Otomatis">✨ Otomatis (AI)</option>
+            <option value="Makanan & Minuman">🍔 Makanan & Minuman</option>
+            <option value="Transportasi">🚗 Transportasi</option>
+            <option value="Belanja">🛍️ Belanja</option>
+            <option value="Tagihan & Utilitas">💡 Tagihan & Utilitas</option>
+            <option value="Hiburan & Hobi">🎮 Hiburan & Hobi</option>
+            <option value="Kesehatan & Edukasi">💊 Kesehatan & Edukasi</option>
+            <option value="Gaji & Pendapatan">💼 Gaji & Pendapatan</option>
+            <option value="Lain-lain">📦 Lain-lain</option>
+          </select>
+        </div>
+        <div>
           <label class="block text-xs font-semibold opacity-80 mb-1">Keterangan</label>
           <input type="text" id="manualDesc" placeholder="Contoh: Beli Kopi" class="w-full p-2.5 rounded-lg border text-xs bg-gray-50 text-gray-800 font-medium focus:ring-2 focus:ring-emerald-500 outline-none" required>
         </div>
@@ -182,11 +196,21 @@
 
     <!-- Transaction Table -->
     <section class="card-style p-6">
-      <div class="flex justify-between items-center mb-4">
-        <h3 class="text-md font-bold">Daftar Transaksi</h3>
-        <button onclick="showChartModal('bulan')" class="px-3 py-1.5 bg-indigo-500 text-white rounded-lg text-xs font-semibold hover:bg-indigo-600">
-          <i class="fa-solid fa-chart-pie mr-1"></i> Tampilkan Grafik
-        </button>
+      <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
+        <div class="flex items-center gap-2">
+          <h3 class="text-md font-bold">Daftar Transaksi</h3>
+          <span id="syncStatusBadge" class="text-[11px] px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 font-semibold flex items-center gap-1 shadow-sm">
+            <i class="fa-solid fa-cloud-check text-emerald-600"></i> Cloud Sinkron
+          </span>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="fetchTransactionsFromSupabase()" class="px-2.5 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-xs font-semibold flex items-center gap-1 transition shadow-sm" title="Sinkronkan dengan Cloud Supabase">
+            <i class="fa-solid fa-arrows-rotate"></i> Sinkron
+          </button>
+          <button onclick="showChartModal('bulan')" class="px-3 py-1.5 bg-indigo-500 text-white rounded-lg text-xs font-semibold hover:bg-indigo-600 transition shadow-sm">
+            <i class="fa-solid fa-chart-pie mr-1"></i> Tampilkan Grafik
+          </button>
+        </div>
       </div>
       <div class="overflow-x-auto">
         <table class="w-full text-left text-sm">
@@ -194,6 +218,7 @@
             <tr class="border-b text-xs uppercase opacity-70">
               <th class="p-2">Tanggal</th>
               <th class="p-2">Jenis</th>
+              <th class="p-2">Kategori</th>
               <th class="p-2">Keterangan</th>
               <th class="p-2 text-right">Jumlah</th>
               <th class="p-2 text-center">Aksi</th>
@@ -769,12 +794,84 @@
     }
 
     // ==========================================
+    // KATEGORI & SISTEM DETEKSI OTOMATIS (AI)
+    // ==========================================
+    function detectCategory(desc, type) {
+      if (!desc) return type === 'pemasukan' ? 'Gaji & Pendapatan' : 'Lain-lain';
+      const text = desc.toLowerCase();
+      
+      if (type === 'pemasukan') {
+        if (/(gaji|upah|honor|bonus|thr|dividen|uang jajan|sangu|transferan|masuk)/i.test(text)) return 'Gaji & Pendapatan';
+        if (/(jual|omset|laba|dagang|toko|jualan|penjualan)/i.test(text)) return 'Penjualan / Usaha';
+        if (/(hadiah|giveaway|cashback|undian|angpao|bonus)/i.test(text)) return 'Hadiah / Bonus';
+        return 'Pemasukan Lain';
+      }
+
+      if (/(makan|minum|kopi|cafe|resto|mie|nasi|roti|jajan|es|bakso|burger|pizza|gofood|grabfood|shopeefood|warteg|indomaret|alfamart|snack|ayam|sate|martabak|soto|bebek|pecel|siomay|batagor)/i.test(text)) {
+        return 'Makanan & Minuman';
+      }
+      if (/(gojek|grab|maxim|ojek|bensin|pertalite|pertamax|spbu|parkir|tol|kereta|krl|mrt|bus|angkot|taksi|pesawat|travel|motor|mobil|tambal ban|cuci motor|cuci mobil)/i.test(text)) {
+        return 'Transportasi';
+      }
+      if (/(belanja|baju|celana|sepatu|shopee|tokped|tokopedia|lazada|skincare|makeup|sabun|odol|deterjen|kaos|tas|jaket|helm|kacamata|parfum|mall)/i.test(text)) {
+        return 'Belanja';
+      }
+      if (/(listrik|pln|wifi|indihome|internet|pulsa|kuota|pdam|air|bpjs|sewa|kos|kontrakan|cicilan|tagihan|iuran)/i.test(text)) {
+        return 'Tagihan & Utilitas';
+      }
+      if (/(nonton|bioskop|cinema|xxi|game|topup|diamond|steam|spotify|netflix|healing|nongkrong|liburan|karaoke|hobi|biliard|futsal|badminton)/i.test(text)) {
+        return 'Hiburan & Hobi';
+      }
+      if (/(obat|dokter|rumah sakit|klinik|apotek|vitamin|buku|kursus|spp|kuliah|sekolah|bimbel|fotocopy|print)/i.test(text)) {
+        return 'Kesehatan & Edukasi';
+      }
+      return 'Lain-lain';
+    }
+
+    function getCategoryBadge(category) {
+      const badges = {
+        'Makanan & Minuman': { bg: 'bg-amber-100 text-amber-800 border-amber-200', icon: 'fa-utensils' },
+        'Transportasi': { bg: 'bg-blue-100 text-blue-800 border-blue-200', icon: 'fa-car' },
+        'Belanja': { bg: 'bg-purple-100 text-purple-800 border-purple-200', icon: 'fa-bag-shopping' },
+        'Tagihan & Utilitas': { bg: 'bg-yellow-100 text-yellow-800 border-yellow-200', icon: 'fa-bolt' },
+        'Hiburan & Hobi': { bg: 'bg-pink-100 text-pink-800 border-pink-200', icon: 'fa-gamepad' },
+        'Kesehatan & Edukasi': { bg: 'bg-teal-100 text-teal-800 border-teal-200', icon: 'fa-heart-pulse' },
+        'Gaji & Pendapatan': { bg: 'bg-green-100 text-green-800 border-green-200', icon: 'fa-money-bill-wave' },
+        'Penjualan / Usaha': { bg: 'bg-emerald-100 text-emerald-800 border-emerald-200', icon: 'fa-store' },
+        'Hadiah / Bonus': { bg: 'bg-indigo-100 text-indigo-800 border-indigo-200', icon: 'fa-gift' },
+        'Pemasukan Lain': { bg: 'bg-green-100 text-green-800 border-green-200', icon: 'fa-arrow-down-long' },
+        'Lain-lain': { bg: 'bg-gray-100 text-gray-700 border-gray-200', icon: 'fa-tag' }
+      };
+
+      const b = badges[category] || badges['Lain-lain'];
+      return `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold border ${b.bg}">
+        <i class="fa-solid ${b.icon} text-[9px]"></i> ${category}
+      </span>`;
+    }
+
+    function updateSyncStatusUI(isSynced, message = '') {
+      const badge = document.getElementById('syncStatusBadge');
+      if (!badge) return;
+      if (isSynced) {
+        badge.className = "text-[11px] px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 font-semibold flex items-center gap-1 shadow-sm";
+        badge.innerHTML = '<i class="fa-solid fa-cloud-check text-emerald-600"></i> Cloud Sinkron';
+      } else {
+        badge.className = "text-[11px] px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-200 font-semibold flex items-center gap-1 shadow-sm";
+        badge.innerHTML = `<i class="fa-solid fa-cloud-arrow-up text-amber-600"></i> ${message || 'Menyimpan Lokal'}`;
+      }
+    }
+
+    // ==========================================
     // SUPABASE TRANSACTIONS SYNC ENGINE
     // ==========================================
     async function fetchTransactionsFromSupabase() {
       const user = getCurrentUser();
-      if (!supabaseClient || !user) return;
+      if (!supabaseClient || !user) {
+        updateSyncStatusUI(false, 'Belum Login (Lokal)');
+        return;
+      }
       try {
+        updateSyncStatusUI(false, 'Menyinkronkan...');
         const { data, error } = await supabaseClient
           .from('transactions')
           .select('*')
@@ -782,28 +879,51 @@
 
         if (error) {
           console.warn("Supabase fetch notice:", error.message);
+          updateSyncStatusUI(false, 'Gagal Sinkron Cloud');
           return;
         }
 
-        if (data && data.length > 0) {
-          let userRows = data;
-          if (data[0] && data[0].user_id !== undefined) {
-            userRows = data.filter(d => d.user_id === user.id);
-          }
-          if (userRows.length > 0) {
-            transactions = userRows.map(item => ({
-              id: String(item.id || Date.now()),
-              date: item.date,
-              type: item.type,
-              amount: Number(item.amount),
-              desc: item.desc
-            }));
-            localStorage.setItem('voice_finance_data', JSON.stringify(transactions));
-            renderData();
-          }
+        const cloudData = data || [];
+        let userCloudRows = cloudData;
+        if (cloudData.length > 0 && cloudData[0].user_id !== undefined) {
+          userCloudRows = cloudData.filter(d => d.user_id === user.id);
         }
+
+        const formattedCloudRows = userCloudRows.map(item => ({
+          id: String(item.id || Date.now()),
+          date: item.date,
+          type: item.type,
+          category: item.category || detectCategory(item.desc, item.type),
+          amount: Number(item.amount),
+          desc: item.desc
+        }));
+
+        // Cek data lokal yang belum masuk ke cloud Supabase (migrasi otomatis antar device)
+        const localItems = JSON.parse(localStorage.getItem('voice_finance_data')) || [];
+        const missingOnCloud = localItems.filter(local => 
+          !formattedCloudRows.some(cloud => 
+            cloud.date === local.date && 
+            cloud.desc.toLowerCase() === local.desc.toLowerCase() && 
+            cloud.amount === local.amount
+          )
+        );
+
+        if (missingOnCloud.length > 0) {
+          console.log(`Mengunggah ${missingOnCloud.length} transaksi lokal ke cloud Supabase...`);
+          for (const item of missingOnCloud) {
+            await syncItemToSupabase(item);
+          }
+          transactions = [...formattedCloudRows, ...missingOnCloud];
+        } else if (formattedCloudRows.length > 0) {
+          transactions = formattedCloudRows;
+        }
+
+        localStorage.setItem('voice_finance_data', JSON.stringify(transactions));
+        renderData();
+        updateSyncStatusUI(true);
       } catch (err) {
         console.error("Gagal sinkronisasi dari Supabase:", err);
+        updateSyncStatusUI(false, 'Offline / Error');
       }
     }
 
@@ -868,6 +988,7 @@
       }
       item.desc = newDesc.trim() || item.desc;
       item.amount = newAmount;
+      item.category = detectCategory(item.desc, item.type);
       saveData();
       syncItemToSupabase(item);
       speak(`Catatan ${item.desc} berhasil diperbarui.`);
@@ -927,29 +1048,53 @@
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     let recognition = null;
     let isListening = false;
+    let finalAccumulatedTranscript = '';
 
     if (SpeechRecognition) {
       recognition = new SpeechRecognition();
       recognition.lang = 'id-ID';
       recognition.continuous = false;
-      recognition.interimResults = false;
+      recognition.interimResults = true; // Real-time feedback
 
       recognition.onstart = () => {
         isListening = true;
+        finalAccumulatedTranscript = '';
         document.getElementById('btnMic').classList.add('mic-active', 'bg-red-500');
-        document.getElementById('speechStatus').innerText = "Aku lagi dengerin kamu nih, ngomong aja...";
+        document.getElementById('speechStatus').innerText = "Sedang mendengarkan... Ngomong santai aja!";
+      };
+
+      recognition.onresult = (event) => {
+        let interimTranscript = '';
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          const transcript = event.results[i][0].transcript;
+          if (event.results[i].isFinal) {
+            finalAccumulatedTranscript += transcript + ' ';
+          } else {
+            interimTranscript += transcript;
+          }
+        }
+        const liveText = (finalAccumulatedTranscript + interimTranscript).trim();
+        if (liveText) {
+          document.getElementById('transcriptText').innerText = `"${liveText}"`;
+        }
+      };
+
+      recognition.onerror = (event) => {
+        console.warn("Speech recognition notice:", event.error);
+        if (event.error === 'no-speech') {
+          document.getElementById('speechStatus').innerText = "Belum terdengar suara nih. Coba klik mic lagi dan bicara lebih dekat.";
+        }
       };
 
       recognition.onend = () => {
         isListening = false;
         document.getElementById('btnMic').classList.remove('mic-active', 'bg-red-500');
         document.getElementById('speechStatus').innerText = "Klik mic lalu ngomong santai aja!";
-      };
 
-      recognition.onresult = (event) => {
-        const command = event.results[0][0].transcript.toLowerCase().trim();
-        document.getElementById('transcriptText').innerText = `"${command}"`;
-        processVoiceCommand(command);
+        const cmd = finalAccumulatedTranscript.toLowerCase().trim();
+        if (cmd && cmd.length >= 3) {
+          processVoiceCommand(cmd);
+        }
       };
     } else {
       document.getElementById('speechStatus').innerText = "Waduh, browser kamu belum dukung rekaman suara nih.";
@@ -963,8 +1108,11 @@
         return;
       }
       if (!recognition) return;
-      if (isListening) recognition.stop();
-      else recognition.start();
+      if (isListening) {
+        recognition.stop();
+      } else {
+        recognition.start();
+      }
     });
 
     // Save Data
@@ -980,6 +1128,7 @@
       const date = document.getElementById('manualDate').value;
       const descInput = document.getElementById('manualDesc').value.trim();
       const amountInput = parseInt(document.getElementById('manualAmount').value, 10);
+      const catSelect = document.getElementById('manualCategory') ? document.getElementById('manualCategory').value : 'Otomatis';
 
       if (!descInput || isNaN(amountInput) || amountInput <= 0 || !date) {
         alert("Mohon isi semua data dengan benar!");
@@ -987,11 +1136,13 @@
       }
 
       const descFormatted = descInput.charAt(0).toUpperCase() + descInput.slice(1);
+      const category = (catSelect === 'Otomatis' || !catSelect) ? detectCategory(descFormatted, type) : catSelect;
 
       const newItem = {
         id: Date.now().toString(),
         date: date,
         type: type,
+        category: category,
         amount: amountInput,
         desc: descFormatted
       };
@@ -1004,7 +1155,7 @@
       document.getElementById('manualAmount').value = '';
       document.getElementById('manualDate').value = getLocalDateStr();
 
-      speak(`Sip! Catatan ${type} ${descFormatted} sebesar ${amountInput.toLocaleString('id-ID')} rupiah berhasil ditambahkan.`);
+      speak(`Sip! Catatan ${type} ${descFormatted} kategori ${category} sebesar ${amountInput.toLocaleString('id-ID')} rupiah berhasil ditambahkan.`);
     }
 
     // Render Data Table & Quick Stats
@@ -1019,8 +1170,9 @@
         if (item.type === 'pemasukan') totalInc += item.amount;
         if (item.type === 'pengeluaran') totalExp += item.amount;
 
+        const cat = item.category || detectCategory(item.desc, item.type);
         const tr = document.createElement('tr');
-        tr.className = "border-b hover:bg-black/5";
+        tr.className = "border-b hover:bg-black/5 transition";
         tr.innerHTML = `
           <td class="p-2 text-xs opacity-75 font-mono">${item.date}</td>
           <td class="p-2">
@@ -1028,6 +1180,7 @@
               ${item.type.toUpperCase()}
             </span>
           </td>
+          <td class="p-2">${getCategoryBadge(cat)}</td>
           <td class="p-2 font-medium">${item.desc}</td>
           <td class="p-2 text-right font-bold ${item.type === 'pemasukan' ? 'text-green-600' : 'text-red-600'}">
             Rp ${item.amount.toLocaleString('id-ID')}
@@ -1458,9 +1611,10 @@
 
     // CSV Generator
     function generateAndDownloadCSV(dataList, fileName) {
-      let csvContent = "\uFEFFTanggal,Jenis,Keterangan,Jumlah (Rp)\n";
+      let csvContent = "\uFEFFTanggal,Jenis,Kategori,Keterangan,Jumlah (Rp)\n";
       dataList.forEach(t => {
-        csvContent += `"${t.date}","${t.type}","${t.desc}",${t.amount}\n`;
+        const cat = t.category || detectCategory(t.desc, t.type);
+        csvContent += `"${t.date}","${t.type}","${cat}","${t.desc}",${t.amount}\n`;
       });
 
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -1503,10 +1657,12 @@
         let { amount, desc, date } = extractTransactionDetails(cmd, type);
 
         if (amount > 0) {
+          const category = detectCategory(desc, type);
           const newItem = {
             id: Date.now().toString(),
             date: date,
             type: type,
+            category: category,
             amount: amount,
             desc: desc
           };
@@ -1516,7 +1672,10 @@
           syncItemToSupabase(newItem);
 
           let dateLabel = (date === getLocalDateStr()) ? "hari ini" : `tanggal ${date}`;
-          speak(`Siap! Udah dicatat ${type} ${desc} sebesar ${amount.toLocaleString('id-ID')} rupiah untuk ${dateLabel}.`);
+          speak(`Siap! Udah dicatat ${type} ${desc} kategori ${category} sebesar ${amount.toLocaleString('id-ID')} rupiah untuk ${dateLabel}.`);
+          return;
+        } else {
+          speak("Nominal angkanya belum ketangkap nih. Coba sebutkan nominalnya, misalnya: Beli kopi lima belas ribu.");
           return;
         }
       }
@@ -1529,41 +1688,7 @@
         return;
       }
 
-      speak("Aduh, nominal angkanya kurang jelas nih. Coba sebutkan nominalnya lebih jelas ya!");
-    }
-
-    // Direct Single Delete & Edit via UI
-    function deleteSingleItem(id) {
-      let item = transactions.find(t => t.id === id);
-      if (item) {
-        transactions = transactions.filter(t => t.id !== id);
-        saveData();
-        speak(`Berhasil hapus ${item.desc} sebesar ${item.amount.toLocaleString('id-ID')} rupiah.`);
-      }
-    }
-
-    function editSingleItem(id) {
-      let item = transactions.find(t => t.id === id);
-      if (!item) return;
-
-      let newDesc = prompt("Ubah Keterangan:", item.desc);
-      if (newDesc === null) return;
-      let newAmountStr = prompt("Ubah Nominal (Rp):", item.amount);
-      if (newAmountStr === null) return;
-      let newDateStr = prompt("Ubah Tanggal (YYYY-MM-DD):", item.date);
-      if (newDateStr === null) return;
-
-      let newAmount = parseInt(newAmountStr, 10);
-      if (isNaN(newAmount) || newAmount <= 0) {
-        alert("Nominal tidak valid!");
-        return;
-      }
-
-      item.desc = newDesc.trim() || item.desc;
-      item.amount = newAmount;
-      item.date = newDateStr.trim() || item.date;
-      saveData();
-      speak("Data transaksi berhasil diperbarui!");
+      speak("Perintah suara belum dikenali nih gaes. Coba cek tombol Panduan Suara Lengkap ya!");
     }
 
     // Popup Chart
