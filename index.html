@@ -678,6 +678,7 @@
         localStorage.setItem('bf_user', JSON.stringify(data.user));
         updateAuthUI();
         closeLoginModal();
+        await fetchTransactionsFromSupabase();
         const userName = data.user.user_metadata?.full_name || 'Kawan';
         speak(`Selamat datang kembali, ${userName}! Sekarang kamu bisa gunakan suara untuk mencatat.`);
       } catch (err) {
@@ -723,6 +724,7 @@
         if (data.session && data.user) {
           localStorage.setItem('bf_user', JSON.stringify(data.user));
           updateAuthUI();
+          await fetchTransactionsFromSupabase();
           showAuthAlert('signupAlert', 'Pendaftaran berhasil & langsung masuk!', false);
           setTimeout(() => {
             closeSignupModal();
@@ -764,6 +766,111 @@
       localStorage.removeItem('bf_user');
       updateAuthUI();
       speak("Kamu berhasil keluar. Sampai jumpa lagi!");
+    }
+
+    // ==========================================
+    // SUPABASE TRANSACTIONS SYNC ENGINE
+    // ==========================================
+    async function fetchTransactionsFromSupabase() {
+      const user = getCurrentUser();
+      if (!supabaseClient || !user) return;
+      try {
+        const { data, error } = await supabaseClient
+          .from('transactions')
+          .select('*')
+          .order('date', { ascending: false });
+
+        if (error) {
+          console.warn("Supabase fetch notice:", error.message);
+          return;
+        }
+
+        if (data && data.length > 0) {
+          let userRows = data;
+          if (data[0] && data[0].user_id !== undefined) {
+            userRows = data.filter(d => d.user_id === user.id);
+          }
+          if (userRows.length > 0) {
+            transactions = userRows.map(item => ({
+              id: String(item.id || Date.now()),
+              date: item.date,
+              type: item.type,
+              amount: Number(item.amount),
+              desc: item.desc
+            }));
+            localStorage.setItem('voice_finance_data', JSON.stringify(transactions));
+            renderData();
+          }
+        }
+      } catch (err) {
+        console.error("Gagal sinkronisasi dari Supabase:", err);
+      }
+    }
+
+    async function syncItemToSupabase(item) {
+      const user = getCurrentUser();
+      if (!supabaseClient || !user) return;
+      try {
+        const payload = {
+          date: item.date,
+          type: item.type,
+          amount: item.amount,
+          desc: item.desc
+        };
+        if (user.id) payload.user_id = user.id;
+
+        const { error } = await supabaseClient.from('transactions').insert([payload]);
+        if (error && error.message && error.message.includes('user_id')) {
+          delete payload.user_id;
+          await supabaseClient.from('transactions').insert([payload]);
+        }
+      } catch (err) {
+        console.warn("Supabase insert notice:", err);
+      }
+    }
+
+    async function deleteSingleItemFromSupabase(id, item) {
+      const user = getCurrentUser();
+      if (!supabaseClient || !user) return;
+      try {
+        let { error } = await supabaseClient.from('transactions').delete().eq('id', id);
+        if (error && item) {
+          await supabaseClient.from('transactions').delete().match({ desc: item.desc, date: item.date, amount: item.amount });
+        }
+      } catch (err) {
+        console.warn("Supabase delete notice:", err);
+      }
+    }
+
+    // Helper Action Hapus & Edit Manual pada Tabel
+    function deleteSingleItem(id) {
+      const item = transactions.find(t => String(t.id) === String(id));
+      if (!item) return;
+      if (confirm(`Yakin ingin menghapus transaksi "${item.desc}"?`)) {
+        transactions = transactions.filter(t => String(t.id) !== String(id));
+        saveData();
+        deleteSingleItemFromSupabase(id, item);
+        speak(`Catatan ${item.desc} berhasil dihapus.`);
+      }
+    }
+
+    function editSingleItem(id) {
+      const item = transactions.find(t => String(t.id) === String(id));
+      if (!item) return;
+      const newDesc = prompt("Ubah keterangan transaksi:", item.desc);
+      if (newDesc === null) return;
+      const newAmountStr = prompt("Ubah nominal transaksi (Rp):", item.amount);
+      if (newAmountStr === null) return;
+      const newAmount = parseInt(newAmountStr, 10);
+      if (isNaN(newAmount) || newAmount <= 0) {
+        alert("Nominal tidak valid!");
+        return;
+      }
+      item.desc = newDesc.trim() || item.desc;
+      item.amount = newAmount;
+      saveData();
+      syncItemToSupabase(item);
+      speak(`Catatan ${item.desc} berhasil diperbarui.`);
     }
 
     // HELPER TANGGAL LOKAL PERANGKAT
@@ -891,6 +998,7 @@
 
       transactions.push(newItem);
       saveData();
+      syncItemToSupabase(newItem);
 
       document.getElementById('manualDesc').value = '';
       document.getElementById('manualAmount').value = '';
@@ -959,6 +1067,7 @@
       }
 
       let text = raw
+        .replace(/\bjt\b/g, 'juta')
         .replace(/\bsejuta\b/g, '1 juta')
         .replace(/\bseribu\b/g, '1 ribu')
         .replace(/\bseratus\b/g, '1 ratus')
@@ -1078,11 +1187,8 @@
         .replace(/(pemasukan|pengeluaran|masuk|keluar|beli|bayar|dapet|dapat|catat|tambah|tolong|rp|rupiah)/gi, '')
         .replace(/(kemarin|kemaren|hari ini|tanggal\s*\d{1,2})/gi, '')
         .replace(/\b\d{1,3}(\.\d{3})+(,\d+)?\b|\b\d{1,3}(,\d{3})+(\.\d+)?\b/g, '')
-        .replace(/\b(nol|satu|dua|tiga|empat|lima|enam|tujuh|delapan|sembilan|sepuluh|sebelas|belas|puluh|ratus|ribu|rb|k|juta|miliar|milyar|setengah|se|sejuta|seribu|seratus)\b/gi, '')
-        .replace(/\b\d+\b/g, (match) => {
-          let num = parseInt(match, 10);
-          return (num >= 1000 || num === amount) ? '' : match;
-        })
+        .replace(/\b(nol|satu|dua|tiga|empat|lima|enam|tujuh|delapan|sembilan|sepuluh|sebelas|belas|puluh|ratus|ribu|rb|k|juta|jt|miliar|milyar|setengah|se|sejuta|seribu|seratus)\b/gi, '')
+        .replace(/\b\d+\b/g, '')
         .replace(/\s+/g, ' ')
         .trim();
 
@@ -1118,7 +1224,7 @@
 
       let initialLen = transactions.length;
 
-      transactions = transactions.filter(t => {
+      let itemsToDelete = transactions.filter(t => {
         let matchType = true;
         if (isIncome && t.type !== 'pemasukan') matchType = false;
         if (isExpense && t.type !== 'pengeluaran') matchType = false;
@@ -1147,12 +1253,13 @@
           matchDesc = t.desc.toLowerCase().includes(keyword.toLowerCase());
         }
 
-        let shouldDelete = matchType && matchDate && matchYear && matchDesc;
-        return !shouldDelete;
+        return matchType && matchDate && matchYear && matchDesc;
       });
 
-      let deletedCount = initialLen - transactions.length;
+      transactions = transactions.filter(t => !itemsToDelete.includes(t));
+      let deletedCount = itemsToDelete.length;
       saveData();
+      itemsToDelete.forEach(item => deleteSingleItemFromSupabase(item.id, item));
 
       if (deletedCount > 0) {
         speak(`Sip! Berhasil menghapus ${deletedCount} data transaksi yang diminta.`);
@@ -1221,12 +1328,14 @@
         let oldAmount = itemToEdit.amount;
         itemToEdit.amount = newAmount;
         saveData();
+        syncItemToSupabase(itemToEdit);
         speak(`Sip! Nominal ${itemToEdit.desc} berhasil diubah dari ${oldAmount.toLocaleString('id-ID')} jadi ${newAmount.toLocaleString('id-ID')} rupiah.`);
       } else {
         let newDesc = newValPart.charAt(0).toUpperCase() + newValPart.slice(1);
         let oldDesc = itemToEdit.desc;
         itemToEdit.desc = newDesc;
         saveData();
+        syncItemToSupabase(itemToEdit);
         speak(`Sip! Keterangan ${oldDesc} berhasil diubah menjadi ${newDesc}.`);
       }
     }
@@ -1404,6 +1513,7 @@
 
           transactions.push(newItem);
           saveData();
+          syncItemToSupabase(newItem);
 
           let dateLabel = (date === getLocalDateStr()) ? "hari ini" : `tanggal ${date}`;
           speak(`Siap! Udah dicatat ${type} ${desc} sebesar ${amount.toLocaleString('id-ID')} rupiah untuk ${dateLabel}.`);
@@ -1537,6 +1647,7 @@
     // Initial Load
     renderData();
     updateAuthUI();
+    fetchTransactionsFromSupabase();
   </script>
 </body>
 </html>
