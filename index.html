@@ -549,14 +549,14 @@
         </button>
       </div>
       
-      <p class="text-xs text-gray-500 mb-4">Silakan masuk ke akunmu untuk mengaktifkan fitur pencatatan suara (mic) dan menyimpan data secara aman.</p>
+      <p class="text-xs text-gray-500 mb-4">Masukkan Nomor HP dan Kata Sandi kamu untuk masuk.</p>
       
       <div id="loginAlert" class="hidden mb-4 p-3 rounded-lg text-xs font-semibold"></div>
 
       <form onsubmit="handleLogin(event)" class="space-y-3">
         <div>
-          <label class="block text-xs font-bold text-gray-700 mb-1">Email</label>
-          <input type="email" id="loginEmail" required placeholder="nama@email.com" class="w-full p-2.5 rounded-lg border text-xs bg-gray-50 text-gray-800 font-medium focus:ring-2 focus:ring-emerald-500 outline-none">
+          <label class="block text-xs font-bold text-gray-700 mb-1">Nomor HP</label>
+          <input type="tel" id="loginPhone" required placeholder="081234567890" class="w-full p-2.5 rounded-lg border text-xs bg-gray-50 text-gray-800 font-medium focus:ring-2 focus:ring-emerald-500 outline-none">
         </div>
         <div>
           <label class="block text-xs font-bold text-gray-700 mb-1">Kata Sandi</label>
@@ -591,18 +591,22 @@
         </button>
       </div>
       
-      <p class="text-xs text-gray-500 mb-4">Buat akun barumu untuk mulai mencatat keuangan hanya dalam hitungan detik.</p>
+      <p class="text-xs text-gray-500 mb-4">Isi Nama, Email, dan Nomor HP untuk pendaftaran langsung tanpa OTP.</p>
       
       <div id="signupAlert" class="hidden mb-4 p-3 rounded-lg text-xs font-semibold"></div>
 
       <form onsubmit="handleSignup(event)" class="space-y-3">
         <div>
-          <label class="block text-xs font-bold text-gray-700 mb-1">Nama Lengkap / Panggilan</label>
+          <label class="block text-xs font-bold text-gray-700 mb-1">Nama Lengkap</label>
           <input type="text" id="signupName" required placeholder="Contoh: Budi Santoso" class="w-full p-2.5 rounded-lg border text-xs bg-gray-50 text-gray-800 font-medium focus:ring-2 focus:ring-emerald-500 outline-none">
         </div>
         <div>
           <label class="block text-xs font-bold text-gray-700 mb-1">Email</label>
           <input type="email" id="signupEmail" required placeholder="nama@email.com" class="w-full p-2.5 rounded-lg border text-xs bg-gray-50 text-gray-800 font-medium focus:ring-2 focus:ring-emerald-500 outline-none">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-gray-700 mb-1">Nomor HP</label>
+          <input type="tel" id="signupPhone" required placeholder="081234567890" class="w-full p-2.5 rounded-lg border text-xs bg-gray-50 text-gray-800 font-medium focus:ring-2 focus:ring-emerald-500 outline-none">
         </div>
         <div>
           <label class="block text-xs font-bold text-gray-700 mb-1">Kata Sandi (Min. 6 karakter)</label>
@@ -627,7 +631,7 @@
     // SUPABASE & AUTHENTICATION ENGINE
     // ==========================================
     const SUPABASE_URL = "https://cpxtmplxgharspotisti.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNweHRtcGx4Z2hhcnNwb3Rpc3RpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4NzA5MTAsImV4cCI6MjEwNDQ0NjkxMH0.vR9BY365MPGD9h71_IieYVGH_d7-ow_ZjOUOY7RbO-s";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInRefiI6ImNweHRtcGx4Z2hhcnNwb3Rpc3RpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4NzA5MTAsImV4cCI6MjEwNDQ0NjkxMH0.vR9BY365MPGD9h71_IieYVGH_d7-ow_ZjOUOY7RbO-s";
     
     let supabaseClient = null;
     try {
@@ -648,6 +652,15 @@
       }
     } catch (e) {
       console.error("Gagal menginisialisasi Supabase client:", e);
+    }
+
+    // Format Nomor HP ke format internasional konsisten
+    function formatPhoneNumber(phone) {
+      let cleaned = phone.replace(/\D/g, '');
+      if (cleaned.startsWith('0')) {
+        cleaned = '62' + cleaned.slice(1);
+      }
+      return cleaned;
     }
 
     // Listener Real-time status otentikasi Supabase
@@ -680,7 +693,7 @@
       if (user) {
         if (loggedOutDiv) loggedOutDiv.classList.add('hidden');
         if (loggedInDiv) loggedInDiv.classList.remove('hidden');
-        const name = user.user_metadata?.full_name || user.email?.split('@')[0] || 'Pengguna';
+        const name = user.user_metadata?.full_name || user.user_metadata?.phone_number || user.email?.split('@')[0] || 'Pengguna';
         if (greetingSpan) greetingSpan.innerText = `Hai, ${name}`;
       } else {
         if (loggedOutDiv) loggedOutDiv.classList.remove('hidden');
@@ -736,9 +749,10 @@
       if (el) el.className = "hidden mb-4 p-3 rounded-lg text-xs font-semibold";
     }
 
+    // LOGIN MENGGUNAKAN NOMOR HP & PASSWORD (TANPA OTP)
     async function handleLogin(e) {
       e.preventDefault();
-      const email = document.getElementById('loginEmail').value.trim();
+      const phoneInput = document.getElementById('loginPhone').value.trim();
       const password = document.getElementById('loginPassword').value;
       const btn = document.getElementById('btnLoginSubmit');
 
@@ -751,21 +765,37 @@
       btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Memproses...';
 
       try {
-        const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+        const formattedPhone = formatPhoneNumber(phoneInput);
+        
+        // Cari email yang terikat dengan nomor HP pengguna di database public.users
+        const { data: userData, error: userError } = await supabaseClient
+          .from('users')
+          .select('email, username')
+          .eq('phone_number', formattedPhone)
+          .single();
+
+        if (userError || !userData || !userData.email) {
+          throw new Error('Nomor HP tidak ditemukan. Silakan daftar terlebih dahulu.');
+        }
+
+        // Login menggunakan email internal dan password
+        const { data, error } = await supabaseClient.auth.signInWithPassword({
+          email: userData.email,
+          password: password
+        });
+
         if (error) throw error;
 
         localStorage.setItem('bf_user', JSON.stringify(data.user));
         updateAuthUI();
         closeLoginModal();
         await fetchTransactionsFromSupabase();
-        const userName = data.user.user_metadata?.full_name || 'Kawan';
+        const userName = userData.username || 'Kawan';
         speak(`Selamat datang kembali, ${userName}! Sekarang kamu bisa gunakan suara untuk mencatat.`);
       } catch (err) {
         let msg = err.message || 'Gagal masuk.';
-        if (msg.includes('Email not confirmed')) {
-          msg = 'Email belum dikonfirmasi! Buka emailmu untuk klik link konfirmasi, atau matikan opsi "Confirm email" di Dashboard Supabase.';
-        } else if (msg.includes('Invalid login credentials')) {
-          msg = 'Email atau kata sandi salah. Silakan cek kembali.';
+        if (msg.includes('Invalid login credentials')) {
+          msg = 'Nomor HP atau kata sandi salah. Silakan cek kembali.';
         }
         showAuthAlert('loginAlert', msg);
       } finally {
@@ -774,10 +804,12 @@
       }
     }
 
+    // PENDAFTARAN LENGKAP NAMA, EMAIL, NOMOR HP (TANPA OTP) & SINKRONISASI SUPABASE
     async function handleSignup(e) {
       e.preventDefault();
       const name = document.getElementById('signupName').value.trim();
       const email = document.getElementById('signupEmail').value.trim();
+      const phoneInput = document.getElementById('signupPhone').value.trim();
       const password = document.getElementById('signupPassword').value;
       const btn = document.getElementById('btnSignupSubmit');
 
@@ -790,40 +822,63 @@
       btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Mendaftarkan...';
 
       try {
+        const formattedPhone = formatPhoneNumber(phoneInput);
+
+        // 1. Cek apakah nomor HP sudah terdaftar di database
+        const { data: existingUser } = await supabaseClient
+          .from('users')
+          .select('id')
+          .eq('phone_number', formattedPhone)
+          .single();
+
+        if (existingUser) {
+          throw new Error('Nomor HP sudah terdaftar. Silakan langsung masuk.');
+        }
+
+        // 2. Daftar ke Supabase Auth (Tanpa OTP)
         const { data, error } = await supabaseClient.auth.signUp({
-          email,
-          password,
+          email: email,
+          password: password,
           options: {
-            data: { full_name: name }
+            data: { 
+              full_name: name,
+              phone_number: formattedPhone 
+            }
           }
         });
+
         if (error) throw error;
 
-        if (data.session && data.user) {
+        if (data.user) {
+          // 3. Simpan/Rapikan Data ke Tabel Public Users Supabase
+          const { error: insertError } = await supabaseClient
+            .from('users')
+            .upsert({
+              id: data.user.id,
+              username: name,
+              email: email,
+              phone_number: formattedPhone,
+              password_hash: 'PROTECTED_AUTH'
+            });
+
+          if (insertError) {
+            console.warn("User insert database notice:", insertError.message);
+          }
+
           localStorage.setItem('bf_user', JSON.stringify(data.user));
           updateAuthUI();
           await fetchTransactionsFromSupabase();
-          showAuthAlert('signupAlert', 'Pendaftaran berhasil & langsung masuk!', false);
+          showAuthAlert('signupAlert', 'Pendaftaran berhasil! Menyimpan data...', false);
+
           setTimeout(() => {
             closeSignupModal();
-            speak(`Selamat bergabung, ${name}!`);
+            speak(`Selamat bergabung, ${name}! Pendaftaran berhasil tanpa OTP.`);
           }, 1000);
-          return;
         }
-
-        showAuthAlert('signupAlert', 'Pendaftaran berhasil! Akunmu sudah terdaftar di Supabase.', false);
-        setTimeout(() => {
-          openLoginModal();
-          document.getElementById('loginEmail').value = email;
-          document.getElementById('loginPassword').value = '';
-          showAuthAlert('loginAlert', 'Akun berhasil terdaftar! Jika "Confirm Email" aktif di Supabase, silakan cek emailmu dulu ya.', false);
-        }, 1200);
       } catch (err) {
         let msg = err.message || 'Gagal mendaftar. Silakan coba lagi.';
-        if (msg.includes('rate limit')) {
-          msg = 'Batas pengiriman email Supabase tercapai (Rate Limit). Matikan opsi "Confirm email" di Supabase Dashboard agar bisa daftar bebas tanpa batas.';
-        } else if (msg.includes('already registered')) {
-          msg = 'Email ini sudah terdaftar! Silakan langsung masuk di menu Masuk.';
+        if (msg.includes('already registered')) {
+          msg = 'Email atau Nomor HP ini sudah terdaftar! Silakan langsung masuk.';
         }
         showAuthAlert('signupAlert', msg);
       } finally {
@@ -919,12 +974,16 @@
     async function ensurePublicUserExists(user) {
       if (!supabaseClient || !user) return;
       try {
-        const username = user.user_metadata?.full_name || user.email?.split('@')[0] || 'User';
+        const username = user.user_metadata?.full_name || 'User';
+        const phone = user.user_metadata?.phone_number || '-';
+        const email = user.email || '-';
+
         await supabaseClient.from('users').upsert({
           id: user.id,
           username: username,
-          phone_number: '-',
-          password_hash: '-'
+          phone_number: phone,
+          email: email,
+          password_hash: 'PROTECTED_AUTH'
         });
       } catch (e) {
         console.warn("Public user upsert notice:", e);
