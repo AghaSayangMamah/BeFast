@@ -236,7 +236,7 @@
   <!-- MODAL PANDUAN PERINTAH SUARA LENGKAP WITH AUDIO SAMPLES -->
   <div id="guideModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4">
     <div class="card-style w-full max-w-4xl p-6 relative max-h-[90vh] overflow-y-auto">
-      <div class="flex justify-between items-center mb-4 sticky top-0 bg-white py-2 border-b z-10">
+      <div class="flex justify-between items-center mb-4 sticky top-0 bg-white dark:bg-slate-800 py-2 border-b z-10">
         <h3 class="font-bold text-lg flex items-center gap-2 text-amber-600">
           <i class="fa-solid fa-comments"></i> Panduan Perintah Suara & Contoh Audio
         </h3>
@@ -247,7 +247,7 @@
 
       <p class="text-xs text-gray-500 mb-4">Tekan tombol <span class="bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded font-bold"><i class="fa-solid fa-volume-high"></i> Dengar Contoh</span> di samping masing-masing skrip untuk mendengarkan contoh cara pengucapannya!</p>
 
-      <div class="space-y-5 text-xs text-gray-700">
+      <div class="space-y-5 text-xs text-gray-700 dark:text-gray-200">
         
         <!-- SECTION 1: CATAT TRANSAKSI -->
         <div class="p-4 bg-emerald-50 rounded-xl border border-emerald-200">
@@ -507,7 +507,7 @@
 
       </div>
 
-      <div class="mt-6 text-center sticky bottom-0 bg-white py-3 border-t">
+      <div class="mt-6 text-center sticky bottom-0 bg-white dark:bg-slate-800 py-3 border-t">
         <button onclick="closeGuideModal()" class="px-6 py-2.5 bg-emerald-500 text-white font-bold rounded-lg hover:bg-emerald-600 transition text-xs shadow-md">
           Paham, Siap Dicoba!
         </button>
@@ -630,8 +630,8 @@
     // ==========================================
     // SUPABASE & AUTHENTICATION ENGINE
     // ==========================================
-    const SUPABASE_URL = "https://pbfwkcmalgtuoegrvtsv.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBiZndrY21hbGd0dW9lZ3J2dHN2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5MTM5MDYsImV4cCI6MjEwNDQ4OTkwNn0.VVIUTQaBINu8YBh1E68ohNbDjkvPhm86C6Njoywf8HA";
+    const SUPABASE_URL = "https://cpxtmplxgharspotisti.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInRefiI6ImNweHRtcGx4Z2hhcnNwb3Rpc3RpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4NzA5MTAsImV4cCI6MjEwNDQ0NjkxMH0.vR9BY365MPGD9h71_IieYVGH_d7-ow_ZjOUOY7RbO-s";
     
     let supabaseClient = null;
     try {
@@ -857,14 +857,13 @@
               id: data.user.id,
               username: name,
               email: email,
-              phone_number: formattedPhone
+              phone_number: formattedPhone,
+              password_hash: 'PROTECTED_AUTH'
             });
 
           if (insertError) {
-            console.error("DATABASE ERROR:", insertError);
-            alert(insertError.message);
-            return;
-          } 
+            console.warn("User insert database notice:", insertError.message);
+          }
 
           localStorage.setItem('bf_user', JSON.stringify(data.user));
           updateAuthUI();
@@ -983,7 +982,8 @@
           id: user.id,
           username: username,
           phone_number: phone,
-          email: email
+          email: email,
+          password_hash: 'PROTECTED_AUTH'
         });
       } catch (e) {
         console.warn("Public user upsert notice:", e);
@@ -1606,6 +1606,9 @@
       }
     }
 
+    // ==========================================
+    // SYSTEM PEMBACAAN / PELAPORAN CANGGIH
+    // ==========================================
     function executeVoiceReadout(cmd) {
       const monthNames = {
         'januari': '01', 'jan': '01', 'februari': '02', 'feb': '02', 'maret': '03', 'mar': '03',
@@ -1617,6 +1620,7 @@
       let filtered = transactions;
       let periodLabel = "keseluruhan";
 
+      // 1. DETEKSI TANGGAL, BULAN, TAHUN KUSTOM
       let yearMatch = cmd.match(/tahun\s*(\d{4})/i) || cmd.match(/\b(20\d{2})\b/);
       let targetYear = yearMatch ? (yearMatch[1] || yearMatch[0]) : null;
 
@@ -1675,6 +1679,7 @@
         periodLabel = "tahun ini";
       }
 
+      // 2. DETEKSI SPESIFIK: PENGELUARAN SAJA, PEMASUKAN SAJA, ATAU KEDUANYA
       let isExpenseOnly = cmd.includes('pengeluaran') || cmd.includes('keluar') || cmd.includes('beli') || cmd.includes('bayar');
       let isIncomeOnly = cmd.includes('pemasukan') || cmd.includes('masuk') || cmd.includes('dapet') || cmd.includes('dapat') || cmd.includes('gaji');
       
@@ -1683,6 +1688,7 @@
         isIncomeOnly = false;
       }
 
+      // 3. DETEKSI OPSI BACAKAN TOTAL GLOBAL ATAU DETAIL
       let isGlobalTotalOnly = cmd.includes('total') || cmd.includes('ringkasan') || cmd.includes('global') || cmd.includes('rekap');
 
       if (filtered.length === 0) {
@@ -1696,6 +1702,7 @@
       let totalExp = expItems.reduce((a, b) => a + b.amount, 0);
       let totalInc = incItems.reduce((a, b) => a + b.amount, 0);
 
+      // JIKA MEMINTA PENGELUARAN SAJA
       if (isExpenseOnly) {
         if (expItems.length === 0) {
           speak(`Tidak ada data pengeluaran untuk ${periodLabel}.`);
@@ -1712,6 +1719,7 @@
         return;
       }
 
+      // JIKA MEMINTA PEMASUKAN SAJA
       if (isIncomeOnly) {
         if (incItems.length === 0) {
           speak(`Tidak ada data pemasukan untuk ${periodLabel}.`);
@@ -1728,6 +1736,7 @@
         return;
       }
 
+      // JIKA MEMINTA KEDUANYA (PEMASUKAN DAN PENGELUARAN)
       if (isGlobalTotalOnly) {
         speak(`Laporan global untuk ${periodLabel}: Total pemasukan ${totalInc.toLocaleString('id-ID')} rupiah. Total pengeluaran ${totalExp.toLocaleString('id-ID')} rupiah. Saldo bersih ${ (totalInc - totalExp).toLocaleString('id-ID') } rupiah.`);
       } else {
@@ -1785,6 +1794,7 @@
       URL.revokeObjectURL(url);
     }
 
+    // Voice Command Dispatcher Utama
     function processVoiceCommand(cmd) {
       if (cmd.includes('edit') || cmd.includes('ubah') || cmd.includes('ganti')) {
         executeVoiceEdit(cmd);
@@ -1809,6 +1819,7 @@
         return;
       }
 
+      // Deteksi Perintah Cek / Spill / Baca / Laporkan Keuangan
       const nominal = parseNominal(cmd);
       const isExplicitReadout = cmd.includes('baca') || cmd.includes('bacakan') || cmd.includes('spill') || 
                                 cmd.includes('cek') || cmd.includes('lihat') || cmd.includes('berapa') || 
@@ -1824,6 +1835,7 @@
         return;
       }
 
+      // Deteksi Pencatatan Transaksi Baru (jika ada nominal)
       if (nominal > 0) {
         let type = 'pengeluaran';
         if (cmd.includes('pemasukan') || cmd.includes('masuk') || cmd.includes('dapet') || cmd.includes('dapat') || 
