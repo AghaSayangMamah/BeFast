@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BeFast - Best Financial Assistant</title>
+  <title>BeFAST - Best Financial Assistant</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Chart.js CDN -->
@@ -47,12 +47,13 @@
   <header class="p-4 shadow-sm card-style rounded-none mb-6">
     <div class="max-w-4xl mx-auto flex justify-between items-center flex-wrap gap-3">
       <div class="flex items-center gap-3">
-        <div class="p-3 bg-emerald-500 text-white rounded-2xl shadow-lg">
-          <i class="fa-solid fa-wallet text-2xl"></i>
+        <!-- INTEGRASI LOGO DI HEADER -->
+        <div class="p-1 bg-white rounded-2xl shadow-lg border border-gray-100 flex items-center justify-center w-14 h-14 overflow-hidden">
+          <img src="logo.png" alt="BeFAST Logo" class="w-full h-full object-contain">
         </div>
         <div>
-          <h1 class="text-xl font-bold">BeFast (Best Financial Assistant)</h1>
-          <p class="text-xs opacity-75">Asisten Keren Catet Keuangan kamu</p>
+          <h1 class="text-xl font-bold">BeFAST</h1>
+          <p class="text-xs opacity-75 font-semibold">Best Financial Assistant</p>
         </div>
       </div>
       
@@ -186,14 +187,14 @@
           <button onclick="executeVoiceReadout('spill bulan ini')" class="px-2.5 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 border border-indigo-200 rounded-lg text-xs font-semibold flex items-center gap-1 transition shadow-sm" title="Bacakan Laporan Bulan Ini">
             <i class="fa-solid fa-volume-high"></i> Spill
           </button>
-          <button onclick="executeVoiceDownload('download bulan ini')" class="px-2.5 py-1.5 bg-green-50 hover:bg-green-100 text-green-700 border border-green-200 rounded-lg text-xs font-semibold flex items-center gap-1 transition shadow-sm" title="Download CSV Bulan Ini">
+          <button onclick="executeVoiceDownload('download laporan keseluruhan')" class="px-2.5 py-1.5 bg-green-50 hover:bg-green-100 text-green-700 border border-green-200 rounded-lg text-xs font-semibold flex items-center gap-1 transition shadow-sm" title="Download Semua Transaksi (CSV)">
             <i class="fa-solid fa-file-csv"></i> Download CSV
           </button>
           <button onclick="fetchTransactionsFromSupabase()" class="px-2.5 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-xs font-semibold flex items-center gap-1 transition shadow-sm" title="Tarik data terbaru dari Cloud">
             <i class="fa-solid fa-arrows-rotate"></i> Sinkron
           </button>
           <button onclick="showChartModal('bulan')" class="px-3 py-1.5 bg-indigo-500 text-white rounded-lg text-xs font-semibold hover:bg-indigo-600 transition shadow-sm">
-            <i class="fa-solid fa-chart-pie mr-1"></i> Tampilkan Grafik
+            <i class="fa-solid fa-chart-pie mr-1"></i> Grafik
           </button>
         </div>
       </div>
@@ -219,7 +220,7 @@
   </main>
 
   <!-- ======================================================= -->
-  <!-- MODAL PANDUAN PERINTAH SUARA LENGKAP (SUPER KOMPLIT)    -->
+  <!-- MODAL PANDUAN PERINTAH SUARA LENGKAP                    -->
   <!-- ======================================================= -->
   <div id="guideModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4 transition-all">
     <div class="card-style w-full max-w-4xl p-6 relative max-h-[90vh] overflow-y-auto bg-white shadow-2xl rounded-2xl">
@@ -248,30 +249,22 @@
             <div class="bg-white p-3 rounded-lg border border-green-100 flex flex-col gap-2">
               <span class="font-bold text-green-800 text-xs uppercase tracking-wide">Hari Ini</span>
               <p class="italic text-gray-700 font-mono text-sm bg-gray-50 p-2 rounded">"Beli kopi dua puluh lima ribu"</p>
-              <button onclick="speak('Beli kopi dua puluh lima ribu')" class="mt-auto self-start px-3 py-1.5 bg-indigo-500 text-white rounded-md text-xs font-bold hover:bg-indigo-600 transition flex items-center gap-1.5">
-                <i class="fa-solid fa-volume-high"></i> Dengar
-              </button>
+              <button onclick="speak('Beli kopi dua puluh lima ribu')" class="mt-auto self-start px-3 py-1.5 bg-indigo-500 text-white rounded-md text-xs font-bold hover:bg-indigo-600 transition flex items-center gap-1.5"><i class="fa-solid fa-volume-high"></i> Dengar</button>
             </div>
             <div class="bg-white p-3 rounded-lg border border-green-100 flex flex-col gap-2">
               <span class="font-bold text-green-800 text-xs uppercase tracking-wide">Kemarin</span>
               <p class="italic text-gray-700 font-mono text-sm bg-gray-50 p-2 rounded">"Kemarin isi bensin pertamax lima puluh ribu"</p>
-              <button onclick="speak('Kemarin isi bensin pertamax lima puluh ribu')" class="mt-auto self-start px-3 py-1.5 bg-indigo-500 text-white rounded-md text-xs font-bold hover:bg-indigo-600 transition flex items-center gap-1.5">
-                <i class="fa-solid fa-volume-high"></i> Dengar
-              </button>
+              <button onclick="speak('Kemarin isi bensin pertamax lima puluh ribu')" class="mt-auto self-start px-3 py-1.5 bg-indigo-500 text-white rounded-md text-xs font-bold hover:bg-indigo-600 transition flex items-center gap-1.5"><i class="fa-solid fa-volume-high"></i> Dengar</button>
             </div>
             <div class="bg-white p-3 rounded-lg border border-green-100 flex flex-col gap-2">
               <span class="font-bold text-green-800 text-xs uppercase tracking-wide">Tanggal Spesifik</span>
               <p class="italic text-gray-700 font-mono text-sm bg-gray-50 p-2 rounded">"Tanggal 15 bayar kos lima ratus ribu"</p>
-              <button onclick="speak('Tanggal 15 bayar kos lima ratus ribu')" class="mt-auto self-start px-3 py-1.5 bg-indigo-500 text-white rounded-md text-xs font-bold hover:bg-indigo-600 transition flex items-center gap-1.5">
-                <i class="fa-solid fa-volume-high"></i> Dengar
-              </button>
+              <button onclick="speak('Tanggal 15 bayar kos lima ratus ribu')" class="mt-auto self-start px-3 py-1.5 bg-indigo-500 text-white rounded-md text-xs font-bold hover:bg-indigo-600 transition flex items-center gap-1.5"><i class="fa-solid fa-volume-high"></i> Dengar</button>
             </div>
             <div class="bg-white p-3 rounded-lg border border-green-100 flex flex-col gap-2">
               <span class="font-bold text-green-800 text-xs uppercase tracking-wide">Pemasukan</span>
               <p class="italic text-gray-700 font-mono text-sm bg-gray-50 p-2 rounded">"Dapet transferan gaji lima juta rupiah"</p>
-              <button onclick="speak('Dapet transferan gaji lima juta rupiah')" class="mt-auto self-start px-3 py-1.5 bg-indigo-500 text-white rounded-md text-xs font-bold hover:bg-indigo-600 transition flex items-center gap-1.5">
-                <i class="fa-solid fa-volume-high"></i> Dengar
-              </button>
+              <button onclick="speak('Dapet transferan gaji lima juta rupiah')" class="mt-auto self-start px-3 py-1.5 bg-indigo-500 text-white rounded-md text-xs font-bold hover:bg-indigo-600 transition flex items-center gap-1.5"><i class="fa-solid fa-volume-high"></i> Dengar</button>
             </div>
           </div>
         </div>
@@ -285,30 +278,22 @@
             <div class="bg-white p-3 rounded-lg border border-indigo-100 flex flex-col gap-2">
               <span class="font-bold text-indigo-800 text-xs uppercase tracking-wide">Laporan Hari Ini</span>
               <p class="italic text-gray-700 font-mono text-sm bg-gray-50 p-2 rounded">"Spill pengeluaran hari ini"</p>
-              <button onclick="speak('Spill pengeluaran hari ini')" class="mt-auto self-start px-3 py-1.5 bg-indigo-500 text-white rounded-md text-xs font-bold hover:bg-indigo-600 transition flex items-center gap-1.5">
-                <i class="fa-solid fa-volume-high"></i> Dengar
-              </button>
+              <button onclick="speak('Spill pengeluaran hari ini')" class="mt-auto self-start px-3 py-1.5 bg-indigo-500 text-white rounded-md text-xs font-bold hover:bg-indigo-600 transition flex items-center gap-1.5"><i class="fa-solid fa-volume-high"></i> Dengar</button>
             </div>
             <div class="bg-white p-3 rounded-lg border border-indigo-100 flex flex-col gap-2">
               <span class="font-bold text-indigo-800 text-xs uppercase tracking-wide">Laporan Kemarin</span>
               <p class="italic text-gray-700 font-mono text-sm bg-gray-50 p-2 rounded">"Bacakan laporan keuangan kemarin"</p>
-              <button onclick="speak('Bacakan laporan keuangan kemarin')" class="mt-auto self-start px-3 py-1.5 bg-indigo-500 text-white rounded-md text-xs font-bold hover:bg-indigo-600 transition flex items-center gap-1.5">
-                <i class="fa-solid fa-volume-high"></i> Dengar
-              </button>
+              <button onclick="speak('Bacakan laporan keuangan kemarin')" class="mt-auto self-start px-3 py-1.5 bg-indigo-500 text-white rounded-md text-xs font-bold hover:bg-indigo-600 transition flex items-center gap-1.5"><i class="fa-solid fa-volume-high"></i> Dengar</button>
             </div>
             <div class="bg-white p-3 rounded-lg border border-indigo-100 flex flex-col gap-2">
               <span class="font-bold text-indigo-800 text-xs uppercase tracking-wide">Laporan Bulan Ini / Bulan Lalu</span>
               <p class="italic text-gray-700 font-mono text-sm bg-gray-50 p-2 rounded">"Cek total pengeluaran bulan lalu"</p>
-              <button onclick="speak('Cek total pengeluaran bulan lalu')" class="mt-auto self-start px-3 py-1.5 bg-indigo-500 text-white rounded-md text-xs font-bold hover:bg-indigo-600 transition flex items-center gap-1.5">
-                <i class="fa-solid fa-volume-high"></i> Dengar
-              </button>
+              <button onclick="speak('Cek total pengeluaran bulan lalu')" class="mt-auto self-start px-3 py-1.5 bg-indigo-500 text-white rounded-md text-xs font-bold hover:bg-indigo-600 transition flex items-center gap-1.5"><i class="fa-solid fa-volume-high"></i> Dengar</button>
             </div>
             <div class="bg-white p-3 rounded-lg border border-indigo-100 flex flex-col gap-2">
               <span class="font-bold text-indigo-800 text-xs uppercase tracking-wide">Laporan Tahun Lalu</span>
               <p class="italic text-gray-700 font-mono text-sm bg-gray-50 p-2 rounded">"Spill laporan keuangan tahun kemarin"</p>
-              <button onclick="speak('Spill laporan keuangan tahun kemarin')" class="mt-auto self-start px-3 py-1.5 bg-indigo-500 text-white rounded-md text-xs font-bold hover:bg-indigo-600 transition flex items-center gap-1.5">
-                <i class="fa-solid fa-volume-high"></i> Dengar
-              </button>
+              <button onclick="speak('Spill laporan keuangan tahun kemarin')" class="mt-auto self-start px-3 py-1.5 bg-indigo-500 text-white rounded-md text-xs font-bold hover:bg-indigo-600 transition flex items-center gap-1.5"><i class="fa-solid fa-volume-high"></i> Dengar</button>
             </div>
           </div>
         </div>
@@ -322,16 +307,12 @@
             <div class="bg-white p-3 rounded-lg border border-amber-100 flex flex-col gap-2">
               <span class="font-bold text-amber-800 text-xs uppercase tracking-wide">Download File Excel/CSV</span>
               <p class="italic text-gray-700 font-mono text-sm bg-gray-50 p-2 rounded">"Download laporan bulan lalu"</p>
-              <button onclick="speak('Download laporan bulan lalu')" class="mt-auto self-start px-3 py-1.5 bg-indigo-500 text-white rounded-md text-xs font-bold hover:bg-indigo-600 transition flex items-center gap-1.5">
-                <i class="fa-solid fa-volume-high"></i> Dengar
-              </button>
+              <button onclick="speak('Download laporan bulan lalu')" class="mt-auto self-start px-3 py-1.5 bg-indigo-500 text-white rounded-md text-xs font-bold hover:bg-indigo-600 transition flex items-center gap-1.5"><i class="fa-solid fa-volume-high"></i> Dengar</button>
             </div>
             <div class="bg-white p-3 rounded-lg border border-amber-100 flex flex-col gap-2">
               <span class="font-bold text-amber-800 text-xs uppercase tracking-wide">Tampilkan Grafik Visual</span>
               <p class="italic text-gray-700 font-mono text-sm bg-gray-50 p-2 rounded">"Tampilkan grafik keuangan tahun ini"</p>
-              <button onclick="speak('Tampilkan grafik keuangan tahun ini')" class="mt-auto self-start px-3 py-1.5 bg-indigo-500 text-white rounded-md text-xs font-bold hover:bg-indigo-600 transition flex items-center gap-1.5">
-                <i class="fa-solid fa-volume-high"></i> Dengar
-              </button>
+              <button onclick="speak('Tampilkan grafik keuangan tahun ini')" class="mt-auto self-start px-3 py-1.5 bg-indigo-500 text-white rounded-md text-xs font-bold hover:bg-indigo-600 transition flex items-center gap-1.5"><i class="fa-solid fa-volume-high"></i> Dengar</button>
             </div>
           </div>
         </div>
@@ -406,40 +387,45 @@
 
   <!-- MODAL POP UP LOGIN -->
   <div id="loginModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4 transition-all">
-    <div class="card-style w-full max-w-md p-6 relative bg-white text-gray-800 shadow-2xl">
-      <div class="flex justify-between items-center mb-4">
-        <div class="flex items-center gap-2">
-          <div class="p-2 bg-emerald-100 text-emerald-700 rounded-lg">
-            <i class="fa-solid fa-lock text-lg"></i>
-          </div>
-          <h3 class="font-bold text-lg text-gray-800">Masuk ke BeFast</h3>
+    <div class="card-style w-full max-w-md p-8 relative bg-white text-gray-800 shadow-2xl">
+      <button onclick="closeLoginModal()" class="absolute top-5 right-5 text-gray-400 hover:text-gray-600 text-xl transition-colors">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <div class="flex flex-col items-center mb-6">
+        <!-- INTEGRASI LOGO DI LOGIN -->
+        <div class="w-20 h-20 mb-4 p-2 bg-white rounded-3xl shadow-lg border border-gray-100 flex items-center justify-center">
+          <img src="logo.png" alt="BeFAST Logo" class="w-full h-full object-contain">
         </div>
-        <button onclick="closeLoginModal()" class="text-gray-400 hover:text-gray-600">
-          <i class="fa-solid fa-xmark text-xl"></i>
-        </button>
+        <h3 class="font-black text-2xl text-gray-800">Masuk ke BeFAST</h3>
+        <p class="text-xs text-gray-500 mt-1 text-center">Bicara 2 detik, langsung kecatat.</p>
       </div>
-      
-      <p class="text-xs text-gray-500 mb-4">Masukkan Nomor HP dan Kata Sandi kamu untuk masuk.</p>
       
       <div id="loginAlert" class="hidden mb-4 p-3 rounded-lg text-xs font-semibold"></div>
 
-      <form onsubmit="handleLogin(event)" class="space-y-3">
+      <form onsubmit="handleLogin(event)" class="space-y-4">
         <div>
-          <label class="block text-xs font-bold text-gray-700 mb-1">Nomor HP</label>
-          <input type="tel" id="loginPhone" required placeholder="081234567890" class="w-full p-2.5 rounded-lg border text-xs bg-gray-50 text-gray-800 font-medium focus:ring-2 focus:ring-emerald-500 outline-none">
+          <label class="block text-xs font-bold text-gray-700 mb-1.5 ml-1">Nomor HP</label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400"><i class="fa-solid fa-phone"></i></div>
+            <input type="tel" id="loginPhone" required placeholder="081234567890" class="w-full pl-10 p-3 rounded-xl border border-gray-200 bg-gray-50 text-sm focus:ring-2 focus:ring-emerald-500 outline-none transition-all">
+          </div>
         </div>
         <div>
-          <label class="block text-xs font-bold text-gray-700 mb-1">Kata Sandi</label>
-          <input type="password" id="loginPassword" required placeholder="••••••••" class="w-full p-2.5 rounded-lg border text-xs bg-gray-50 text-gray-800 font-medium focus:ring-2 focus:ring-emerald-500 outline-none">
+          <label class="block text-xs font-bold text-gray-700 mb-1.5 ml-1">Kata Sandi</label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400"><i class="fa-solid fa-lock"></i></div>
+            <input type="password" id="loginPassword" required placeholder="••••••••" class="w-full pl-10 p-3 rounded-xl border border-gray-200 bg-gray-50 text-sm focus:ring-2 focus:ring-emerald-500 outline-none transition-all">
+          </div>
         </div>
-        <button type="submit" id="btnLoginSubmit" class="w-full py-2.5 bg-emerald-600 text-white font-bold rounded-lg hover:bg-emerald-700 transition text-xs shadow-md mt-2 flex items-center justify-center gap-2">
-          <i class="fa-solid fa-right-to-bracket"></i> Masuk Sekarang
+        <button type="submit" id="btnLoginSubmit" class="w-full py-3.5 mt-2 bg-emerald-500 text-white font-bold rounded-xl hover:bg-emerald-600 transition shadow-lg shadow-emerald-500/30 flex items-center justify-center gap-2">
+          Masuk Sekarang
         </button>
       </form>
 
-      <div class="mt-4 pt-3 border-t text-center text-xs text-gray-600">
+      <div class="mt-6 pt-4 border-t text-center text-sm text-gray-600">
         Belum punya akun? 
-        <button type="button" onclick="switchAuthModal('signup')" class="text-emerald-600 font-bold hover:underline">
+        <button type="button" onclick="switchAuthModal('signup')" class="text-emerald-600 font-bold hover:underline transition-all">
           Daftar di sini
         </button>
       </div>
@@ -448,48 +434,46 @@
 
   <!-- MODAL POP UP SIGN UP -->
   <div id="signupModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4 transition-all">
-    <div class="card-style w-full max-w-md p-6 relative bg-white text-gray-800 shadow-2xl">
-      <div class="flex justify-between items-center mb-4">
-        <div class="flex items-center gap-2">
-          <div class="p-2 bg-emerald-100 text-emerald-700 rounded-lg">
-            <i class="fa-solid fa-user-plus text-lg"></i>
-          </div>
-          <h3 class="font-bold text-lg text-gray-800">Daftar Akun BeFast</h3>
+    <div class="card-style w-full max-w-md p-8 relative bg-white text-gray-800 shadow-2xl">
+      <button onclick="closeSignupModal()" class="absolute top-5 right-5 text-gray-400 hover:text-gray-600 text-xl transition-colors">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <div class="flex flex-col items-center mb-6">
+        <!-- INTEGRASI LOGO DI SIGNUP -->
+        <div class="w-16 h-16 mb-3 p-1.5 bg-white rounded-2xl shadow-md border border-gray-100 flex items-center justify-center">
+          <img src="logo.png" alt="BeFAST Logo" class="w-full h-full object-contain">
         </div>
-        <button onclick="closeSignupModal()" class="text-gray-400 hover:text-gray-600">
-          <i class="fa-solid fa-xmark text-xl"></i>
-        </button>
+        <h3 class="font-black text-xl text-gray-800">Daftar Akun Baru</h3>
       </div>
-      
-      <p class="text-xs text-gray-500 mb-4">Isi Nama, Email, dan Nomor HP untuk pendaftaran langsung tanpa OTP.</p>
       
       <div id="signupAlert" class="hidden mb-4 p-3 rounded-lg text-xs font-semibold"></div>
 
       <form onsubmit="handleSignup(event)" class="space-y-3">
         <div>
           <label class="block text-xs font-bold text-gray-700 mb-1">Nama Lengkap</label>
-          <input type="text" id="signupName" required placeholder="Contoh: Budi Santoso" class="w-full p-2.5 rounded-lg border text-xs bg-gray-50 text-gray-800 font-medium focus:ring-2 focus:ring-emerald-500 outline-none">
+          <input type="text" id="signupName" required placeholder="Contoh: Budi Santoso" class="w-full p-2.5 rounded-xl border text-sm bg-gray-50 focus:ring-2 focus:ring-emerald-500 outline-none">
         </div>
         <div>
-          <label class="block text-xs font-bold text-gray-700 mb-1">Email</label>
-          <input type="email" id="signupEmail" required placeholder="nama@email.com" class="w-full p-2.5 rounded-lg border text-xs bg-gray-50 text-gray-800 font-medium focus:ring-2 focus:ring-emerald-500 outline-none">
+          <label class="block text-xs font-bold text-gray-700 mb-1">Email <span class="text-red-500">* (Gunakan @gmail / @yahoo)</span></label>
+          <input type="email" id="signupEmail" required placeholder="nama@gmail.com" class="w-full p-2.5 rounded-xl border text-sm bg-gray-50 focus:ring-2 focus:ring-emerald-500 outline-none">
         </div>
         <div>
           <label class="block text-xs font-bold text-gray-700 mb-1">Nomor HP</label>
-          <input type="tel" id="signupPhone" required placeholder="081234567890" class="w-full p-2.5 rounded-lg border text-xs bg-gray-50 text-gray-800 font-medium focus:ring-2 focus:ring-emerald-500 outline-none">
+          <input type="tel" id="signupPhone" required placeholder="081234567890" class="w-full p-2.5 rounded-xl border text-sm bg-gray-50 focus:ring-2 focus:ring-emerald-500 outline-none">
         </div>
         <div>
           <label class="block text-xs font-bold text-gray-700 mb-1">Kata Sandi (Min. 6 karakter)</label>
-          <input type="password" id="signupPassword" required minlength="6" placeholder="••••••••" class="w-full p-2.5 rounded-lg border text-xs bg-gray-50 text-gray-800 font-medium focus:ring-2 focus:ring-emerald-500 outline-none">
+          <input type="password" id="signupPassword" required minlength="6" placeholder="••••••••" class="w-full p-2.5 rounded-xl border text-sm bg-gray-50 focus:ring-2 focus:ring-emerald-500 outline-none">
         </div>
-        <button type="submit" id="btnSignupSubmit" class="w-full py-2.5 bg-emerald-600 text-white font-bold rounded-lg hover:bg-emerald-700 transition text-xs shadow-md mt-2 flex items-center justify-center gap-2">
-          <i class="fa-solid fa-user-plus"></i> Buat Akun
+        <button type="submit" id="btnSignupSubmit" class="w-full py-3 mt-2 bg-emerald-500 text-white font-bold rounded-xl hover:bg-emerald-600 transition shadow-lg shadow-emerald-500/30 flex items-center justify-center gap-2">
+          Buat Akun
         </button>
       </form>
 
-      <div class="mt-4 pt-3 border-t text-center text-xs text-gray-600">
+      <div class="mt-5 pt-4 border-t text-center text-sm text-gray-600">
         Sudah punya akun? 
-        <button type="button" onclick="switchAuthModal('login')" class="text-emerald-600 font-bold hover:underline">
+        <button type="button" onclick="switchAuthModal('login')" class="text-emerald-600 font-bold hover:underline transition-all">
           Masuk di sini
         </button>
       </div>
@@ -600,7 +584,7 @@
       } catch (err) {
         showAuthAlert('loginAlert', err.message.includes('Invalid') ? 'Sandi salah.' : err.message);
       } finally {
-        btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Masuk Sekarang';
+        btn.disabled = false; btn.innerHTML = 'Masuk Sekarang';
       }
     }
 
@@ -611,6 +595,15 @@
       const phoneInput = document.getElementById('signupPhone').value.trim();
       const password = document.getElementById('signupPassword').value;
       const btn = document.getElementById('btnSignupSubmit');
+
+      // VALIDASI EMAIL LEVEL 1 (Mencegah email asal-asalan)
+      const allowedDomains = ['@gmail.com', '@yahoo.com', '@outlook.com', '@icloud.com', '@student.ac.id'];
+      const isValidDomain = allowedDomains.some(domain => email.toLowerCase().endsWith(domain));
+      
+      if (!isValidDomain) {
+        showAuthAlert('signupAlert', 'Wajib menggunakan email asli yang valid (seperti @gmail.com atau @yahoo.com)!');
+        return;
+      }
 
       if (!supabaseClient) return showAuthAlert('signupAlert', 'Koneksi terputus.');
       btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Mendaftarkan...';
@@ -632,18 +625,20 @@
           if (insertError) console.warn("User insert notice:", insertError.message);
 
           showAuthAlert('signupAlert', 'Pendaftaran berhasil!', false);
-          setTimeout(() => closeSignupModal(), 1000);
+          setTimeout(() => {
+            closeSignupModal();
+            speak(`Selamat bergabung, ${name}! Pendaftaran berhasil.`);
+          }, 1000);
         }
       } catch (err) {
         showAuthAlert('signupAlert', err.message);
       } finally {
-        btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-user-plus"></i> Buat Akun';
+        btn.disabled = false; btn.innerHTML = 'Buat Akun';
       }
     }
 
     async function handleLogout() {
       if (supabaseClient) await supabaseClient.auth.signOut();
-      
       localStorage.removeItem('bf_user');
       transactions = []; 
       renderData();      
@@ -703,7 +698,7 @@
     }
 
     // ==========================================
-    // SUPABASE TRANSACTIONS ENGINE
+    // SUPABASE TRANSACTIONS CLOUD ENGINE
     // ==========================================
     async function ensurePublicUserExists(user) {
       if (!supabaseClient || !user) return;
@@ -740,11 +735,14 @@
         renderData();
         updateSyncStatusUI(true);
       } catch (err) {
-        console.error("Gagal sinkronisasi dari Supabase:", err);
+        console.error("Gagal sinkronisasi:", err);
         updateSyncStatusUI(false, 'Gagal Sinkron Cloud');
       }
     }
 
+    // ==========================================
+    // FUNGSI CRUD MURNI CLOUD
+    // ==========================================
     async function addManualTransaction(e) {
       e.preventDefault();
       const user = getCurrentUser();
@@ -762,11 +760,7 @@
       const category = (catSelect === 'Otomatis' || !catSelect) ? detectCategory(descFormatted, type) : catSelect;
 
       updateSyncStatusUI(false, 'Menyimpan...');
-      
-      const payload = {
-        id: Date.now().toString(), user_id: user.id, date: date, type: type,
-        category: category, amount: amountInput, desc: descFormatted
-      };
+      const payload = { id: Date.now().toString(), user_id: user.id, date: date, type: type, category: category, amount: amountInput, desc: descFormatted };
       
       const { error } = await supabaseClient.from('transactions').insert([payload]);
       
@@ -969,7 +963,7 @@
     }
 
     // ==========================================
-    // VOICE COMMAND DISPATCHER & LOGIC (UPGRADED)
+    // VOICE COMMAND DISPATCHER & LOGIC
     // ==========================================
     function parseDateScopeFromCommand(cmd) {
       const monthNames = { 'januari': '01', 'jan': '01', 'februari': '02', 'feb': '02', 'maret': '03', 'mar': '03', 'april': '04', 'apr': '04', 'mei': '05', 'juni': '06', 'juli': '07', 'agustus': '08', 'agu': '08', 'september': '09', 'sep': '09', 'oktober': '10', 'okt': '10', 'november': '11', 'nov': '11', 'desember': '12', 'des': '12' };
@@ -977,7 +971,6 @@
       let periodLabel = "keseluruhan";
       let filterFunc = () => true;
 
-      // 1. Deteksi "Lalu/Kemarin" (Relative Past)
       if (cmd.includes('bulan lalu') || cmd.includes('bulan kemarin')) {
         let ym = getRelativeDateStr('bulan_lalu').ym;
         return { label: "bulan lalu", func: t => t.date.startsWith(ym) };
@@ -987,7 +980,6 @@
         return { label: "tahun lalu", func: t => t.date.startsWith(yr) };
       }
 
-      // 2. Deteksi Custom Date
       let yearMatch = cmd.match(/tahun\s*(\d{4})/i) || cmd.match(/\b(20\d{2})\b/);
       let targetYear = yearMatch ? (yearMatch[1] || yearMatch[0]) : null;
       let targetMonth = null;
@@ -1014,10 +1006,7 @@
         return { label: `tanggal ${targetDay} bulan ini`, func: t => t.date === `${currentYM}-${targetDay}` };
       } else if (targetYear) {
         return { label: `tahun ${targetYear}`, func: t => t.date.startsWith(targetYear) };
-      } 
-      
-      // 3. Deteksi Relative Present/Immediate Past
-      else if (cmd.includes('hari ini')) {
+      } else if (cmd.includes('hari ini')) {
         return { label: "hari ini", func: t => t.date === todayStr };
       } else if (cmd.includes('kemarin') || cmd.includes('kemaren')) {
         let yStr = getRelativeDateStr('kemarin').full;
@@ -1050,21 +1039,14 @@
         return true;
       });
 
-      if (itemsToDelete.length === 0) {
-        speak(`Aduh, tidak ditemukan transaksi yang cocok untuk dihapus.`);
-        return;
-      }
+      if (itemsToDelete.length === 0) return speak(`Aduh, tidak ditemukan transaksi yang cocok untuk dihapus.`);
 
       const user = getCurrentUser();
       if (user && supabaseClient) {
         updateSyncStatusUI(false, 'Menghapus Cloud...');
         const ids = itemsToDelete.map(i => i.id);
         const { error } = await supabaseClient.from('transactions').delete().in('id', ids);
-        if (error) {
-          alert(`Gagal hapus Cloud: ${error.message}`);
-          updateSyncStatusUI(false, 'Gagal Sinkron');
-          return;
-        }
+        if (error) return alert(`Gagal hapus Cloud: ${error.message}`);
       }
 
       await fetchTransactionsFromSupabase();
@@ -1108,7 +1090,7 @@
         const { error } = await supabaseClient.from('transactions').update({ amount: newAmount }).eq('id', itemToEdit.id);
         if (!error) {
           await fetchTransactionsFromSupabase();
-          speak(`Sip! Nominal ${itemToEdit.desc} berhasil diubah dari ${oldAmount.toLocaleString('id-ID')} jadi ${newAmount.toLocaleString('id-ID')} rupiah.`);
+          speak(`Sip! Nominal ${itemToEdit.desc} diubah dari ${oldAmount.toLocaleString('id-ID')} jadi ${newAmount.toLocaleString('id-ID')} rupiah.`);
         }
       } else {
         let newDesc = newValPart.charAt(0).toUpperCase() + newValPart.slice(1);
@@ -1118,7 +1100,7 @@
         const { error } = await supabaseClient.from('transactions').update({ desc: newDesc, category: newCat }).eq('id', itemToEdit.id);
         if (!error) {
           await fetchTransactionsFromSupabase();
-          speak(`Sip! Keterangan ${oldDesc} berhasil diubah menjadi ${newDesc}.`);
+          speak(`Sip! Keterangan ${oldDesc} diubah menjadi ${newDesc}.`);
         }
       }
     }
@@ -1126,14 +1108,12 @@
     function executeVoiceReadout(cmd) {
       let scope = parseDateScopeFromCommand(cmd);
       let filtered = transactions;
-      if (scope.label !== 'keseluruhan') {
-        filtered = transactions.filter(scope.func);
-      }
+      if (scope.label !== 'keseluruhan') filtered = transactions.filter(scope.func);
 
       let isExpenseOnly = cmd.includes('pengeluaran') || cmd.includes('keluar') || cmd.includes('beli') || cmd.includes('bayar');
       let isIncomeOnly = cmd.includes('pemasukan') || cmd.includes('masuk') || cmd.includes('dapet') || cmd.includes('dapat') || cmd.includes('gaji');
       if (isExpenseOnly && isIncomeOnly) { isExpenseOnly = false; isIncomeOnly = false; }
-      let isGlobalTotalOnly = cmd.includes('total') || cmd.includes('ringkasan') || cmd.includes('global') || cmd.includes('rekap');
+      let isGlobalTotalOnly = cmd.includes('total') || cmd.includes('ringkasan') || cmd.includes('global') || cmd.includes('rekap') || cmd.includes('spill');
 
       if (filtered.length === 0) return speak(`Belum ada data transaksi yang ditemukan untuk ${scope.label}.`);
 
@@ -1143,7 +1123,7 @@
       let totalInc = incItems.reduce((a, b) => a + b.amount, 0);
 
       if (isExpenseOnly) {
-        if (expItems.length === 0) return speak(`Tidak ada data pengeluaran untuk ${scope.label}.`);
+        if (expItems.length === 0) return speak(`Tidak ada pengeluaran untuk ${scope.label}.`);
         if (isGlobalTotalOnly) return speak(`Total pengeluaran kamu untuk ${scope.label} adalah sebesar ${totalExp.toLocaleString('id-ID')} rupiah.`);
         let text = `Laporan pengeluaran untuk ${scope.label}: `;
         expItems.forEach(t => { text += `${t.desc} sebesar ${t.amount.toLocaleString('id-ID')} rupiah. `; });
@@ -1151,7 +1131,7 @@
       }
 
       if (isIncomeOnly) {
-        if (incItems.length === 0) return speak(`Tidak ada data pemasukan untuk ${scope.label}.`);
+        if (incItems.length === 0) return speak(`Tidak ada pemasukan untuk ${scope.label}.`);
         if (isGlobalTotalOnly) return speak(`Total pemasukan kamu untuk ${scope.label} adalah sebesar ${totalInc.toLocaleString('id-ID')} rupiah.`);
         let text = `Laporan pemasukan untuk ${scope.label}: `;
         incItems.forEach(t => { text += `${t.desc} sebesar ${t.amount.toLocaleString('id-ID')} rupiah. `; });
@@ -1159,7 +1139,7 @@
       }
 
       if (isGlobalTotalOnly) {
-        speak(`Laporan global untuk ${scope.label}: Total pemasukan ${totalInc.toLocaleString('id-ID')} rupiah. Total pengeluaran ${totalExp.toLocaleString('id-ID')} rupiah. Saldo bersih ${ (totalInc - totalExp).toLocaleString('id-ID') } rupiah.`);
+        speak(`Laporan global untuk ${scope.label}: Pemasukan ${totalInc.toLocaleString('id-ID')} rupiah, Pengeluaran ${totalExp.toLocaleString('id-ID')} rupiah. Saldo bersih ${ (totalInc - totalExp).toLocaleString('id-ID') } rupiah.`);
       } else {
         let text = `Berikut detail laporan keuangan untuk ${scope.label}: `;
         filtered.forEach(t => { text += `${t.type === 'pemasukan' ? 'Pemasukan' : 'Pengeluaran'} ${t.desc} sebesar ${t.amount.toLocaleString('id-ID')} rupiah. `; });
@@ -1167,25 +1147,72 @@
       }
     }
 
-    function executeVoiceDownload(cmd) {
-      let scope = parseDateScopeFromCommand(cmd);
-      let filtered = transactions;
-      if (scope.label !== 'keseluruhan') {
-        filtered = transactions.filter(scope.func);
-      }
+    // ==========================================
+    // KORPORAT Laporan CSV Generator
+    // ==========================================
+    function generateAndDownloadCSV(dataList, fileName, periodLabel) {
+      const user = getCurrentUser();
+      const userName = user ? (user.user_metadata?.full_name || user.user_metadata?.phone_number || user.email?.split('@')[0]) : 'Pengguna Tamu';
+      
+      let totalInc = dataList.filter(t => t.type === 'pemasukan').reduce((a,b) => a + b.amount, 0);
+      let totalExp = dataList.filter(t => t.type === 'pengeluaran').reduce((a,b) => a + b.amount, 0);
+      let netBalance = totalInc - totalExp;
 
-      if (filtered.length === 0) return speak(`Gak ada data transaksi buat laporan ${scope.label}.`);
-      generateAndDownloadCSV(filtered, `Laporan_Keuangan_${scope.label.replace(/\s+/g, '_')}`);
-      speak(`Laporan keuangan ${scope.label} berhasil di-download!`);
-    }
+      const printDate = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' });
 
-    function generateAndDownloadCSV(dataList, fileName) {
-      let csvContent = "\uFEFFTanggal,Jenis,Kategori,Keterangan,Jumlah (Rp)\n";
-      dataList.forEach(t => { csvContent += `"${t.date}","${t.type}","${t.category}","${t.desc}",${t.amount}\n`; });
+      let csvContent = "\uFEFF"; 
+      csvContent += "====================================================\n";
+      csvContent += "LAPORAN KEUANGAN RESMI - BeFAST FINANCIAL ASSISTANT\n";
+      csvContent += "====================================================\n";
+      csvContent += `Nama Pemilik Akun :,${userName}\n`;
+      csvContent += `Periode Laporan   :,${periodLabel.toUpperCase()}\n`;
+      csvContent += `Dicetak Pada      :,${printDate}\n\n`;
+
+      csvContent += "RINGKASAN ARUS KAS\n";
+      csvContent += "----------------------------------------------------\n";
+      csvContent += `Total Pemasukan   :,Rp ${totalInc.toLocaleString('id-ID')}\n`;
+      csvContent += `Total Pengeluaran :,Rp ${totalExp.toLocaleString('id-ID')}\n`;
+      csvContent += `SALDO BERSIH      :,Rp ${netBalance.toLocaleString('id-ID')}\n\n`;
+
+      csvContent += "RINCIAN TRANSAKSI\n";
+      csvContent += "----------------------------------------------------\n";
+      csvContent += "Tanggal,Jenis,Kategori,Keterangan,Pemasukan (Rp),Pengeluaran (Rp)\n";
+
+      dataList.sort((a,b) => new Date(b.date) - new Date(a.date)).forEach(t => {
+        const cat = t.category || detectCategory(t.desc, t.type);
+        const cleanDesc = t.desc.replace(/"/g, '""'); 
+        let masuk = t.type === 'pemasukan' ? t.amount : 0;
+        let keluar = t.type === 'pengeluaran' ? t.amount : 0;
+        csvContent += `"${t.date}","${t.type.toUpperCase()}","${cat}","${cleanDesc}",${masuk},${keluar}\n`;
+      });
+
+      csvContent += "\n====================================================\n";
+      csvContent += "Dokumen ini di-generate secara otomatis oleh Sistem AI BeFAST.\n";
+
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a'); a.href = url; a.download = `${fileName}_${Date.now()}.csv`;
       document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+    }
+
+    function executeVoiceDownload(cmd) {
+      let scope = parseDateScopeFromCommand(cmd);
+      let filtered = transactions;
+      if (scope.label !== 'keseluruhan') filtered = transactions.filter(scope.func);
+
+      if (filtered.length === 0) return speak(`Gak ada data transaksi buat laporan ${scope.label}.`);
+      generateAndDownloadCSV(filtered, `Laporan_Keuangan_${scope.label.replace(/\s+/g, '_')}`, scope.label);
+      speak(`Laporan keuangan ${scope.label} berhasil di-download!`);
+    }
+
+    function downloadCSV(scope) { executeVoiceDownload(`download laporan ${scope}`); }
+    function downloadByPromptDate() {
+      let targetDate = prompt("Masukkan tanggal laporan (YYYY-MM-DD):", getLocalDateStr());
+      if (targetDate) {
+        let filtered = transactions.filter(t => t.date === targetDate);
+        if (filtered.length === 0) return alert("Tidak ada transaksi di tanggal tersebut.");
+        generateAndDownloadCSV(filtered, `Laporan_Keuangan_${targetDate}`, `TANGGAL ${targetDate}`);
+      }
     }
 
     function showChartModal(scopeCmd) {
@@ -1206,10 +1233,7 @@
 
       chartInstance = new Chart(ctx, {
         type: 'doughnut',
-        data: {
-          labels: ['Pemasukan', 'Pengeluaran'],
-          datasets: [{ data: [inc, exp], backgroundColor: ['#10b981', '#ef4444'], borderWidth: 0 }]
-        },
+        data: { labels: ['Pemasukan', 'Pengeluaran'], datasets: [{ data: [inc, exp], backgroundColor: ['#10b981', '#ef4444'], borderWidth: 0 }] },
         options: { responsive: true, maintainAspectRatio: false }
       });
 
@@ -1224,17 +1248,7 @@
       if (modalTimer) clearTimeout(modalTimer);
       modalTimer = setTimeout(() => { closeChartModal(); }, 30000);
     }
-
     function closeChartModal() { document.getElementById('chartModal').classList.add('hidden'); if (modalTimer) clearTimeout(modalTimer); }
-    function downloadCSV(scope) { executeVoiceDownload(`download laporan ${scope}`); }
-    function downloadByPromptDate() {
-      let targetDate = prompt("Masukkan tanggal laporan (YYYY-MM-DD):", getLocalDateStr());
-      if (targetDate) {
-        let filtered = transactions.filter(t => t.date === targetDate);
-        if (filtered.length === 0) return alert("Tidak ada transaksi di tanggal tersebut.");
-        generateAndDownloadCSV(filtered, `Laporan_Keuangan_${targetDate}`);
-      }
-    }
 
     async function processVoiceCommand(cmd) {
       const user = getCurrentUser();
@@ -1242,7 +1256,7 @@
 
       if (cmd.includes('edit') || cmd.includes('ubah') || cmd.includes('ganti')) { executeVoiceEdit(cmd); return; }
       if (cmd.includes('hapus') || cmd.includes('delete') || cmd.includes('hilangin') || cmd.includes('bersihin') || cmd.includes('buang')) { executeVoiceDelete(cmd); return; }
-      if (cmd.includes('download') || cmd.includes('unduh') || cmd.includes('simpan csv')) { executeVoiceDownload(cmd); return; }
+      if (cmd.includes('download') || cmd.includes('unduh') || cmd.includes('simpan csv') || cmd.includes('ekspor')) { executeVoiceDownload(cmd); return; }
       if (cmd.includes('grafik') || cmd.includes('chart')) { showChartModal(cmd); return; }
 
       const nominal = parseNominal(cmd);
