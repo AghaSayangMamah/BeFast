@@ -888,17 +888,23 @@
     }
 
     async function handleLogout() {
-      if (supabaseClient) {
-        try {
-          await supabaseClient.auth.signOut();
-        } catch (e) {
-          console.warn("SignOut Supabase notice:", e);
-        }
-      }
-      localStorage.removeItem('bf_user');
-      updateAuthUI();
-      speak("Kamu berhasil keluar. Sampai jumpa lagi!");
+  if (supabaseClient) {
+    try {
+      await supabaseClient.auth.signOut();
+    } catch (e) {
+      console.warn("SignOut Supabase notice:", e);
     }
+  }
+  
+  // HAPUS SEMUA DATA LOKAL BIAR GAK BOCOR KE AKUN LAIN
+  localStorage.removeItem('bf_user');
+  localStorage.removeItem('voice_finance_data');
+  transactions = []; // Kosongkan memori tabel di layar
+  
+  updateAuthUI();
+  renderData(); // Refresh UI menjadi Rp 0
+  speak("Kamu berhasil keluar. Sampai jumpa lagi!");
+}
 
     // ==========================================
     // KATEGORI & SISTEM DETEKSI OTOMATIS (AI)
