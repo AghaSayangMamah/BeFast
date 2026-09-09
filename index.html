@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BeFAST - Best Financial Assistant</title>
   
-  <!-- INTEGRASI FAVICON LOGO (GAMBAR 1) -->
-  <link rel="icon" type="image/png" href="logo.png">
+  <!-- INTEGRASI FAVICON LOGO -->
+  <link rel="icon" type="image/png" href="LOGO FIX.png">
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -52,10 +52,10 @@
   <header class="p-4 shadow-sm bg-white border-b mb-6">
     <div class="max-w-4xl mx-auto flex justify-between items-center flex-wrap gap-3">
       
-      <!-- BRANDING AREA (Sesuai Referensi Gambar 2) -->
+      <!-- BRANDING AREA -->
       <div class="flex items-center gap-3">
         <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center p-1 drop-shadow-md">
-          <img src="logo.png" alt="BeFAST Logo" class="w-full h-full object-contain">
+          <img src="LOGO FIX.png" alt="BeFAST Logo" class="w-full h-full object-contain">
         </div>
         <div class="flex flex-col justify-center">
           <h1 class="text-2xl font-black text-[#5e2e10] tracking-tight leading-tight">BeFAST</h1>
@@ -69,7 +69,6 @@
           <i class="fa-solid fa-microphone-lines"></i> Panduan Suara
         </button>
 
-        <!-- Auth Navigation Area -->
         <div id="authLoggedOut" class="flex items-center gap-2">
           <button onclick="openLoginModal()" class="px-3 py-2 bg-white hover:bg-gray-50 text-blue-800 border border-blue-200 rounded-lg text-xs font-bold transition flex items-center gap-1 shadow-sm">
             <i class="fa-solid fa-right-to-bracket"></i> Masuk
@@ -81,7 +80,7 @@
 
         <div id="authLoggedIn" class="hidden flex items-center gap-2">
           <div class="flex items-center gap-1.5 bg-gray-50 px-2.5 py-1.5 rounded-lg border text-xs font-semibold text-[#023047] shadow-sm">
-            <img src="logo.png" class="w-4 h-4 object-contain">
+            <img src="LOGO FIX.png" class="w-4 h-4 object-contain">
             <span id="userGreeting">Hai, Pengguna</span>
           </div>
           <button onclick="handleLogout()" class="px-2.5 py-2 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 rounded-lg text-xs font-bold transition flex items-center gap-1" title="Keluar">
@@ -175,6 +174,27 @@
       </div>
     </section>
 
+    <!-- Download Buttons Section -->
+    <section class="card-style p-6 bg-white">
+      <h3 class="text-md font-bold mb-4 flex items-center gap-2 text-gray-800">
+        <i class="fa-solid fa-file-excel text-[#10b981]"></i> Tombol Download Laporan (CSV)
+      </h3>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <button onclick="downloadCSV('hari ini')" class="p-3 bg-[#ecfdf5] text-[#047857] rounded-lg text-xs font-bold hover:bg-[#d1fae5] transition flex items-center justify-center gap-1.5 shadow-sm">
+          <i class="fa-solid fa-calendar-day"></i> Hari Ini
+        </button>
+        <button onclick="downloadByPromptDate()" class="p-3 bg-[#ecfdf5] text-[#047857] rounded-lg text-xs font-bold hover:bg-[#d1fae5] transition flex items-center justify-center gap-1.5 shadow-sm">
+          <i class="fa-solid fa-calendar-days"></i> Per Tanggal
+        </button>
+        <button onclick="downloadCSV('bulan ini')" class="p-3 bg-[#ecfdf5] text-[#047857] rounded-lg text-xs font-bold hover:bg-[#d1fae5] transition flex items-center justify-center gap-1.5 shadow-sm">
+          <i class="fa-solid fa-calendar-week"></i> Bulan Ini
+        </button>
+        <button onclick="downloadCSV('tahun ini')" class="p-3 bg-[#ecfdf5] text-[#047857] rounded-lg text-xs font-bold hover:bg-[#d1fae5] transition flex items-center justify-center gap-1.5 shadow-sm">
+          <i class="fa-solid fa-calendar"></i> Tahun Ini
+        </button>
+      </div>
+    </section>
+
     <!-- Transaction Table & Action Buttons -->
     <section class="card-style p-6 bg-white">
       <div class="flex justify-between items-center mb-6 flex-wrap gap-4 border-b pb-4">
@@ -187,10 +207,6 @@
         <div class="flex items-center gap-2 flex-wrap">
           <button onclick="executeVoiceReadout('spill bulan ini')" class="px-3 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg text-xs font-bold flex items-center gap-1.5 transition shadow-sm" title="Bacakan Laporan Bulan Ini">
             <i class="fa-solid fa-bullhorn"></i> Bacakan
-          </button>
-          <!-- Tombol Download Laporan -->
-          <button onclick="executeVoiceDownload('download laporan keseluruhan')" class="px-3 py-2 bg-[#023047] hover:bg-[#044c70] text-white rounded-lg text-xs font-bold flex items-center gap-1.5 transition shadow-sm" title="Download Format Corporate BI">
-            <i class="fa-solid fa-file-excel"></i> Ekspor Laporan Resmi
           </button>
           <button onclick="showChartModal('bulan')" class="px-3 py-2 bg-[#ffb703] hover:bg-[#fb8500] text-[#5e2e10] rounded-lg text-xs font-bold transition shadow-sm flex items-center gap-1.5">
             <i class="fa-solid fa-chart-pie"></i> Visualisasi BI
@@ -238,7 +254,7 @@
       </p>
 
       <div class="space-y-6 text-sm text-gray-700">
-        <!-- (Konten panduan suara persis sama seperti sebelumnya) -->
+        <!-- SECTION 1: INPUT DATA -->
         <div class="p-4 bg-emerald-50 rounded-xl border border-emerald-200">
           <h4 class="font-black text-emerald-900 text-sm mb-3 flex items-center gap-2">
             <i class="fa-solid fa-plus-circle text-emerald-600"></i> 1. Input Transaksi (Catat)
@@ -333,16 +349,14 @@
   <!-- MODAL POP UP LOGIN -->
   <div id="loginModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4 transition-all">
     <div class="card-style w-full max-w-md p-8 relative bg-white text-gray-800 shadow-2xl overflow-hidden">
-      <!-- Ornamen Latar -->
       <div class="absolute -top-16 -right-16 w-40 h-40 bg-[#ffb703] rounded-full blur-3xl opacity-20"></div>
-
       <button onclick="closeLoginModal()" class="absolute top-5 right-5 text-gray-400 hover:text-gray-600 text-xl transition-colors z-20">
         <i class="fa-solid fa-xmark"></i>
       </button>
 
       <div class="flex flex-col items-center mb-6 relative z-10">
         <div class="w-20 h-20 mb-4 p-2 bg-white rounded-3xl shadow-lg border border-gray-100 flex items-center justify-center">
-          <img src="logo.png" alt="BeFAST Logo" class="w-full h-full object-contain">
+          <img src="LOGO FIX.png" alt="BeFAST Logo" class="w-full h-full object-contain">
         </div>
         <h3 class="font-black text-2xl text-[#023047]">Masuk ke BeFAST</h3>
         <p class="text-xs text-gray-500 mt-1 font-semibold text-center">Bicara 2 detik, langsung kecatat.</p>
@@ -383,14 +397,13 @@
   <div id="signupModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4 transition-all">
     <div class="card-style w-full max-w-md p-8 relative bg-white text-gray-800 shadow-2xl overflow-hidden">
       <div class="absolute -top-16 -left-16 w-40 h-40 bg-[#10b981] rounded-full blur-3xl opacity-10"></div>
-
       <button onclick="closeSignupModal()" class="absolute top-5 right-5 text-gray-400 hover:text-gray-600 text-xl transition-colors z-20">
         <i class="fa-solid fa-xmark"></i>
       </button>
 
       <div class="flex flex-col items-center mb-6 relative z-10">
         <div class="w-16 h-16 mb-3 p-1.5 bg-white rounded-2xl shadow-md border border-gray-100 flex items-center justify-center">
-          <img src="logo.png" alt="BeFAST Logo" class="w-full h-full object-contain">
+          <img src="LOGO FIX.png" alt="BeFAST Logo" class="w-full h-full object-contain">
         </div>
         <h3 class="font-black text-xl text-[#023047]">Daftar Akun Baru</h3>
       </div>
@@ -429,9 +442,6 @@
   </div>
 
   <script>
-    // ==========================================
-    // MURNI 100% CLOUD-BASED 
-    // ==========================================
     const SUPABASE_URL = "https://tdeqnnyauwsnpfslbhcj.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRkZXFubnlhdXdzbnBmc2xiaGNqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5Mjc0MTcsImV4cCI6MjEwNDUwMzQxN30.VbEC115BGzCAMsGE9wecXvhXLx3BwMZ1skPP3ibS0ew";
     
@@ -446,7 +456,7 @@
           auth: { persistSession: true, autoRefreshToken: true }
         });
       }
-    } catch (e) { console.error("Gagal menginisialisasi Supabase:", e); }
+    } catch (e) {}
 
     function formatPhoneNumber(phone) {
       let cleaned = phone.replace(/\D/g, '');
@@ -542,7 +552,6 @@
       const password = document.getElementById('signupPassword').value;
       const btn = document.getElementById('btnSignupSubmit');
 
-      // VALIDASI DOMAIN EMAIL LEVEL 1
       const allowedDomains = ['@gmail.com', '@yahoo.com', '@outlook.com', '@icloud.com', '@student.ac.id'];
       const isValidDomain = allowedDomains.some(domain => email.toLowerCase().endsWith(domain));
       if (!isValidDomain) {
@@ -567,13 +576,9 @@
           const { error: insertError } = await supabaseClient.from('users').upsert({
             id: data.user.id, username: name, email: email, phone_number: formattedPhone
           });
-          if (insertError) console.warn("User insert notice:", insertError.message);
 
           showAuthAlert('signupAlert', 'Pendaftaran berhasil!', false);
-          setTimeout(() => {
-            closeSignupModal();
-            speak(`Selamat bergabung, ${name}! Pendaftaran berhasil.`);
-          }, 1000);
+          setTimeout(() => { closeSignupModal(); speak(`Selamat bergabung, ${name}! Pendaftaran berhasil.`); }, 1000);
         }
       } catch (err) {
         showAuthAlert('signupAlert', err.message);
@@ -591,9 +596,6 @@
       speak("Kamu berhasil keluar.");
     }
 
-    // ==========================================
-    // KATEGORI AI
-    // ==========================================
     function detectCategory(desc, type) {
       if (!desc) return type === 'pemasukan' ? 'Pendapatan' : 'Lain-lain';
       const text = desc.toLowerCase();
@@ -642,9 +644,6 @@
       }
     }
 
-    // ==========================================
-    // SUPABASE TRANSACTIONS CLOUD ENGINE
-    // ==========================================
     async function ensurePublicUserExists(user) {
       if (!supabaseClient || !user) return;
       try {
@@ -699,7 +698,6 @@
       const payload = { id: Date.now().toString(), user_id: user.id, date: date, type: type, category: category, amount: amountInput, desc: descFormatted };
       
       const { error } = await supabaseClient.from('transactions').insert([payload]);
-      
       if (error) {
         alert(`Gagal menyimpan ke Cloud: ${error.message}`);
         updateSyncStatusUI(false, 'Gagal Menyimpan');
@@ -721,7 +719,6 @@
       if (confirm(`Yakin ingin menghapus transaksi "${item.desc}"?`)) {
         updateSyncStatusUI(false, 'Menghapus...');
         const { error } = await supabaseClient.from('transactions').delete().eq('id', id);
-        
         if (error) {
           alert(`Gagal menghapus di Cloud: ${error.message}`);
           updateSyncStatusUI(false, 'Gagal Menghapus');
@@ -750,10 +747,7 @@
       const updatedCat = detectCategory(updatedDesc, item.type);
 
       updateSyncStatusUI(false, 'Mengubah...');
-      const { error } = await supabaseClient.from('transactions')
-        .update({ desc: updatedDesc, amount: newAmount, category: updatedCat })
-        .eq('id', id);
-      
+      const { error } = await supabaseClient.from('transactions').update({ desc: updatedDesc, amount: newAmount, category: updatedCat }).eq('id', id);
       if (error) {
         alert(`Gagal mengubah di Cloud: ${error.message}`);
         updateSyncStatusUI(false, 'Gagal Mengubah');
@@ -774,8 +768,6 @@
         if (item.type === 'pengeluaran') totalExp += item.amount;
 
         const cat = item.category || detectCategory(item.desc, item.type);
-        
-        // Memisahkan kolom Debit dan Kredit
         let debit = item.type === 'pemasukan' ? `Rp ${item.amount.toLocaleString('id-ID')}` : '-';
         let kredit = item.type === 'pengeluaran' ? `Rp ${item.amount.toLocaleString('id-ID')}` : '-';
 
@@ -800,9 +792,6 @@
       document.getElementById('cardBalance').innerText = `Rp ${(totalInc - totalExp).toLocaleString('id-ID')}`;
     }
 
-    // ==========================================
-    // NLP DATE & NUMBER LOGIC
-    // ==========================================
     function getLocalDateStr(dateObj = new Date()) {
       const year = dateObj.getFullYear();
       const month = String(dateObj.getMonth() + 1).padStart(2, '0');
@@ -903,9 +892,6 @@
       return { amount, desc, date: transactionDate };
     }
 
-    // ==========================================
-    // VOICE COMMAND DISPATCHER & LOGIC
-    // ==========================================
     function parseDateScopeFromCommand(cmd) {
       const monthNames = { 'januari': '01', 'jan': '01', 'februari': '02', 'feb': '02', 'maret': '03', 'mar': '03', 'april': '04', 'apr': '04', 'mei': '05', 'juni': '06', 'juli': '07', 'agustus': '08', 'agu': '08', 'september': '09', 'sep': '09', 'oktober': '10', 'okt': '10', 'november': '11', 'nov': '11', 'desember': '12', 'des': '12' };
       
@@ -1088,9 +1074,6 @@
       }
     }
 
-    // ==========================================
-    // KORPORAT Laporan CSV Generator
-    // ==========================================
     function generateAndDownloadCSV(dataList, fileName, periodLabel) {
       const user = getCurrentUser();
       const userName = user ? (user.user_metadata?.full_name || user.user_metadata?.phone_number || user.email?.split('@')[0]) : 'Pengguna Tamu';
@@ -1147,6 +1130,16 @@
       if (filtered.length === 0) return speak(`Gak ada data transaksi buat laporan ${scope.label}.`);
       generateAndDownloadCSV(filtered, `Laporan_Keuangan_${scope.label.replace(/\s+/g, '_')}`, scope.label);
       speak(`Laporan keuangan ${scope.label} berhasil di-download!`);
+    }
+
+    function downloadCSV(scope) { executeVoiceDownload(`download laporan ${scope}`); }
+    function downloadByPromptDate() {
+      let targetDate = prompt("Masukkan tanggal laporan (YYYY-MM-DD):", getLocalDateStr());
+      if (targetDate) {
+        let filtered = transactions.filter(t => t.date === targetDate);
+        if (filtered.length === 0) return alert("Tidak ada transaksi di tanggal tersebut.");
+        generateAndDownloadCSV(filtered, `Laporan_Keuangan_${targetDate}`, `TANGGAL ${targetDate}`);
+      }
     }
 
     function showChartModal(scopeCmd) {
