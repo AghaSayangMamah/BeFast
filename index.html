@@ -4,6 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BeFAST - Best Financial Assistant</title>
+  
+  <!-- INTEGRASI FAVICON LOGO (GAMBAR 1) -->
+  <link rel="icon" type="image/png" href="logo.png">
+  
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Chart.js CDN -->
@@ -15,7 +19,7 @@
   
   <style>
     /* Themes */
-    .theme-pastel { --bg-main: #95ff69; --card-bg: #ffffff; --primary: #10b981; --text-main: #064e3b; }
+    .theme-pastel { --bg-main: #fcfdf8; --card-bg: #ffffff; --primary: #10b981; --text-main: #1f2937; }
     .theme-sunset { --bg-main: #fff645; --card-bg: #ffffff; --primary: #f97316; --text-main: #431407; }
     .theme-berry  { --bg-main: #c963cf; --card-bg: #ffffff; --primary: #ec4899; --text-main: #831843; }
     .theme-neon   { --bg-main: #0f172a; --card-bg: #1e293b; --primary: #06b6d4; --text-main: #f8fafc; }
@@ -28,8 +32,9 @@
     }
     .card-style {
       background-color: var(--card-bg);
-      border-radius: 1rem;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+      border-radius: 1.2rem;
+      box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.08);
+      border: 1px solid rgba(0,0,0,0.03);
     }
     .mic-active {
       animation: pulse 1.5s infinite;
@@ -44,50 +49,43 @@
 <body class="theme-pastel min-h-screen pb-12">
 
   <!-- Header & Navigation -->
-  <header class="p-4 shadow-sm card-style rounded-none mb-6">
+  <header class="p-4 shadow-sm bg-white border-b mb-6">
     <div class="max-w-4xl mx-auto flex justify-between items-center flex-wrap gap-3">
+      
+      <!-- BRANDING AREA (Sesuai Referensi Gambar 2) -->
       <div class="flex items-center gap-3">
-        <!-- INTEGRASI LOGO DI HEADER -->
-        <div class="p-1 bg-white rounded-2xl shadow-lg border border-gray-100 flex items-center justify-center w-14 h-14 overflow-hidden">
+        <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center p-1 drop-shadow-md">
           <img src="logo.png" alt="BeFAST Logo" class="w-full h-full object-contain">
         </div>
-        <div>
-          <h1 class="text-xl font-bold">BeFAST</h1>
-          <p class="text-xs opacity-75 font-semibold">Best Financial Assistant</p>
+        <div class="flex flex-col justify-center">
+          <h1 class="text-2xl font-black text-[#5e2e10] tracking-tight leading-tight">BeFAST</h1>
+          <p class="text-[11px] font-bold text-[#8a5d43] leading-tight">Best Financial Assistant</p>
+          <p class="text-[10px] text-gray-500 italic mt-0.5">"Catat Keuangan, Semudah Bicara"</p>
         </div>
       </div>
       
       <div class="flex items-center gap-2">
-        <button onclick="openGuideModal()" class="px-3 py-2 bg-lime-500 text-white rounded-lg text-xs font-bold hover:bg-amber-600 transition flex items-center gap-1.5 shadow">
-          <i class="fa-solid fa-comments"></i> Panduan Suara Lengkap
+        <button onclick="openGuideModal()" class="px-3 py-2 bg-[#ffb703] text-[#5e2e10] rounded-lg text-xs font-bold hover:bg-[#fb8500] transition flex items-center gap-1.5 shadow">
+          <i class="fa-solid fa-microphone-lines"></i> Panduan Suara
         </button>
-
-        <div class="flex items-center gap-1">
-          <select id="skinSelect" class="p-2 rounded-lg text-sm bg-gray-100 text-gray-800 border font-medium outline-none">
-            <option value="theme-pastel">Mint Pastel</option>
-            <option value="theme-sunset">Sunset Orange</option>
-            <option value="theme-berry">Berry Pink</option>
-            <option value="theme-neon">Cyber Neon</option>
-          </select>
-        </div>
 
         <!-- Auth Navigation Area -->
         <div id="authLoggedOut" class="flex items-center gap-2">
-          <button onclick="openLoginModal()" class="px-3 py-2 bg-white/90 hover:bg-white text-emerald-800 border border-emerald-500 rounded-lg text-xs font-bold transition flex items-center gap-1 shadow-sm">
+          <button onclick="openLoginModal()" class="px-3 py-2 bg-white hover:bg-gray-50 text-blue-800 border border-blue-200 rounded-lg text-xs font-bold transition flex items-center gap-1 shadow-sm">
             <i class="fa-solid fa-right-to-bracket"></i> Masuk
           </button>
-          <button onclick="openSignupModal()" class="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold transition flex items-center gap-1 shadow-sm">
+          <button onclick="openSignupModal()" class="px-3 py-2 bg-[#023047] hover:bg-[#044c70] text-white rounded-lg text-xs font-bold transition flex items-center gap-1 shadow-sm">
             <i class="fa-solid fa-user-plus"></i> Daftar
           </button>
         </div>
 
         <div id="authLoggedIn" class="hidden flex items-center gap-2">
-          <div class="flex items-center gap-1.5 bg-white/90 px-2.5 py-1.5 rounded-lg border text-xs font-semibold text-gray-800 shadow-sm">
-            <i class="fa-solid fa-circle-user text-emerald-600 text-sm"></i>
+          <div class="flex items-center gap-1.5 bg-gray-50 px-2.5 py-1.5 rounded-lg border text-xs font-semibold text-[#023047] shadow-sm">
+            <img src="logo.png" class="w-4 h-4 object-contain">
             <span id="userGreeting">Hai, Pengguna</span>
           </div>
           <button onclick="handleLogout()" class="px-2.5 py-2 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 rounded-lg text-xs font-bold transition flex items-center gap-1" title="Keluar">
-            <i class="fa-solid fa-arrow-right-from-bracket"></i> Keluar
+            <i class="fa-solid fa-arrow-right-from-bracket"></i>
           </button>
         </div>
       </div>
@@ -97,40 +95,40 @@
   <main class="max-w-4xl mx-auto px-4 space-y-6">
 
     <!-- Voice Control Center -->
-    <section class="card-style p-6 text-center relative overflow-hidden">
-      <h2 class="text-lg font-semibold mb-1">VOICE</h2>
-      <p id="speechStatus" class="text-sm text-gray-500 mb-4">Klik mic lalu ngomong santai aja!</p>
+    <section class="card-style p-6 text-center relative overflow-hidden bg-gradient-to-br from-[#f8fdf9] to-[#eefcf2]">
+      <h2 class="text-lg font-black text-[#023047] mb-1">KONTROL SUARA JARVIS</h2>
+      <p id="speechStatus" class="text-sm text-gray-500 mb-5">Klik logo mic, lalu ucapkan perintahmu!</p>
 
-      <button id="btnMic" class="w-20 h-20 bg-emerald-500 text-white rounded-full text-3xl shadow-xl hover:bg-emerald-600 transition flex items-center justify-center mx-auto mb-4">
+      <button id="btnMic" class="w-24 h-24 bg-[#10b981] text-white rounded-full text-4xl shadow-xl hover:bg-[#059669] hover:scale-105 transition-all flex items-center justify-center mx-auto mb-5">
         <i class="fa-solid fa-microphone"></i>
       </button>
 
-      <div class="bg-gray-100/70 p-3 rounded-xl max-w-lg mx-auto border">
-        <p class="text-xs text-gray-500 font-semibold mb-1">Suara Terakhir Terdeteksi:</p>
-        <p id="transcriptText" class="text-sm italic font-medium">"Belum ada ucapan..."</p>
+      <div class="bg-white p-3 rounded-xl max-w-lg mx-auto border shadow-sm">
+        <p class="text-xs text-gray-400 font-bold mb-1 uppercase tracking-wider">Deteksi Suara AI:</p>
+        <p id="transcriptText" class="text-sm italic font-medium text-gray-700">"Belum ada ucapan..."</p>
       </div>
     </section>
 
     <!-- FORM INPUT MANUAL -->
     <section class="card-style p-6">
-      <h3 class="text-md font-bold mb-4 flex items-center gap-2">
-        <i class="fa-solid fa-pen-to-square text-emerald-500"></i> Input Transaksi Manual
+      <h3 class="text-md font-bold mb-4 flex items-center gap-2 text-gray-800">
+        <i class="fa-solid fa-keyboard text-[#ffb703]"></i> Input Transaksi Manual
       </h3>
       <form id="manualForm" onsubmit="addManualTransaction(event)" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-3">
         <div>
-          <label class="block text-xs font-semibold opacity-80 mb-1">Jenis</label>
-          <select id="manualType" class="w-full p-2.5 rounded-lg border text-xs bg-gray-50 text-gray-800 font-medium focus:ring-2 focus:ring-emerald-500 outline-none">
+          <label class="block text-xs font-bold text-gray-500 mb-1">Jenis</label>
+          <select id="manualType" class="w-full p-2.5 rounded-lg border text-xs bg-gray-50 text-gray-800 font-bold focus:ring-2 focus:ring-[#023047] outline-none">
             <option value="pengeluaran">Pengeluaran</option>
             <option value="pemasukan">Pemasukan</option>
           </select>
         </div>
         <div>
-          <label class="block text-xs font-semibold opacity-80 mb-1">Tanggal</label>
-          <input type="date" id="manualDate" class="w-full p-2.5 rounded-lg border text-xs bg-gray-50 text-gray-800 font-medium focus:ring-2 focus:ring-emerald-500 outline-none" required>
+          <label class="block text-xs font-bold text-gray-500 mb-1">Tanggal</label>
+          <input type="date" id="manualDate" class="w-full p-2.5 rounded-lg border text-xs bg-gray-50 text-gray-800 font-bold focus:ring-2 focus:ring-[#023047] outline-none" required>
         </div>
         <div>
-          <label class="block text-xs font-semibold opacity-80 mb-1">Kategori</label>
-          <select id="manualCategory" class="w-full p-2.5 rounded-lg border text-xs bg-gray-50 text-gray-800 font-medium focus:ring-2 focus:ring-emerald-500 outline-none">
+          <label class="block text-xs font-bold text-gray-500 mb-1">Kategori</label>
+          <select id="manualCategory" class="w-full p-2.5 rounded-lg border text-xs bg-gray-50 text-gray-800 font-bold focus:ring-2 focus:ring-[#023047] outline-none">
             <option value="Otomatis">✨ Otomatis (AI)</option>
             <option value="Makanan & Minuman">🍔 Makanan & Minuman</option>
             <option value="Transportasi">🚗 Transportasi</option>
@@ -143,74 +141,75 @@
           </select>
         </div>
         <div>
-          <label class="block text-xs font-semibold opacity-80 mb-1">Keterangan</label>
-          <input type="text" id="manualDesc" placeholder="Contoh: Beli Kopi" class="w-full p-2.5 rounded-lg border text-xs bg-gray-50 text-gray-800 font-medium focus:ring-2 focus:ring-emerald-500 outline-none" required>
+          <label class="block text-xs font-bold text-gray-500 mb-1">Keterangan</label>
+          <input type="text" id="manualDesc" placeholder="Contoh: Beli Kopi" class="w-full p-2.5 rounded-lg border text-xs bg-gray-50 text-gray-800 font-bold focus:ring-2 focus:ring-[#023047] outline-none" required>
         </div>
         <div>
-          <label class="block text-xs font-semibold opacity-80 mb-1">Nominal (Rp)</label>
-          <input type="number" id="manualAmount" placeholder="25000" min="1" class="w-full p-2.5 rounded-lg border text-xs bg-gray-50 text-gray-800 font-medium focus:ring-2 focus:ring-emerald-500 outline-none" required>
+          <label class="block text-xs font-bold text-gray-500 mb-1">Nominal (Rp)</label>
+          <input type="number" id="manualAmount" placeholder="25000" min="1" class="w-full p-2.5 rounded-lg border text-xs bg-gray-50 text-gray-800 font-bold focus:ring-2 focus:ring-[#023047] outline-none" required>
         </div>
         <div class="flex items-end">
-          <button type="submit" class="w-full p-2.5 bg-emerald-500 text-white rounded-lg text-xs font-bold hover:bg-emerald-600 transition flex items-center justify-center gap-1.5 shadow">
+          <button type="submit" class="w-full p-2.5 bg-[#023047] text-white rounded-lg text-xs font-bold hover:bg-[#044c70] transition shadow flex items-center justify-center gap-1.5">
             <i class="fa-solid fa-plus"></i> Tambah
           </button>
         </div>
       </form>
     </section>
 
-    <!-- Quick Stats Cards -->
+    <!-- Quick Stats Cards (Corporate Style KPI) -->
     <section class="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <div class="card-style p-5 border-l-4 border-green-500">
-        <div class="text-xs text-gray-500 font-bold uppercase mb-1">Total Pemasukan</div>
-        <div id="cardIncome" class="text-2xl font-black text-green-600">Rp 0</div>
+      <div class="card-style p-5 border-t-4 border-[#10b981] bg-white relative overflow-hidden">
+        <i class="fa-solid fa-arrow-trend-up absolute -bottom-4 -right-4 text-6xl text-green-50 opacity-50"></i>
+        <div class="text-[10px] text-gray-400 font-black uppercase tracking-widest mb-1">Total Pemasukan</div>
+        <div id="cardIncome" class="text-3xl font-black text-[#023047]">Rp 0</div>
       </div>
-      <div class="card-style p-5 border-l-4 border-red-500">
-        <div class="text-xs text-gray-500 font-bold uppercase mb-1">Total Pengeluaran</div>
-        <div id="cardExpense" class="text-2xl font-black text-red-600">Rp 0</div>
+      <div class="card-style p-5 border-t-4 border-[#ef4444] bg-white relative overflow-hidden">
+        <i class="fa-solid fa-arrow-trend-down absolute -bottom-4 -right-4 text-6xl text-red-50 opacity-50"></i>
+        <div class="text-[10px] text-gray-400 font-black uppercase tracking-widest mb-1">Total Pengeluaran</div>
+        <div id="cardExpense" class="text-3xl font-black text-[#023047]">Rp 0</div>
       </div>
-      <div class="card-style p-5 border-l-4 border-blue-500">
-        <div class="text-xs text-gray-500 font-bold uppercase mb-1">Saldo Bersih</div>
-        <div id="cardBalance" class="text-2xl font-black text-blue-600">Rp 0</div>
+      <div class="card-style p-5 border-t-4 border-[#3b82f6] bg-white relative overflow-hidden">
+        <i class="fa-solid fa-scale-balanced absolute -bottom-4 -right-4 text-6xl text-blue-50 opacity-50"></i>
+        <div class="text-[10px] text-gray-400 font-black uppercase tracking-widest mb-1">Net Balance (Saldo Bersih)</div>
+        <div id="cardBalance" class="text-3xl font-black text-[#3b82f6]">Rp 0</div>
       </div>
     </section>
 
     <!-- Transaction Table & Action Buttons -->
-    <section class="card-style p-6">
-      <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
+    <section class="card-style p-6 bg-white">
+      <div class="flex justify-between items-center mb-6 flex-wrap gap-4 border-b pb-4">
         <div class="flex items-center gap-2">
-          <h3 class="text-md font-bold">Daftar Transaksi</h3>
-          <span id="syncStatusBadge" class="text-[11px] px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 font-semibold flex items-center gap-1 shadow-sm">
-            <i class="fa-solid fa-cloud-check text-emerald-600"></i> Cloud Sinkron
+          <h3 class="text-lg font-black text-gray-800 tracking-tight">Rincian Transaksi (Ledger)</h3>
+          <span id="syncStatusBadge" class="text-[10px] px-2 py-0.5 rounded font-bold bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center gap-1 shadow-sm">
+            <i class="fa-solid fa-cloud-check"></i> Tersinkron
           </span>
         </div>
         <div class="flex items-center gap-2 flex-wrap">
-          <button onclick="executeVoiceReadout('spill bulan ini')" class="px-2.5 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 border border-indigo-200 rounded-lg text-xs font-semibold flex items-center gap-1 transition shadow-sm" title="Bacakan Laporan Bulan Ini">
-            <i class="fa-solid fa-volume-high"></i> Spill
+          <button onclick="executeVoiceReadout('spill bulan ini')" class="px-3 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg text-xs font-bold flex items-center gap-1.5 transition shadow-sm" title="Bacakan Laporan Bulan Ini">
+            <i class="fa-solid fa-bullhorn"></i> Bacakan
           </button>
-          <button onclick="executeVoiceDownload('download laporan keseluruhan')" class="px-2.5 py-1.5 bg-green-50 hover:bg-green-100 text-green-700 border border-green-200 rounded-lg text-xs font-semibold flex items-center gap-1 transition shadow-sm" title="Download Semua Transaksi (CSV)">
-            <i class="fa-solid fa-file-csv"></i> Download CSV
+          <!-- Tombol Download Laporan -->
+          <button onclick="executeVoiceDownload('download laporan keseluruhan')" class="px-3 py-2 bg-[#023047] hover:bg-[#044c70] text-white rounded-lg text-xs font-bold flex items-center gap-1.5 transition shadow-sm" title="Download Format Corporate BI">
+            <i class="fa-solid fa-file-excel"></i> Ekspor Laporan Resmi
           </button>
-          <button onclick="fetchTransactionsFromSupabase()" class="px-2.5 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-xs font-semibold flex items-center gap-1 transition shadow-sm" title="Tarik data terbaru dari Cloud">
-            <i class="fa-solid fa-arrows-rotate"></i> Sinkron
-          </button>
-          <button onclick="showChartModal('bulan')" class="px-3 py-1.5 bg-indigo-500 text-white rounded-lg text-xs font-semibold hover:bg-indigo-600 transition shadow-sm">
-            <i class="fa-solid fa-chart-pie mr-1"></i> Grafik
+          <button onclick="showChartModal('bulan')" class="px-3 py-2 bg-[#ffb703] hover:bg-[#fb8500] text-[#5e2e10] rounded-lg text-xs font-bold transition shadow-sm flex items-center gap-1.5">
+            <i class="fa-solid fa-chart-pie"></i> Visualisasi BI
           </button>
         </div>
       </div>
       <div class="overflow-x-auto">
         <table class="w-full text-left text-sm">
           <thead>
-            <tr class="border-b text-xs uppercase opacity-70">
-              <th class="p-2">Tanggal</th>
-              <th class="p-2">Jenis</th>
-              <th class="p-2">Kategori</th>
-              <th class="p-2">Keterangan</th>
-              <th class="p-2 text-right">Jumlah</th>
-              <th class="p-2 text-center">Aksi</th>
+            <tr class="text-[10px] text-gray-400 font-black uppercase tracking-wider border-b">
+              <th class="p-3">Tanggal</th>
+              <th class="p-3">Kategori</th>
+              <th class="p-3">Keterangan</th>
+              <th class="p-3 text-right">Debit (Masuk)</th>
+              <th class="p-3 text-right">Kredit (Keluar)</th>
+              <th class="p-3 text-center">Aksi</th>
             </tr>
           </thead>
-          <tbody id="transactionList">
+          <tbody id="transactionList" class="text-sm">
             <!-- Dynamic Rows -->
           </tbody>
         </table>
@@ -223,209 +222,157 @@
   <!-- MODAL PANDUAN PERINTAH SUARA LENGKAP                    -->
   <!-- ======================================================= -->
   <div id="guideModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4 transition-all">
-    <div class="card-style w-full max-w-4xl p-6 relative max-h-[90vh] overflow-y-auto bg-white shadow-2xl rounded-2xl">
-      <div class="flex justify-between items-center mb-4 sticky top-0 bg-white py-3 border-b z-10">
-        <h3 class="font-black text-xl flex items-center gap-2 text-emerald-600">
-          <i class="fa-solid fa-microphone-lines"></i> Master Panduan Suara JARVIS
+    <div class="card-style w-full max-w-4xl p-6 relative max-h-[90vh] overflow-y-auto bg-white shadow-2xl rounded-2xl border border-gray-100">
+      <div class="flex justify-between items-center mb-6 sticky top-0 bg-white/90 backdrop-blur-sm py-3 border-b z-10">
+        <h3 class="font-black text-xl flex items-center gap-2 text-[#023047]">
+          <i class="fa-solid fa-microphone-lines text-[#ffb703]"></i> Master Panduan Suara JARVIS
         </h3>
         <button onclick="closeGuideModal()" class="text-gray-400 hover:text-red-500 transition-colors">
           <i class="fa-solid fa-circle-xmark text-2xl"></i>
         </button>
       </div>
 
-      <p class="text-sm text-gray-500 mb-6 font-medium bg-gray-50 p-3 rounded-lg border border-gray-200">
-        <i class="fa-solid fa-circle-info text-blue-500 mr-1"></i> 
-        Klik tombol <span class="bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded font-bold mx-1"><i class="fa-solid fa-volume-high"></i> Dengar</span> untuk memutar contoh audio ke audiens saat presentasi.
+      <p class="text-sm text-[#044c70] mb-6 font-bold bg-blue-50 p-3 rounded-xl border border-blue-100 flex items-center gap-2">
+        <i class="fa-solid fa-lightbulb text-xl text-[#ffb703]"></i> 
+        Klik tombol "Dengar" untuk memutar contoh audio saat presentasi ke Juri.
       </p>
 
       <div class="space-y-6 text-sm text-gray-700">
-        
-        <!-- SECTION 1: INPUT DATA -->
-        <div class="p-4 bg-green-50 rounded-xl border border-green-200 shadow-sm">
-          <h4 class="font-bold text-green-800 text-md mb-3 flex items-center gap-2 border-b border-green-200 pb-2">
-            <i class="fa-solid fa-plus-circle text-green-600"></i> 1. Input Transaksi (Catat)
+        <!-- (Konten panduan suara persis sama seperti sebelumnya) -->
+        <div class="p-4 bg-emerald-50 rounded-xl border border-emerald-200">
+          <h4 class="font-black text-emerald-900 text-sm mb-3 flex items-center gap-2">
+            <i class="fa-solid fa-plus-circle text-emerald-600"></i> 1. Input Transaksi (Catat)
           </h4>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <div class="bg-white p-3 rounded-lg border border-green-100 flex flex-col gap-2">
-              <span class="font-bold text-green-800 text-xs uppercase tracking-wide">Hari Ini</span>
-              <p class="italic text-gray-700 font-mono text-sm bg-gray-50 p-2 rounded">"Beli kopi dua puluh lima ribu"</p>
-              <button onclick="speak('Beli kopi dua puluh lima ribu')" class="mt-auto self-start px-3 py-1.5 bg-indigo-500 text-white rounded-md text-xs font-bold hover:bg-indigo-600 transition flex items-center gap-1.5"><i class="fa-solid fa-volume-high"></i> Dengar</button>
+            <div class="bg-white p-3 rounded-lg border border-emerald-100 flex flex-col gap-2">
+              <span class="font-bold text-emerald-800 text-xs uppercase tracking-wide">Hari Ini</span>
+              <p class="italic text-gray-700 font-mono text-xs bg-gray-50 p-2 rounded">"Beli kopi dua puluh lima ribu"</p>
+              <button onclick="speak('Beli kopi dua puluh lima ribu')" class="mt-auto self-start px-3 py-1.5 bg-[#023047] text-white rounded-md text-xs font-bold hover:bg-[#044c70] transition flex items-center gap-1.5"><i class="fa-solid fa-volume-high"></i> Dengar</button>
             </div>
-            <div class="bg-white p-3 rounded-lg border border-green-100 flex flex-col gap-2">
-              <span class="font-bold text-green-800 text-xs uppercase tracking-wide">Kemarin</span>
-              <p class="italic text-gray-700 font-mono text-sm bg-gray-50 p-2 rounded">"Kemarin isi bensin pertamax lima puluh ribu"</p>
-              <button onclick="speak('Kemarin isi bensin pertamax lima puluh ribu')" class="mt-auto self-start px-3 py-1.5 bg-indigo-500 text-white rounded-md text-xs font-bold hover:bg-indigo-600 transition flex items-center gap-1.5"><i class="fa-solid fa-volume-high"></i> Dengar</button>
+            <div class="bg-white p-3 rounded-lg border border-emerald-100 flex flex-col gap-2">
+              <span class="font-bold text-emerald-800 text-xs uppercase tracking-wide">Kemarin</span>
+              <p class="italic text-gray-700 font-mono text-xs bg-gray-50 p-2 rounded">"Kemarin isi bensin pertamax lima puluh ribu"</p>
+              <button onclick="speak('Kemarin isi bensin pertamax lima puluh ribu')" class="mt-auto self-start px-3 py-1.5 bg-[#023047] text-white rounded-md text-xs font-bold hover:bg-[#044c70] transition flex items-center gap-1.5"><i class="fa-solid fa-volume-high"></i> Dengar</button>
             </div>
-            <div class="bg-white p-3 rounded-lg border border-green-100 flex flex-col gap-2">
-              <span class="font-bold text-green-800 text-xs uppercase tracking-wide">Tanggal Spesifik</span>
-              <p class="italic text-gray-700 font-mono text-sm bg-gray-50 p-2 rounded">"Tanggal 15 bayar kos lima ratus ribu"</p>
-              <button onclick="speak('Tanggal 15 bayar kos lima ratus ribu')" class="mt-auto self-start px-3 py-1.5 bg-indigo-500 text-white rounded-md text-xs font-bold hover:bg-indigo-600 transition flex items-center gap-1.5"><i class="fa-solid fa-volume-high"></i> Dengar</button>
+            <div class="bg-white p-3 rounded-lg border border-emerald-100 flex flex-col gap-2">
+              <span class="font-bold text-emerald-800 text-xs uppercase tracking-wide">Tanggal Spesifik</span>
+              <p class="italic text-gray-700 font-mono text-xs bg-gray-50 p-2 rounded">"Tanggal 15 bayar kos lima ratus ribu"</p>
+              <button onclick="speak('Tanggal 15 bayar kos lima ratus ribu')" class="mt-auto self-start px-3 py-1.5 bg-[#023047] text-white rounded-md text-xs font-bold hover:bg-[#044c70] transition flex items-center gap-1.5"><i class="fa-solid fa-volume-high"></i> Dengar</button>
             </div>
-            <div class="bg-white p-3 rounded-lg border border-green-100 flex flex-col gap-2">
-              <span class="font-bold text-green-800 text-xs uppercase tracking-wide">Pemasukan</span>
-              <p class="italic text-gray-700 font-mono text-sm bg-gray-50 p-2 rounded">"Dapet transferan gaji lima juta rupiah"</p>
-              <button onclick="speak('Dapet transferan gaji lima juta rupiah')" class="mt-auto self-start px-3 py-1.5 bg-indigo-500 text-white rounded-md text-xs font-bold hover:bg-indigo-600 transition flex items-center gap-1.5"><i class="fa-solid fa-volume-high"></i> Dengar</button>
+            <div class="bg-white p-3 rounded-lg border border-emerald-100 flex flex-col gap-2">
+              <span class="font-bold text-emerald-800 text-xs uppercase tracking-wide">Pemasukan</span>
+              <p class="italic text-gray-700 font-mono text-xs bg-gray-50 p-2 rounded">"Dapet transferan gaji lima juta rupiah"</p>
+              <button onclick="speak('Dapet transferan gaji lima juta rupiah')" class="mt-auto self-start px-3 py-1.5 bg-[#023047] text-white rounded-md text-xs font-bold hover:bg-[#044c70] transition flex items-center gap-1.5"><i class="fa-solid fa-volume-high"></i> Dengar</button>
             </div>
           </div>
         </div>
 
-        <!-- SECTION 2: BACA LAPORAN (SPILL) -->
-        <div class="p-4 bg-indigo-50 rounded-xl border border-indigo-200 shadow-sm">
-          <h4 class="font-bold text-indigo-800 text-md mb-3 flex items-center gap-2 border-b border-indigo-200 pb-2">
+        <div class="p-4 bg-indigo-50 rounded-xl border border-indigo-200">
+          <h4 class="font-black text-indigo-900 text-sm mb-3 flex items-center gap-2">
             <i class="fa-solid fa-bullhorn text-indigo-600"></i> 2. Minta Dibacakan Laporan (Spill / Cek)
           </h4>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div class="bg-white p-3 rounded-lg border border-indigo-100 flex flex-col gap-2">
               <span class="font-bold text-indigo-800 text-xs uppercase tracking-wide">Laporan Hari Ini</span>
-              <p class="italic text-gray-700 font-mono text-sm bg-gray-50 p-2 rounded">"Spill pengeluaran hari ini"</p>
-              <button onclick="speak('Spill pengeluaran hari ini')" class="mt-auto self-start px-3 py-1.5 bg-indigo-500 text-white rounded-md text-xs font-bold hover:bg-indigo-600 transition flex items-center gap-1.5"><i class="fa-solid fa-volume-high"></i> Dengar</button>
+              <p class="italic text-gray-700 font-mono text-xs bg-gray-50 p-2 rounded">"Spill pengeluaran hari ini"</p>
+              <button onclick="speak('Spill pengeluaran hari ini')" class="mt-auto self-start px-3 py-1.5 bg-[#023047] text-white rounded-md text-xs font-bold hover:bg-[#044c70] transition flex items-center gap-1.5"><i class="fa-solid fa-volume-high"></i> Dengar</button>
             </div>
             <div class="bg-white p-3 rounded-lg border border-indigo-100 flex flex-col gap-2">
-              <span class="font-bold text-indigo-800 text-xs uppercase tracking-wide">Laporan Kemarin</span>
-              <p class="italic text-gray-700 font-mono text-sm bg-gray-50 p-2 rounded">"Bacakan laporan keuangan kemarin"</p>
-              <button onclick="speak('Bacakan laporan keuangan kemarin')" class="mt-auto self-start px-3 py-1.5 bg-indigo-500 text-white rounded-md text-xs font-bold hover:bg-indigo-600 transition flex items-center gap-1.5"><i class="fa-solid fa-volume-high"></i> Dengar</button>
-            </div>
-            <div class="bg-white p-3 rounded-lg border border-indigo-100 flex flex-col gap-2">
-              <span class="font-bold text-indigo-800 text-xs uppercase tracking-wide">Laporan Bulan Ini / Bulan Lalu</span>
-              <p class="italic text-gray-700 font-mono text-sm bg-gray-50 p-2 rounded">"Cek total pengeluaran bulan lalu"</p>
-              <button onclick="speak('Cek total pengeluaran bulan lalu')" class="mt-auto self-start px-3 py-1.5 bg-indigo-500 text-white rounded-md text-xs font-bold hover:bg-indigo-600 transition flex items-center gap-1.5"><i class="fa-solid fa-volume-high"></i> Dengar</button>
-            </div>
-            <div class="bg-white p-3 rounded-lg border border-indigo-100 flex flex-col gap-2">
-              <span class="font-bold text-indigo-800 text-xs uppercase tracking-wide">Laporan Tahun Lalu</span>
-              <p class="italic text-gray-700 font-mono text-sm bg-gray-50 p-2 rounded">"Spill laporan keuangan tahun kemarin"</p>
-              <button onclick="speak('Spill laporan keuangan tahun kemarin')" class="mt-auto self-start px-3 py-1.5 bg-indigo-500 text-white rounded-md text-xs font-bold hover:bg-indigo-600 transition flex items-center gap-1.5"><i class="fa-solid fa-volume-high"></i> Dengar</button>
+              <span class="font-bold text-indigo-800 text-xs uppercase tracking-wide">Laporan Bulan Lalu</span>
+              <p class="italic text-gray-700 font-mono text-xs bg-gray-50 p-2 rounded">"Cek total pengeluaran bulan lalu"</p>
+              <button onclick="speak('Cek total pengeluaran bulan lalu')" class="mt-auto self-start px-3 py-1.5 bg-[#023047] text-white rounded-md text-xs font-bold hover:bg-[#044c70] transition flex items-center gap-1.5"><i class="fa-solid fa-volume-high"></i> Dengar</button>
             </div>
           </div>
         </div>
 
-        <!-- SECTION 3: DOWNLOAD & GRAFIK -->
-        <div class="p-4 bg-amber-50 rounded-xl border border-amber-200 shadow-sm">
-          <h4 class="font-bold text-amber-800 text-md mb-3 flex items-center gap-2 border-b border-amber-200 pb-2">
-            <i class="fa-solid fa-cloud-arrow-down text-amber-600"></i> 3. Download CSV & Tampilkan Grafik
+        <div class="p-4 bg-amber-50 rounded-xl border border-amber-200">
+          <h4 class="font-black text-amber-900 text-sm mb-3 flex items-center gap-2">
+            <i class="fa-solid fa-cloud-arrow-down text-amber-600"></i> 3. Ekspor CSV & Grafik
           </h4>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div class="bg-white p-3 rounded-lg border border-amber-100 flex flex-col gap-2">
-              <span class="font-bold text-amber-800 text-xs uppercase tracking-wide">Download File Excel/CSV</span>
-              <p class="italic text-gray-700 font-mono text-sm bg-gray-50 p-2 rounded">"Download laporan bulan lalu"</p>
-              <button onclick="speak('Download laporan bulan lalu')" class="mt-auto self-start px-3 py-1.5 bg-indigo-500 text-white rounded-md text-xs font-bold hover:bg-indigo-600 transition flex items-center gap-1.5"><i class="fa-solid fa-volume-high"></i> Dengar</button>
+              <span class="font-bold text-amber-800 text-xs uppercase tracking-wide">Download Laporan Resmi</span>
+              <p class="italic text-gray-700 font-mono text-xs bg-gray-50 p-2 rounded">"Download laporan bulan lalu"</p>
+              <button onclick="speak('Download laporan bulan lalu')" class="mt-auto self-start px-3 py-1.5 bg-[#023047] text-white rounded-md text-xs font-bold hover:bg-[#044c70] transition flex items-center gap-1.5"><i class="fa-solid fa-volume-high"></i> Dengar</button>
             </div>
             <div class="bg-white p-3 rounded-lg border border-amber-100 flex flex-col gap-2">
-              <span class="font-bold text-amber-800 text-xs uppercase tracking-wide">Tampilkan Grafik Visual</span>
-              <p class="italic text-gray-700 font-mono text-sm bg-gray-50 p-2 rounded">"Tampilkan grafik keuangan tahun ini"</p>
-              <button onclick="speak('Tampilkan grafik keuangan tahun ini')" class="mt-auto self-start px-3 py-1.5 bg-indigo-500 text-white rounded-md text-xs font-bold hover:bg-indigo-600 transition flex items-center gap-1.5"><i class="fa-solid fa-volume-high"></i> Dengar</button>
+              <span class="font-bold text-amber-800 text-xs uppercase tracking-wide">Tampilkan Grafik BI</span>
+              <p class="italic text-gray-700 font-mono text-xs bg-gray-50 p-2 rounded">"Tampilkan grafik keuangan tahun ini"</p>
+              <button onclick="speak('Tampilkan grafik keuangan tahun ini')" class="mt-auto self-start px-3 py-1.5 bg-[#023047] text-white rounded-md text-xs font-bold hover:bg-[#044c70] transition flex items-center gap-1.5"><i class="fa-solid fa-volume-high"></i> Dengar</button>
             </div>
           </div>
         </div>
-
-        <!-- SECTION 4: EDIT & HAPUS -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div class="p-4 bg-blue-50 rounded-xl border border-blue-200 shadow-sm">
-            <h4 class="font-bold text-blue-800 text-md mb-3 flex items-center gap-2 border-b border-blue-200 pb-2">
-              <i class="fa-solid fa-pen text-blue-600"></i> 4. Edit Transaksi
-            </h4>
-            <div class="flex flex-col gap-3">
-              <div class="bg-white p-3 rounded-lg border border-blue-100 flex flex-col gap-2">
-                <span class="font-bold text-blue-800 text-xs uppercase tracking-wide">Edit Nominal</span>
-                <p class="italic text-gray-700 font-mono text-xs bg-gray-50 p-2 rounded">"Edit pengeluaran kopi kemarin jadi lima puluh ribu"</p>
-                <button onclick="speak('Edit pengeluaran kopi kemarin jadi lima puluh ribu')" class="mt-auto self-start px-3 py-1.5 bg-indigo-500 text-white rounded-md text-xs font-bold hover:bg-indigo-600 transition flex items-center gap-1.5"><i class="fa-solid fa-volume-high"></i> Dengar</button>
-              </div>
-              <div class="bg-white p-3 rounded-lg border border-blue-100 flex flex-col gap-2">
-                <span class="font-bold text-blue-800 text-xs uppercase tracking-wide">Edit Keterangan</span>
-                <p class="italic text-gray-700 font-mono text-xs bg-gray-50 p-2 rounded">"Ubah deskripsi pengeluaran kopi jadi kopi kenangan"</p>
-                <button onclick="speak('Ubah deskripsi pengeluaran kopi jadi kopi kenangan')" class="mt-auto self-start px-3 py-1.5 bg-indigo-500 text-white rounded-md text-xs font-bold hover:bg-indigo-600 transition flex items-center gap-1.5"><i class="fa-solid fa-volume-high"></i> Dengar</button>
-              </div>
-            </div>
-          </div>
-
-          <div class="p-4 bg-red-50 rounded-xl border border-red-200 shadow-sm">
-            <h4 class="font-bold text-red-800 text-md mb-3 flex items-center gap-2 border-b border-red-200 pb-2">
-              <i class="fa-solid fa-trash text-red-600"></i> 5. Hapus Transaksi
-            </h4>
-            <div class="flex flex-col gap-3">
-              <div class="bg-white p-3 rounded-lg border border-red-100 flex flex-col gap-2">
-                <span class="font-bold text-red-800 text-xs uppercase tracking-wide">Hapus Spesifik Item</span>
-                <p class="italic text-gray-700 font-mono text-xs bg-gray-50 p-2 rounded">"Hapus pengeluaran kopi tanggal 15"</p>
-                <button onclick="speak('Hapus pengeluaran kopi tanggal 15')" class="mt-auto self-start px-3 py-1.5 bg-indigo-500 text-white rounded-md text-xs font-bold hover:bg-indigo-600 transition flex items-center gap-1.5"><i class="fa-solid fa-volume-high"></i> Dengar</button>
-              </div>
-              <div class="bg-white p-3 rounded-lg border border-red-100 flex flex-col gap-2">
-                <span class="font-bold text-red-800 text-xs uppercase tracking-wide">Hapus Masal (Bahaya)</span>
-                <p class="italic text-gray-700 font-mono text-xs bg-gray-50 p-2 rounded">"Hapus semua transaksi tahun lalu"</p>
-                <button onclick="speak('Hapus semua transaksi tahun lalu')" class="mt-auto self-start px-3 py-1.5 bg-indigo-500 text-white rounded-md text-xs font-bold hover:bg-indigo-600 transition flex items-center gap-1.5"><i class="fa-solid fa-volume-high"></i> Dengar</button>
-              </div>
-            </div>
-          </div>
-        </div>
-
       </div>
 
-      <div class="mt-6 text-center sticky bottom-0 bg-white py-3 border-t">
-        <button onclick="closeGuideModal()" class="px-8 py-3 bg-emerald-500 text-white font-black rounded-xl hover:bg-emerald-600 transition shadow-lg shadow-emerald-500/30">
-          Tutup Panduan & Mulai Ngomong
+      <div class="mt-6 text-center sticky bottom-0 bg-white/90 backdrop-blur-sm py-4 border-t">
+        <button onclick="closeGuideModal()" class="px-8 py-3 bg-[#10b981] text-white font-black rounded-xl hover:bg-[#059669] transition shadow-lg shadow-emerald-500/30">
+          Saya Mengerti, Tutup Panduan
         </button>
       </div>
     </div>
   </div>
 
-  <!-- MODAL POP UP GRAFIK -->
+  <!-- MODAL POP UP GRAFIK (BI DASHBOARD) -->
   <div id="chartModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4 transition-all">
-    <div class="card-style w-full max-w-md p-6 relative">
-      <div class="flex justify-between items-center mb-4">
-        <h3 id="modalTitle" class="font-bold text-lg text-indigo-900">Grafik Keuangan</h3>
-        <button onclick="closeChartModal()" class="text-gray-400 hover:text-red-500">
+    <div class="card-style w-full max-w-md p-6 relative bg-white">
+      <div class="flex justify-between items-center mb-6 border-b pb-3">
+        <h3 id="modalTitle" class="font-black text-xl text-[#023047]"><i class="fa-solid fa-chart-pie text-[#ffb703]"></i> Analisis BI</h3>
+        <button onclick="closeChartModal()" class="text-gray-400 hover:text-red-500 transition-colors">
           <i class="fa-solid fa-xmark text-xl"></i>
         </button>
       </div>
       <div class="w-full h-64 mb-4">
         <canvas id="financeChart"></canvas>
       </div>
-      <div id="aiAdvice" class="p-3 bg-indigo-50 border border-indigo-100 rounded-xl text-xs text-indigo-900 font-medium text-center">
+      <div id="aiAdvice" class="p-3 bg-indigo-50 border border-indigo-100 rounded-xl text-xs text-indigo-900 font-bold text-center">
         Memuat analisis data...
       </div>
-      <p class="text-[10px] text-gray-400 text-center mt-3"><i class="fa-solid fa-timer"></i> Pop up ini akan otomatis tertutup dalam 30 detik</p>
     </div>
   </div>
 
   <!-- MODAL POP UP LOGIN -->
-  <div id="loginModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4 transition-all">
-    <div class="card-style w-full max-w-md p-8 relative bg-white text-gray-800 shadow-2xl">
-      <button onclick="closeLoginModal()" class="absolute top-5 right-5 text-gray-400 hover:text-gray-600 text-xl transition-colors">
+  <div id="loginModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4 transition-all">
+    <div class="card-style w-full max-w-md p-8 relative bg-white text-gray-800 shadow-2xl overflow-hidden">
+      <!-- Ornamen Latar -->
+      <div class="absolute -top-16 -right-16 w-40 h-40 bg-[#ffb703] rounded-full blur-3xl opacity-20"></div>
+
+      <button onclick="closeLoginModal()" class="absolute top-5 right-5 text-gray-400 hover:text-gray-600 text-xl transition-colors z-20">
         <i class="fa-solid fa-xmark"></i>
       </button>
 
-      <div class="flex flex-col items-center mb-6">
-        <!-- INTEGRASI LOGO DI LOGIN -->
+      <div class="flex flex-col items-center mb-6 relative z-10">
         <div class="w-20 h-20 mb-4 p-2 bg-white rounded-3xl shadow-lg border border-gray-100 flex items-center justify-center">
           <img src="logo.png" alt="BeFAST Logo" class="w-full h-full object-contain">
         </div>
-        <h3 class="font-black text-2xl text-gray-800">Masuk ke BeFAST</h3>
-        <p class="text-xs text-gray-500 mt-1 text-center">Bicara 2 detik, langsung kecatat.</p>
+        <h3 class="font-black text-2xl text-[#023047]">Masuk ke BeFAST</h3>
+        <p class="text-xs text-gray-500 mt-1 font-semibold text-center">Bicara 2 detik, langsung kecatat.</p>
       </div>
       
-      <div id="loginAlert" class="hidden mb-4 p-3 rounded-lg text-xs font-semibold"></div>
+      <div id="loginAlert" class="hidden mb-4 p-3 rounded-lg text-xs font-semibold relative z-10"></div>
 
-      <form onsubmit="handleLogin(event)" class="space-y-4">
+      <form onsubmit="handleLogin(event)" class="space-y-4 relative z-10">
         <div>
           <label class="block text-xs font-bold text-gray-700 mb-1.5 ml-1">Nomor HP</label>
           <div class="relative">
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400"><i class="fa-solid fa-phone"></i></div>
-            <input type="tel" id="loginPhone" required placeholder="081234567890" class="w-full pl-10 p-3 rounded-xl border border-gray-200 bg-gray-50 text-sm focus:ring-2 focus:ring-emerald-500 outline-none transition-all">
+            <input type="tel" id="loginPhone" required placeholder="081234567890" class="w-full pl-10 p-3 rounded-xl border border-gray-200 bg-gray-50 text-sm focus:ring-2 focus:ring-[#023047] outline-none font-bold">
           </div>
         </div>
         <div>
           <label class="block text-xs font-bold text-gray-700 mb-1.5 ml-1">Kata Sandi</label>
           <div class="relative">
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400"><i class="fa-solid fa-lock"></i></div>
-            <input type="password" id="loginPassword" required placeholder="••••••••" class="w-full pl-10 p-3 rounded-xl border border-gray-200 bg-gray-50 text-sm focus:ring-2 focus:ring-emerald-500 outline-none transition-all">
+            <input type="password" id="loginPassword" required placeholder="••••••••" class="w-full pl-10 p-3 rounded-xl border border-gray-200 bg-gray-50 text-sm focus:ring-2 focus:ring-[#023047] outline-none font-bold">
           </div>
         </div>
-        <button type="submit" id="btnLoginSubmit" class="w-full py-3.5 mt-2 bg-emerald-500 text-white font-bold rounded-xl hover:bg-emerald-600 transition shadow-lg shadow-emerald-500/30 flex items-center justify-center gap-2">
+        <button type="submit" id="btnLoginSubmit" class="w-full py-3.5 mt-2 bg-[#023047] text-white font-black rounded-xl hover:bg-[#044c70] transition shadow-lg shadow-blue-900/20 flex items-center justify-center gap-2">
           Masuk Sekarang
         </button>
       </form>
 
-      <div class="mt-6 pt-4 border-t text-center text-sm text-gray-600">
+      <div class="mt-6 pt-4 border-t text-center text-sm font-semibold text-gray-600 relative z-10">
         Belum punya akun? 
-        <button type="button" onclick="switchAuthModal('signup')" class="text-emerald-600 font-bold hover:underline transition-all">
+        <button type="button" onclick="switchAuthModal('signup')" class="text-[#023047] font-black hover:underline transition-all">
           Daftar di sini
         </button>
       </div>
@@ -433,47 +380,48 @@
   </div>
 
   <!-- MODAL POP UP SIGN UP -->
-  <div id="signupModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4 transition-all">
-    <div class="card-style w-full max-w-md p-8 relative bg-white text-gray-800 shadow-2xl">
-      <button onclick="closeSignupModal()" class="absolute top-5 right-5 text-gray-400 hover:text-gray-600 text-xl transition-colors">
+  <div id="signupModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4 transition-all">
+    <div class="card-style w-full max-w-md p-8 relative bg-white text-gray-800 shadow-2xl overflow-hidden">
+      <div class="absolute -top-16 -left-16 w-40 h-40 bg-[#10b981] rounded-full blur-3xl opacity-10"></div>
+
+      <button onclick="closeSignupModal()" class="absolute top-5 right-5 text-gray-400 hover:text-gray-600 text-xl transition-colors z-20">
         <i class="fa-solid fa-xmark"></i>
       </button>
 
-      <div class="flex flex-col items-center mb-6">
-        <!-- INTEGRASI LOGO DI SIGNUP -->
+      <div class="flex flex-col items-center mb-6 relative z-10">
         <div class="w-16 h-16 mb-3 p-1.5 bg-white rounded-2xl shadow-md border border-gray-100 flex items-center justify-center">
           <img src="logo.png" alt="BeFAST Logo" class="w-full h-full object-contain">
         </div>
-        <h3 class="font-black text-xl text-gray-800">Daftar Akun Baru</h3>
+        <h3 class="font-black text-xl text-[#023047]">Daftar Akun Baru</h3>
       </div>
       
-      <div id="signupAlert" class="hidden mb-4 p-3 rounded-lg text-xs font-semibold"></div>
+      <div id="signupAlert" class="hidden mb-4 p-3 rounded-lg text-xs font-semibold relative z-10"></div>
 
-      <form onsubmit="handleSignup(event)" class="space-y-3">
+      <form onsubmit="handleSignup(event)" class="space-y-3 relative z-10">
         <div>
-          <label class="block text-xs font-bold text-gray-700 mb-1">Nama Lengkap</label>
-          <input type="text" id="signupName" required placeholder="Contoh: Budi Santoso" class="w-full p-2.5 rounded-xl border text-sm bg-gray-50 focus:ring-2 focus:ring-emerald-500 outline-none">
+          <label class="block text-xs font-bold text-gray-700 mb-1 ml-1">Nama Lengkap</label>
+          <input type="text" id="signupName" required placeholder="Contoh: Budi Santoso" class="w-full p-2.5 rounded-xl border bg-gray-50 text-sm font-bold focus:ring-2 focus:ring-[#023047] outline-none">
         </div>
         <div>
-          <label class="block text-xs font-bold text-gray-700 mb-1">Email <span class="text-red-500">* (Gunakan @gmail / @yahoo)</span></label>
-          <input type="email" id="signupEmail" required placeholder="nama@gmail.com" class="w-full p-2.5 rounded-xl border text-sm bg-gray-50 focus:ring-2 focus:ring-emerald-500 outline-none">
+          <label class="block text-xs font-bold text-gray-700 mb-1 ml-1">Email Resmi <span class="text-red-500 font-normal">*Wajib (@gmail dsb)</span></label>
+          <input type="email" id="signupEmail" required placeholder="nama@gmail.com" class="w-full p-2.5 rounded-xl border bg-gray-50 text-sm font-bold focus:ring-2 focus:ring-[#023047] outline-none">
         </div>
         <div>
-          <label class="block text-xs font-bold text-gray-700 mb-1">Nomor HP</label>
-          <input type="tel" id="signupPhone" required placeholder="081234567890" class="w-full p-2.5 rounded-xl border text-sm bg-gray-50 focus:ring-2 focus:ring-emerald-500 outline-none">
+          <label class="block text-xs font-bold text-gray-700 mb-1 ml-1">Nomor HP</label>
+          <input type="tel" id="signupPhone" required placeholder="081234567890" class="w-full p-2.5 rounded-xl border bg-gray-50 text-sm font-bold focus:ring-2 focus:ring-[#023047] outline-none">
         </div>
         <div>
-          <label class="block text-xs font-bold text-gray-700 mb-1">Kata Sandi (Min. 6 karakter)</label>
-          <input type="password" id="signupPassword" required minlength="6" placeholder="••••••••" class="w-full p-2.5 rounded-xl border text-sm bg-gray-50 focus:ring-2 focus:ring-emerald-500 outline-none">
+          <label class="block text-xs font-bold text-gray-700 mb-1 ml-1">Kata Sandi (Min. 6 karakter)</label>
+          <input type="password" id="signupPassword" required minlength="6" placeholder="••••••••" class="w-full p-2.5 rounded-xl border bg-gray-50 text-sm font-bold focus:ring-2 focus:ring-[#023047] outline-none">
         </div>
-        <button type="submit" id="btnSignupSubmit" class="w-full py-3 mt-2 bg-emerald-500 text-white font-bold rounded-xl hover:bg-emerald-600 transition shadow-lg shadow-emerald-500/30 flex items-center justify-center gap-2">
-          Buat Akun
+        <button type="submit" id="btnSignupSubmit" class="w-full py-3.5 mt-3 bg-[#10b981] text-white font-black rounded-xl hover:bg-[#059669] transition shadow-lg flex items-center justify-center gap-2">
+          Buat Akun Sekarang
         </button>
       </form>
 
-      <div class="mt-5 pt-4 border-t text-center text-sm text-gray-600">
+      <div class="mt-5 pt-4 border-t text-center text-sm font-semibold text-gray-600 relative z-10">
         Sudah punya akun? 
-        <button type="button" onclick="switchAuthModal('login')" class="text-emerald-600 font-bold hover:underline transition-all">
+        <button type="button" onclick="switchAuthModal('login')" class="text-[#023047] font-black hover:underline transition-all">
           Masuk di sini
         </button>
       </div>
@@ -498,9 +446,7 @@
           auth: { persistSession: true, autoRefreshToken: true }
         });
       }
-    } catch (e) {
-      console.error("Gagal menginisialisasi Supabase:", e);
-    }
+    } catch (e) { console.error("Gagal menginisialisasi Supabase:", e); }
 
     function formatPhoneNumber(phone) {
       let cleaned = phone.replace(/\D/g, '');
@@ -556,7 +502,7 @@
       const el = document.getElementById(id);
       if (!el) return;
       el.innerText = msg;
-      el.className = isError ? "mb-4 p-3 rounded-lg text-xs font-semibold bg-red-100 text-red-700 border border-red-200 block" : "mb-4 p-3 rounded-lg text-xs font-semibold bg-green-100 text-green-700 border border-green-200 block";
+      el.className = isError ? "mb-4 p-3 rounded-lg text-xs font-bold bg-red-100 text-red-700 border border-red-200 block" : "mb-4 p-3 rounded-lg text-xs font-bold bg-green-100 text-green-700 border border-green-200 block";
     }
     function hideAuthAlert(id) {
       const el = document.getElementById(id);
@@ -596,12 +542,11 @@
       const password = document.getElementById('signupPassword').value;
       const btn = document.getElementById('btnSignupSubmit');
 
-      // VALIDASI EMAIL LEVEL 1 (Mencegah email asal-asalan)
+      // VALIDASI DOMAIN EMAIL LEVEL 1
       const allowedDomains = ['@gmail.com', '@yahoo.com', '@outlook.com', '@icloud.com', '@student.ac.id'];
       const isValidDomain = allowedDomains.some(domain => email.toLowerCase().endsWith(domain));
-      
       if (!isValidDomain) {
-        showAuthAlert('signupAlert', 'Wajib menggunakan email asli yang valid (seperti @gmail.com atau @yahoo.com)!');
+        showAuthAlert('signupAlert', 'Wajib menggunakan email valid/resmi (misal: @gmail.com)');
         return;
       }
 
@@ -633,7 +578,7 @@
       } catch (err) {
         showAuthAlert('signupAlert', err.message);
       } finally {
-        btn.disabled = false; btn.innerHTML = 'Buat Akun';
+        btn.disabled = false; btn.innerHTML = 'Buat Akun Sekarang';
       }
     }
 
@@ -650,10 +595,10 @@
     // KATEGORI AI
     // ==========================================
     function detectCategory(desc, type) {
-      if (!desc) return type === 'pemasukan' ? 'Gaji & Pendapatan' : 'Lain-lain';
+      if (!desc) return type === 'pemasukan' ? 'Pendapatan' : 'Lain-lain';
       const text = desc.toLowerCase();
       if (type === 'pemasukan') {
-        if (/(gaji|upah|honor|bonus|thr|dividen|uang jajan|sangu|transferan|masuk)/i.test(text)) return 'Gaji & Pendapatan';
+        if (/(gaji|upah|honor|bonus|thr|dividen|uang jajan|sangu|transferan|masuk)/i.test(text)) return 'Pendapatan';
         if (/(jual|omset|laba|dagang|toko|jualan|penjualan)/i.test(text)) return 'Penjualan / Usaha';
         if (/(hadiah|giveaway|cashback|undian|angpao|bonus)/i.test(text)) return 'Hadiah / Bonus';
         return 'Pemasukan Lain';
@@ -669,31 +614,31 @@
 
     function getCategoryBadge(category) {
       const badges = {
-        'Makanan & Minuman': { bg: 'bg-amber-100 text-amber-800 border-amber-200', icon: 'fa-utensils' },
-        'Transportasi': { bg: 'bg-blue-100 text-blue-800 border-blue-200', icon: 'fa-car' },
-        'Belanja': { bg: 'bg-purple-100 text-purple-800 border-purple-200', icon: 'fa-bag-shopping' },
-        'Tagihan & Utilitas': { bg: 'bg-yellow-100 text-yellow-800 border-yellow-200', icon: 'fa-bolt' },
-        'Hiburan & Hobi': { bg: 'bg-pink-100 text-pink-800 border-pink-200', icon: 'fa-gamepad' },
-        'Kesehatan & Edukasi': { bg: 'bg-teal-100 text-teal-800 border-teal-200', icon: 'fa-heart-pulse' },
-        'Gaji & Pendapatan': { bg: 'bg-green-100 text-green-800 border-green-200', icon: 'fa-money-bill-wave' },
-        'Penjualan / Usaha': { bg: 'bg-emerald-100 text-emerald-800 border-emerald-200', icon: 'fa-store' },
-        'Hadiah / Bonus': { bg: 'bg-indigo-100 text-indigo-800 border-indigo-200', icon: 'fa-gift' },
-        'Pemasukan Lain': { bg: 'bg-green-100 text-green-800 border-green-200', icon: 'fa-arrow-down-long' },
+        'Makanan & Minuman': { bg: 'bg-amber-50 text-amber-700 border-amber-200', icon: 'fa-utensils' },
+        'Transportasi': { bg: 'bg-blue-50 text-blue-700 border-blue-200', icon: 'fa-car' },
+        'Belanja': { bg: 'bg-purple-50 text-purple-700 border-purple-200', icon: 'fa-bag-shopping' },
+        'Tagihan & Utilitas': { bg: 'bg-yellow-50 text-yellow-700 border-yellow-200', icon: 'fa-bolt' },
+        'Hiburan & Hobi': { bg: 'bg-pink-50 text-pink-700 border-pink-200', icon: 'fa-gamepad' },
+        'Kesehatan & Edukasi': { bg: 'bg-teal-50 text-teal-700 border-teal-200', icon: 'fa-heart-pulse' },
+        'Pendapatan': { bg: 'bg-green-50 text-green-700 border-green-200', icon: 'fa-money-bill-wave' },
+        'Penjualan / Usaha': { bg: 'bg-emerald-50 text-emerald-700 border-emerald-200', icon: 'fa-store' },
+        'Hadiah / Bonus': { bg: 'bg-indigo-50 text-indigo-700 border-indigo-200', icon: 'fa-gift' },
+        'Pemasukan Lain': { bg: 'bg-green-50 text-green-700 border-green-200', icon: 'fa-arrow-down-long' },
         'Lain-lain': { bg: 'bg-gray-100 text-gray-700 border-gray-200', icon: 'fa-tag' }
       };
       const b = badges[category] || badges['Lain-lain'];
-      return `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold border ${b.bg}"><i class="fa-solid ${b.icon} text-[9px]"></i> ${category}</span>`;
+      return `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold border ${b.bg}"><i class="fa-solid ${b.icon} text-[9px]"></i> ${category}</span>`;
     }
 
     function updateSyncStatusUI(isSynced, message = '') {
       const badge = document.getElementById('syncStatusBadge');
       if (!badge) return;
       if (isSynced) {
-        badge.className = "text-[11px] px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 font-semibold flex items-center gap-1 shadow-sm";
-        badge.innerHTML = '<i class="fa-solid fa-cloud-check text-emerald-600"></i> Cloud Sinkron';
+        badge.className = "text-[10px] px-2 py-0.5 rounded font-bold bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center gap-1 shadow-sm";
+        badge.innerHTML = '<i class="fa-solid fa-cloud-check"></i> Tersinkron';
       } else {
-        badge.className = "text-[11px] px-2.5 py-0.5 rounded-full bg-red-100 text-red-800 border border-red-200 font-semibold flex items-center gap-1 shadow-sm";
-        badge.innerHTML = `<i class="fa-solid fa-cloud-arrow-down text-red-600"></i> ${message || 'Belum Login'}`;
+        badge.className = "text-[10px] px-2 py-0.5 rounded font-bold bg-red-50 text-red-600 border border-red-100 flex items-center gap-1 shadow-sm";
+        badge.innerHTML = `<i class="fa-solid fa-cloud-arrow-down"></i> ${message || 'Belum Login'}`;
       }
     }
 
@@ -706,13 +651,8 @@
         const username = user.user_metadata?.full_name || 'User';
         const phone = user.user_metadata?.phone_number || '-';
         const email = user.email || '-';
-
-        await supabaseClient.from('users').upsert({
-          id: user.id, username: username, phone_number: phone, email: email
-        });
-      } catch (e) {
-        console.warn("Public user upsert notice:", e);
-      }
+        await supabaseClient.from('users').upsert({ id: user.id, username: username, phone_number: phone, email: email });
+      } catch (e) {}
     }
 
     async function fetchTransactionsFromSupabase() {
@@ -735,14 +675,10 @@
         renderData();
         updateSyncStatusUI(true);
       } catch (err) {
-        console.error("Gagal sinkronisasi:", err);
-        updateSyncStatusUI(false, 'Gagal Sinkron Cloud');
+        updateSyncStatusUI(false, 'Gagal Sinkron');
       }
     }
 
-    // ==========================================
-    // FUNGSI CRUD MURNI CLOUD
-    // ==========================================
     async function addManualTransaction(e) {
       e.preventDefault();
       const user = getCurrentUser();
@@ -838,17 +774,22 @@
         if (item.type === 'pengeluaran') totalExp += item.amount;
 
         const cat = item.category || detectCategory(item.desc, item.type);
+        
+        // Memisahkan kolom Debit dan Kredit
+        let debit = item.type === 'pemasukan' ? `Rp ${item.amount.toLocaleString('id-ID')}` : '-';
+        let kredit = item.type === 'pengeluaran' ? `Rp ${item.amount.toLocaleString('id-ID')}` : '-';
+
         const tr = document.createElement('tr');
-        tr.className = "border-b hover:bg-black/5 transition";
+        tr.className = "border-b hover:bg-gray-50 transition text-gray-700";
         tr.innerHTML = `
-          <td class="p-2 text-xs opacity-75 font-mono">${item.date}</td>
-          <td class="p-2"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${item.type === 'pemasukan' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">${item.type.toUpperCase()}</span></td>
-          <td class="p-2">${getCategoryBadge(cat)}</td>
-          <td class="p-2 font-medium">${item.desc}</td>
-          <td class="p-2 text-right font-bold ${item.type === 'pemasukan' ? 'text-green-600' : 'text-red-600'}">Rp ${item.amount.toLocaleString('id-ID')}</td>
-          <td class="p-2 text-center flex justify-center gap-2">
-            <button onclick="editSingleItem('${item.id}')" class="text-blue-500 hover:text-blue-700 text-xs" title="Edit Data"><i class="fa-solid fa-pen"></i></button>
-            <button onclick="deleteSingleItem('${item.id}')" class="text-red-500 hover:text-red-700 text-xs" title="Hapus Data"><i class="fa-solid fa-trash"></i></button>
+          <td class="p-3 font-mono text-[11px] opacity-75">${item.date}</td>
+          <td class="p-3">${getCategoryBadge(cat)}</td>
+          <td class="p-3 font-bold">${item.desc}</td>
+          <td class="p-3 text-right font-bold text-green-600">${debit}</td>
+          <td class="p-3 text-right font-bold text-red-600">${kredit}</td>
+          <td class="p-3 text-center flex justify-center gap-3">
+            <button onclick="editSingleItem('${item.id}')" class="text-blue-500 hover:text-blue-700 transition" title="Edit Data"><i class="fa-solid fa-pen"></i></button>
+            <button onclick="deleteSingleItem('${item.id}')" class="text-red-500 hover:text-red-700 transition" title="Hapus Data"><i class="fa-solid fa-trash"></i></button>
           </td>
         `;
         tbody.appendChild(tr);
@@ -860,7 +801,7 @@
     }
 
     // ==========================================
-    // NLP DATE & NUMBER LOGIC (UPGRADED)
+    // NLP DATE & NUMBER LOGIC
     // ==========================================
     function getLocalDateStr(dateObj = new Date()) {
       const year = dateObj.getFullYear();
@@ -1161,32 +1102,35 @@
       const printDate = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' });
 
       let csvContent = "\uFEFF"; 
-      csvContent += "====================================================\n";
-      csvContent += "LAPORAN KEUANGAN RESMI - BeFAST FINANCIAL ASSISTANT\n";
-      csvContent += "====================================================\n";
-      csvContent += `Nama Pemilik Akun :,${userName}\n`;
-      csvContent += `Periode Laporan   :,${periodLabel.toUpperCase()}\n`;
-      csvContent += `Dicetak Pada      :,${printDate}\n\n`;
+      csvContent += "BEFAST FINANCIAL INTELLIGENCE REPORT\n";
+      csvContent += "======================================================================\n\n";
 
-      csvContent += "RINGKASAN ARUS KAS\n";
-      csvContent += "----------------------------------------------------\n";
-      csvContent += `Total Pemasukan   :,Rp ${totalInc.toLocaleString('id-ID')}\n`;
-      csvContent += `Total Pengeluaran :,Rp ${totalExp.toLocaleString('id-ID')}\n`;
-      csvContent += `SALDO BERSIH      :,Rp ${netBalance.toLocaleString('id-ID')}\n\n`;
+      csvContent += "1. INFORMASI DOKUMEN\n";
+      csvContent += "----------------------------------------------------------------------\n";
+      csvContent += `Nama Pemilik Akun,:,${userName}\n`;
+      csvContent += `Periode Analisis,:,${periodLabel.toUpperCase()}\n`;
+      csvContent += `Waktu Cetak Dokumen,:,${printDate}\n\n`;
 
-      csvContent += "RINCIAN TRANSAKSI\n";
-      csvContent += "----------------------------------------------------\n";
-      csvContent += "Tanggal,Jenis,Kategori,Keterangan,Pemasukan (Rp),Pengeluaran (Rp)\n";
+      csvContent += "2. RINGKASAN EKSEKUTIF (EXECUTIVE SUMMARY)\n";
+      csvContent += "----------------------------------------------------------------------\n";
+      csvContent += `Total Debit (Pemasukan),:,Rp ${totalInc.toLocaleString('id-ID')}\n`;
+      csvContent += `Total Kredit (Pengeluaran),:,Rp ${totalExp.toLocaleString('id-ID')}\n`;
+      csvContent += `NET BALANCE (Saldo Bersih),:,Rp ${netBalance.toLocaleString('id-ID')}\n`;
+      csvContent += `Total Transaksi Tercatat,:,${dataList.length} Transaksi\n\n`;
+
+      csvContent += "3. BUKU BESAR (LEDGER DETAIL)\n";
+      csvContent += "----------------------------------------------------------------------\n";
+      csvContent += "TANGGAL,KATEGORI,KETERANGAN,DEBIT (MASUK),KREDIT (KELUAR)\n";
 
       dataList.sort((a,b) => new Date(b.date) - new Date(a.date)).forEach(t => {
         const cat = t.category || detectCategory(t.desc, t.type);
         const cleanDesc = t.desc.replace(/"/g, '""'); 
         let masuk = t.type === 'pemasukan' ? t.amount : 0;
         let keluar = t.type === 'pengeluaran' ? t.amount : 0;
-        csvContent += `"${t.date}","${t.type.toUpperCase()}","${cat}","${cleanDesc}",${masuk},${keluar}\n`;
+        csvContent += `"${t.date}","${cat}","${cleanDesc}",${masuk},${keluar}\n`;
       });
 
-      csvContent += "\n====================================================\n";
+      csvContent += "\n======================================================================\n";
       csvContent += "Dokumen ini di-generate secara otomatis oleh Sistem AI BeFAST.\n";
 
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -1203,16 +1147,6 @@
       if (filtered.length === 0) return speak(`Gak ada data transaksi buat laporan ${scope.label}.`);
       generateAndDownloadCSV(filtered, `Laporan_Keuangan_${scope.label.replace(/\s+/g, '_')}`, scope.label);
       speak(`Laporan keuangan ${scope.label} berhasil di-download!`);
-    }
-
-    function downloadCSV(scope) { executeVoiceDownload(`download laporan ${scope}`); }
-    function downloadByPromptDate() {
-      let targetDate = prompt("Masukkan tanggal laporan (YYYY-MM-DD):", getLocalDateStr());
-      if (targetDate) {
-        let filtered = transactions.filter(t => t.date === targetDate);
-        if (filtered.length === 0) return alert("Tidak ada transaksi di tanggal tersebut.");
-        generateAndDownloadCSV(filtered, `Laporan_Keuangan_${targetDate}`, `TANGGAL ${targetDate}`);
-      }
     }
 
     function showChartModal(scopeCmd) {
@@ -1343,7 +1277,6 @@
       document.body.className = `${skinSelect.value} min-h-screen pb-12`;
     }
 
-    renderData();
     updateAuthUI();
     if (getCurrentUser()) fetchTransactionsFromSupabase();
   </script>
