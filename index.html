@@ -862,10 +862,10 @@
             });
 
           if (insertError) {
-            console.error("DATABASE ERROR:", insertError);
-            alert(insertError.message);
-            return;
-          } 
+    console.error("DATABASE ERROR:", insertError);
+    alert(insertError.message);
+    return;
+} 
 
           localStorage.setItem('bf_user', JSON.stringify(data.user));
           updateAuthUI();
