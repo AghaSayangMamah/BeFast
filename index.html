@@ -862,8 +862,10 @@
             });
 
           if (insertError) {
-            console.warn("User insert database notice:", insertError.message);
-          }
+            console.error("DATABASE ERROR:", insertError);
+            alert(insertError.message);
+            return;
+          } 
 
           localStorage.setItem('bf_user', JSON.stringify(data.user));
           updateAuthUI();
