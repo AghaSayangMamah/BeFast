@@ -1150,12 +1150,77 @@
     }
     function closeChartModal() { document.getElementById('chartModal').classList.add('hidden'); if (modalTimer) clearTimeout(modalTimer); }
 
-    // --- SISTEM EXPORT BARU (EXCELJS & JSPDF) ---
+    // --- SISTEM EXPORT BARU DENGAN LOGO & GRAFIK OFFSCREEN ---
     function openExportModal() { 
       if (!getCurrentUser()) { openLoginModal(); return; }
       document.getElementById('exportModal').classList.remove('hidden'); 
     }
     function closeExportModal() { document.getElementById('exportModal').classList.add('hidden'); }
+
+    // Helper: Mengambil file Logo dari file sistem (LOGO FIX.png) ke format Base64 Image
+    function getBase64FromUrl(url) {
+      return new Promise((resolve) => {
+        let img = new Image();
+        img.crossOrigin = 'Anonymous';
+        img.onload = () => {
+          let canvas = document.createElement('canvas');
+          canvas.width = img.width; canvas.height = img.height;
+          let ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0);
+          resolve(canvas.toDataURL('image/png'));
+        };
+        img.onerror = () => resolve(null); // Kalau gambar gagal diload, jangan error
+        img.src = url;
+      });
+    }
+
+    // Helper: Bikin Chart di background (invisible) lalu ubah jadi Gambar (Base64)
+    function getExpenseChartBase64(dataList) {
+      return new Promise((resolve) => {
+        const expenses = dataList.filter(t => t.type === 'pengeluaran');
+        if(expenses.length === 0) { resolve(null); return; }
+        
+        // Kelompokkan data pengeluaran berdasarkan kategori
+        const catData = {};
+        expenses.forEach(t => {
+          let c = t.category || detectCategory(t.desc, t.type);
+          catData[c] = (catData[c] || 0) + t.amount;
+        });
+
+        // Buat canvas bayangan (tidak dimunculkan ke layar)
+        const canvas = document.createElement('canvas');
+        canvas.width = 500; canvas.height = 350;
+        const ctx = canvas.getContext('2d');
+        
+        // Background putih solid (agar tidak transparan di PDF/Excel)
+        ctx.fillStyle = '#ffffff'; 
+        ctx.fillRect(0, 0, 500, 350); 
+
+        // Generate Chart.js
+        new Chart(ctx, {
+          type: 'doughnut',
+          data: {
+            labels: Object.keys(catData),
+            datasets: [{
+              data: Object.values(catData),
+              backgroundColor: ['#ef4444', '#f97316', '#f59e0b', '#10b981', '#3b82f6', '#8b5cf6', '#ec4899', '#64748b'],
+              borderWidth: 2, borderColor: '#ffffff'
+            }]
+          },
+          options: {
+            responsive: false, 
+            animation: false, // Wajib MATI agar canvas langsung selesai dirender seketika
+            plugins: { 
+              title: { display: true, text: 'Komposisi Pengeluaran', font: { size: 16 } }, 
+              legend: { position: 'right' } 
+            }
+          }
+        });
+        
+        // Beri jeda sangat kecil agar Chart.js selesai menggambar canvas
+        setTimeout(() => { resolve(canvas.toDataURL('image/png')); }, 250);
+      });
+    }
 
     async function processExport() {
       const periodCmd = document.getElementById('exportPeriod').value;
@@ -1170,19 +1235,23 @@
       if (filtered.length === 0) return alert(`Tidak ada data transaksi untuk periode: ${scope.label}`);
 
       const btn = document.getElementById('btnProcessExport');
-      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Memproses...';
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Merender Visual...';
       
+      // Ambil gambar logo & render grafik secara gaib (offscreen)
+      const logoB64 = await getBase64FromUrl('LOGO FIX.png');
+      const chartB64 = await getExpenseChartBase64(filtered);
+
       setTimeout(async () => {
-        if (format === 'excel') await generateExcel(filtered, scope.label);
-        else generatePDF(filtered, scope.label);
+        if (format === 'excel') await generateExcel(filtered, scope.label, logoB64, chartB64);
+        else generatePDF(filtered, scope.label, logoB64, chartB64);
         
         btn.innerHTML = 'Download Sekarang <i class="fa-solid fa-arrow-down"></i>';
         closeExportModal();
-        speak(`Dokumen ${format} untuk periode ${scope.label} berhasil didownload.`);
-      }, 800);
+        speak(`Dokumen visual ${format} untuk periode ${scope.label} berhasil didownload.`);
+      }, 300);
     }
 
-    async function generateExcel(dataList, periodLabel) {
+    async function generateExcel(dataList, periodLabel, logoB64, chartB64) {
       const user = getCurrentUser();
       const userName = user ? (user.user_metadata?.full_name || 'Pengguna') : 'Pengguna';
       
@@ -1193,35 +1262,44 @@
       const workbook = new ExcelJS.Workbook();
       const sheet = workbook.addWorksheet('Laporan Keuangan');
 
-      // Styling Background Header (Biru Corporate / Emerald)
-      sheet.mergeCells('A1:E2');
+      // 1. HEADER UTAMA
+      sheet.mergeCells('A1:E3');
       const titleCell = sheet.getCell('A1');
       titleCell.value = 'LAPORAN KEUANGAN BeFAST';
-      titleCell.font = { name: 'Arial', size: 16, bold: true, color: { argb: 'FFFFFFFF' } };
+      titleCell.font = { name: 'Arial', size: 18, bold: true, color: { argb: 'FFFFFFFF' } };
       titleCell.alignment = { vertical: 'middle', horizontal: 'center' };
       titleCell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF023047' } };
 
-      // Metadata user
-      sheet.getCell('A4').value = 'Nama Pemilik:'; sheet.getCell('B4').value = userName;
-      sheet.getCell('A5').value = 'Periode:'; sheet.getCell('B5').value = periodLabel.toUpperCase();
-      sheet.getCell('A4').font = { bold: true }; sheet.getCell('A5').font = { bold: true };
+      // Sisipkan Logo jika file 'LOGO FIX.png' ada
+      if (logoB64) {
+        const logoId = workbook.addImage({ base64: logoB64, extension: 'png' });
+        // Taruh logo melayang di ujung kiri atas
+        sheet.addImage(logoId, { tl: { col: 0.2, row: 0.2 }, ext: { width: 55, height: 55 } });
+      }
 
-      // Kotak Rangkuman
-      sheet.getCell('D4').value = 'Total Pemasukan:'; sheet.getCell('E4').value = totalInc;
-      sheet.getCell('D5').value = 'Total Pengeluaran:'; sheet.getCell('E5').value = totalExp;
-      sheet.getCell('D6').value = 'Saldo Bersih:'; sheet.getCell('E6').value = netBalance;
+      // Sisipkan Grafik Pengeluaran jika ada pengeluaran
+      if (chartB64) {
+        const chartId = workbook.addImage({ base64: chartB64, extension: 'png' });
+        // Taruh di kolom G (index 6), baris 4
+        sheet.addImage(chartId, { tl: { col: 6, row: 4 }, ext: { width: 500, height: 350 } });
+      }
+
+      // 2. METADATA & RINGKASAN
+      sheet.getCell('A5').value = 'Nama Pemilik:'; sheet.getCell('B5').value = userName;
+      sheet.getCell('A6').value = 'Periode:'; sheet.getCell('B6').value = periodLabel.toUpperCase();
+      sheet.getCell('A5').font = { bold: true }; sheet.getCell('A6').font = { bold: true };
+
+      sheet.getCell('D5').value = 'Total Pemasukan:'; sheet.getCell('E5').value = totalInc;
+      sheet.getCell('D6').value = 'Total Pengeluaran:'; sheet.getCell('E6').value = totalExp;
+      sheet.getCell('D7').value = 'Saldo Bersih:'; sheet.getCell('E7').value = netBalance;
       
-      // Styling Angka Rangkuman
-      ['E4', 'E5', 'E6'].forEach(c => { 
-        sheet.getCell(c).numFmt = '"Rp"#,##0'; 
-        sheet.getCell(c).font = { bold: true };
-      });
-      sheet.getCell('E4').font.color = { argb: 'FF10B981' }; // Hijau
-      sheet.getCell('E5').font.color = { argb: 'FFEF4444' }; // Merah
-      sheet.getCell('E6').font.color = { argb: 'FF3B82F6' }; // Biru
+      ['E5', 'E6', 'E7'].forEach(c => { sheet.getCell(c).numFmt = '"Rp"#,##0'; sheet.getCell(c).font = { bold: true }; });
+      sheet.getCell('E5').font.color = { argb: 'FF10B981' }; // Hijau
+      sheet.getCell('E6').font.color = { argb: 'FFEF4444' }; // Merah
+      sheet.getCell('E7').font.color = { argb: 'FF3B82F6' }; // Biru
 
-      // Header Tabel (Baris 8)
-      const headerRow = sheet.getRow(8);
+      // 3. TABEL DATA
+      const headerRow = sheet.getRow(9);
       headerRow.values = ['TANGGAL', 'KATEGORI', 'KETERANGAN', 'DEBIT (MASUK)', 'KREDIT (KELUAR)'];
       headerRow.eachCell((cell) => {
         cell.font = { bold: true, color: { argb: 'FFFFFFFF' } };
@@ -1230,8 +1308,7 @@
         cell.border = { top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'} };
       });
 
-      // Data Baris
-      let currentRow = 9;
+      let currentRow = 10;
       dataList.sort((a,b) => new Date(b.date) - new Date(a.date)).forEach((t, i) => {
         const cat = t.category || detectCategory(t.desc, t.type);
         let masuk = t.type === 'pemasukan' ? t.amount : 0;
@@ -1240,10 +1317,8 @@
         const row = sheet.getRow(currentRow);
         row.values = [t.date, cat, t.desc, masuk, keluar];
         
-        // Zebra cross styling
-        if(i % 2 === 0) {
-          row.eachCell({ includeEmpty: true }, cell => { cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF9FAFB' } }; });
-        }
+        // Efek Zebra cross baris tabel
+        if(i % 2 === 0) row.eachCell({ includeEmpty: true }, cell => { cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF9FAFB' } }; });
 
         row.getCell(4).numFmt = '"Rp"#,##0';
         row.getCell(5).numFmt = '"Rp"#,##0';
@@ -1251,23 +1326,17 @@
         currentRow++;
       });
 
-      // Atur Lebar Kolom
-      sheet.getColumn(1).width = 15;
-      sheet.getColumn(2).width = 25;
-      sheet.getColumn(3).width = 40;
-      sheet.getColumn(4).width = 20;
-      sheet.getColumn(5).width = 20;
+      sheet.getColumn(1).width = 15; sheet.getColumn(2).width = 25; sheet.getColumn(3).width = 40; sheet.getColumn(4).width = 20; sheet.getColumn(5).width = 20;
 
-      // Ekspor & Download
       const buffer = await workbook.xlsx.writeBuffer();
       const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a'); a.href = url; 
       a.download = `BeFAST_Report_${periodLabel.replace(/\s/g, '_')}.xlsx`;
-      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
     }
 
-    function generatePDF(dataList, periodLabel) {
+    function generatePDF(dataList, periodLabel, logoB64, chartB64) {
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF();
       
@@ -1278,26 +1347,37 @@
       let totalInc = dataList.filter(t => t.type === 'pemasukan').reduce((a,b) => a + b.amount, 0);
       let totalExp = dataList.filter(t => t.type === 'pengeluaran').reduce((a,b) => a + b.amount, 0);
 
-      // Header Laporan
-      doc.setFillColor(2, 48, 71); // #023047
+      // Header PDF Laporan
+      doc.setFillColor(2, 48, 71); // Warna #023047
       doc.rect(0, 0, 210, 40, 'F');
+      
+      // Render Logo di Kiri Atas
+      if (logoB64) doc.addImage(logoB64, 'PNG', 15, 10, 20, 20);
+      
       doc.setTextColor(255, 255, 255);
       doc.setFontSize(22);
       doc.text("BeFAST FINANCIAL REPORT", 105, 20, { align: "center" });
       doc.setFontSize(10);
       doc.text(`Periode: ${periodLabel.toUpperCase()}`, 105, 28, { align: "center" });
 
-      // Info User
+      // Rangkuman Teks di Sebelah Kiri
       doc.setTextColor(50, 50, 50);
       doc.setFontSize(10);
       doc.text(`Nama Akun   : ${userName}`, 14, 50);
       doc.text(`Tanggal Cetak : ${printDate}`, 14, 55);
 
-      // Rangkuman
       doc.setFont("helvetica", "bold");
-      doc.text(`Total Pemasukan   : Rp ${totalInc.toLocaleString('id-ID')}`, 130, 50);
-      doc.text(`Total Pengeluaran : Rp ${totalExp.toLocaleString('id-ID')}`, 130, 55);
-      doc.text(`Saldo Bersih      : Rp ${(totalInc - totalExp).toLocaleString('id-ID')}`, 130, 60);
+      doc.text(`Total Pemasukan   : Rp ${totalInc.toLocaleString('id-ID')}`, 14, 65);
+      doc.text(`Total Pengeluaran : Rp ${totalExp.toLocaleString('id-ID')}`, 14, 70);
+      doc.text(`Saldo Bersih      : Rp ${(totalInc - totalExp).toLocaleString('id-ID')}`, 14, 75);
+
+      let tableStartY = 85;
+
+      // Render Gambar Grafik Chart di Sebelah Kanan
+      if (chartB64) {
+        doc.addImage(chartB64, 'PNG', 115, 45, 80, 56); 
+        tableStartY = 110; // Geser tabel ke bawah agar tidak menabrak grafik
+      }
 
       // Tabel Data Autotable
       const tableData = dataList.sort((a,b) => new Date(b.date) - new Date(a.date)).map(t => {
@@ -1308,16 +1388,12 @@
       });
 
       doc.autoTable({
-        startY: 70,
+        startY: tableStartY,
         head: [['Tanggal', 'Kategori', 'Keterangan', 'Masuk', 'Keluar']],
         body: tableData,
         headStyles: { fillColor: [16, 185, 129], textColor: [255, 255, 255], fontStyle: 'bold' },
         alternateRowStyles: { fillColor: [249, 250, 251] },
-        columnStyles: {
-          0: { cellWidth: 25 },
-          3: { halign: 'right' },
-          4: { halign: 'right' }
-        },
+        columnStyles: { 0: { cellWidth: 25 }, 3: { halign: 'right' }, 4: { halign: 'right' } },
         styles: { fontSize: 9 }
       });
 
