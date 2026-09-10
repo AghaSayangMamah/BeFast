@@ -75,13 +75,13 @@
         
         <!-- Tombol Panduan Pindah ke Sini di Mobile agar lebih ringkas -->
         <button onclick="openGuideModal()" class="sm:hidden px-3 py-2 bg-[#ffb703] text-[#5e2e10] rounded-lg text-xs font-bold hover:bg-[#fb8500] transition shadow">
-          <i class="fa-solid fa-microphone-lines"></i>
+          <i class="fa-solid fa-book-open"></i>
         </button>
       </div>
       
       <div class="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
         <button onclick="openGuideModal()" class="hidden sm:flex px-3 py-2 bg-[#ffb703] text-[#5e2e10] rounded-lg text-xs font-bold hover:bg-[#fb8500] transition items-center gap-1.5 shadow">
-          <i class="fa-solid fa-microphone-lines"></i> Panduan Suara
+          <i class="fa-solid fa-book-open"></i> Panduan Suara
         </button>
 
         <div id="authLoggedOut" class="flex items-center gap-2 w-full sm:w-auto justify-end">
@@ -110,7 +110,8 @@
 
     <!-- Voice Control Center -->
     <section class="card-style p-5 md:p-6 text-center relative overflow-hidden bg-gradient-to-br from-[#f8fdf9] to-[#eefcf2]">
-      <h2 class="text-md md:text-lg font-black text-[#023047] mb-1">KONTROL SUARA JARVIS</h2>
+      <h2 class="text-md md:text-lg font-black text-[#023047] mb-1">KONTROL SUARA CIEL</h2>
+      <p class="text-[10px] md:text-xs text-[#10b981] font-bold mb-3">(Catatan Intelijen Ekonomi Langsung)</p>
       <p id="speechStatus" class="text-xs md:text-sm text-gray-500 mb-5">Klik logo mic, lalu ucapkan perintahmu!</p>
 
       <button id="btnMic" class="w-20 h-20 md:w-24 md:h-24 bg-[#10b981] text-white rounded-full text-3xl md:text-4xl shadow-xl hover:bg-[#059669] hover:scale-105 transition-all flex items-center justify-center mx-auto mb-5">
@@ -124,7 +125,12 @@
     </section>
 
     <!-- FORM INPUT MANUAL -->
-    <section class="card-style p-5 md:p-6">
+    <div class="flex justify-center mb-2">
+      <button onclick="toggleManualForm()" id="btnToggleManual" class="px-5 py-2.5 border-2 border-gray-200 text-gray-600 bg-white rounded-xl text-xs font-bold hover:bg-gray-50 transition flex items-center gap-2 shadow-sm">
+        <i class="fa-solid fa-pen-to-square"></i> Tampilkan Form Input Manual
+      </button>
+    </div>
+    <section id="manualFormSection" class="card-style p-5 md:p-6 hidden transition-all duration-300">
       <h3 class="text-sm md:text-md font-bold mb-4 flex items-center gap-2 text-gray-800">
         <i class="fa-solid fa-keyboard text-[#ffb703]"></i> Input Transaksi Manual
       </h3>
@@ -252,7 +258,7 @@
     <div class="card-style w-full max-w-4xl p-4 md:p-6 relative max-h-[85vh] overflow-y-auto bg-white shadow-2xl rounded-2xl border border-gray-100 no-scrollbar">
       <div class="flex justify-between items-center mb-4 md:mb-6 sticky top-0 bg-white/95 backdrop-blur-sm py-3 border-b z-10">
         <h3 class="font-black text-lg md:text-xl flex items-center gap-2 text-[#023047]">
-          <i class="fa-solid fa-microphone-lines text-[#ffb703]"></i> Panduan Suara
+          <i class="fa-solid fa-book-open text-[#ffb703]"></i> Panduan Suara
         </h3>
         <button onclick="closeGuideModal()" class="text-gray-400 hover:text-red-500 transition-colors bg-gray-100 p-2 rounded-full w-8 h-8 flex items-center justify-center">
           <i class="fa-solid fa-xmark text-lg"></i>
@@ -330,6 +336,61 @@
     </div>
   </div>
 
+  
+  <!-- MODAL POP UP LUPA PASSWORD -->
+  <div id="forgotModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4 transition-all">
+    <div class="card-style w-full max-w-sm md:max-w-md p-6 md:p-8 relative bg-white text-gray-800 shadow-2xl overflow-hidden rounded-3xl">
+      <button onclick="closeForgotModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center transition-colors z-20">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <div class="flex flex-col items-center mb-4 relative z-10">
+        <div class="w-12 h-12 mb-3 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center text-xl">
+          <i class="fa-solid fa-key"></i>
+        </div>
+        <h3 class="font-black text-xl text-[#023047]">Lupa Kata Sandi?</h3>
+        <p class="text-[11px] md:text-xs text-gray-500 mt-1 font-semibold text-center">Masukkan email kamu, kami akan kirimkan link pemulihan.</p>
+      </div>
+      <div id="forgotAlert" class="hidden mb-4 p-3 rounded-lg text-xs font-semibold relative z-10"></div>
+      <form onsubmit="handleForgotPassword(event)" class="space-y-4 relative z-10">
+        <div>
+          <label class="block text-[11px] md:text-xs font-bold text-gray-700 mb-1 ml-1">Email Terdaftar</label>
+          <input type="email" id="forgotEmail" required placeholder="nama@gmail.com" class="w-full p-3 rounded-xl border border-gray-200 bg-gray-50 text-xs md:text-sm focus:ring-2 focus:ring-[#023047] outline-none font-bold">
+        </div>
+        <button type="submit" id="btnForgotSubmit" class="w-full py-3 mt-2 bg-[#023047] text-white text-sm font-black rounded-xl hover:bg-[#044c70] transition shadow flex items-center justify-center gap-2">
+          Kirim Link Pemulihan
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL POP UP RESET PASSWORD (KETIKA LINK DIKLIK) -->
+  <div id="resetModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4 transition-all">
+    <div class="card-style w-full max-w-sm md:max-w-md p-6 md:p-8 relative bg-white text-gray-800 shadow-2xl overflow-hidden rounded-3xl">
+      <div class="flex flex-col items-center mb-4 relative z-10">
+        <div class="w-12 h-12 mb-3 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center text-xl">
+          <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        <h3 class="font-black text-xl text-[#023047]">Buat Sandi Baru</h3>
+        <p class="text-[11px] md:text-xs text-gray-500 mt-1 font-semibold text-center">Silakan masukkan kata sandi baru kamu.</p>
+      </div>
+      <div id="resetAlert" class="hidden mb-4 p-3 rounded-lg text-xs font-semibold relative z-10"></div>
+      <form onsubmit="handleResetPassword(event)" class="space-y-4 relative z-10">
+        <div>
+          <label class="block text-[11px] md:text-xs font-bold text-gray-700 mb-1 ml-1">Kata Sandi Baru (Min 6)</label>
+          <div class="relative">
+            <input type="password" id="resetPasswordInput" required minlength="6" placeholder="••••••••" class="w-full p-3 pr-10 rounded-xl border border-gray-200 bg-gray-50 text-xs md:text-sm focus:ring-2 focus:ring-[#023047] outline-none font-bold">
+            <button type="button" onclick="togglePassword('resetPasswordInput', 'eyeIconReset')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none">
+              <i id="eyeIconReset" class="fa-solid fa-eye"></i>
+            </button>
+          </div>
+        </div>
+        <button type="submit" id="btnResetSubmit" class="w-full py-3 mt-2 bg-[#10b981] text-white text-sm font-black rounded-xl hover:bg-[#059669] transition shadow flex items-center justify-center gap-2">
+          Simpan Sandi Baru
+        </button>
+      </form>
+    </div>
+  </div>
+
   <!-- MODAL POP UP LOGIN -->
   <div id="loginModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4 transition-all">
     <div class="card-style w-full max-w-sm md:max-w-md p-6 md:p-8 relative bg-white text-gray-800 shadow-2xl overflow-hidden rounded-3xl">
@@ -360,7 +421,13 @@
           <label class="block text-[11px] md:text-xs font-bold text-gray-700 mb-1 ml-1">Kata Sandi</label>
           <div class="relative">
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400"><i class="fa-solid fa-lock text-sm"></i></div>
-            <input type="password" id="loginPassword" required placeholder="••••••••" class="w-full pl-10 p-3 rounded-xl border border-gray-200 bg-gray-50 text-xs md:text-sm focus:ring-2 focus:ring-[#023047] outline-none font-bold">
+            <input type="password" id="loginPassword" required placeholder="••••••••" class="w-full pl-10 pr-10 p-3 rounded-xl border border-gray-200 bg-gray-50 text-xs md:text-sm focus:ring-2 focus:ring-[#023047] outline-none font-bold">
+            <button type="button" onclick="togglePassword('loginPassword', 'eyeIconLogin')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none">
+              <i id="eyeIconLogin" class="fa-solid fa-eye"></i>
+            </button>
+          </div>
+          <div class="text-right mt-1.5">
+            <button type="button" onclick="openForgotModal()" class="text-[10px] md:text-xs text-[#023047] font-bold hover:underline">Lupa Kata Sandi?</button>
           </div>
         </div>
         <button type="submit" id="btnLoginSubmit" class="w-full py-3.5 mt-2 bg-[#023047] text-white text-sm font-black rounded-xl hover:bg-[#044c70] transition shadow-lg shadow-blue-900/20 flex items-center justify-center gap-2">
@@ -409,7 +476,12 @@
         </div>
         <div>
           <label class="block text-[11px] md:text-xs font-bold text-gray-700 mb-1 ml-1">Kata Sandi (Min 6)</label>
-          <input type="password" id="signupPassword" required minlength="6" placeholder="••••••••" class="w-full p-2.5 rounded-xl border bg-gray-50 text-xs md:text-sm font-bold focus:ring-2 focus:ring-[#023047] outline-none">
+          <div class="relative">
+            <input type="password" id="signupPassword" required minlength="6" placeholder="••••••••" class="w-full p-2.5 pr-10 rounded-xl border bg-gray-50 text-xs md:text-sm font-bold focus:ring-2 focus:ring-[#023047] outline-none">
+            <button type="button" onclick="togglePassword('signupPassword', 'eyeIconSignup')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none">
+              <i id="eyeIconSignup" class="fa-solid fa-eye"></i>
+            </button>
+          </div>
         </div>
         <button type="submit" id="btnSignupSubmit" class="w-full py-3.5 mt-2 bg-[#10b981] text-white text-sm font-black rounded-xl hover:bg-[#059669] transition shadow-lg flex items-center justify-center gap-2">
           Buat Akun Sekarang
@@ -504,7 +576,9 @@
 
     if (supabaseClient) {
       supabaseClient.auth.onAuthStateChange((event, session) => {
-        if (session && session.user) {
+        if (event === 'PASSWORD_RECOVERY') {
+          document.getElementById('resetModal').classList.remove('hidden');
+        } else if (session && session.user) {
           localStorage.setItem('bf_user', JSON.stringify(session.user));
           fetchTransactionsFromSupabase(); 
         } else if (event === 'SIGNED_OUT') {
@@ -537,6 +611,79 @@
       } else {
         if (loggedOutDiv) loggedOutDiv.classList.remove('hidden');
         if (loggedInDiv) loggedInDiv.classList.add('hidden');
+      }
+    }
+
+    
+    // --- UI INTERACTION LOGIC ---
+    function togglePassword(inputId, iconId) {
+      const input = document.getElementById(inputId);
+      const icon = document.getElementById(iconId);
+      if (input.type === "password") {
+        input.type = "text";
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+      } else {
+        input.type = "password";
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+      }
+    }
+
+    function toggleManualForm() {
+      const form = document.getElementById('manualFormSection');
+      const btn = document.getElementById('btnToggleManual');
+      if (form.classList.contains('hidden')) {
+        form.classList.remove('hidden');
+        btn.innerHTML = '<i class="fa-solid fa-chevron-up"></i> Sembunyikan Form Manual';
+      } else {
+        form.classList.add('hidden');
+        btn.innerHTML = '<i class="fa-solid fa-pen-to-square"></i> Tampilkan Form Input Manual';
+      }
+    }
+
+    // --- FORGOT & RESET PASSWORD LOGIC ---
+    function openForgotModal() { closeLoginModal(); document.getElementById('forgotModal').classList.remove('hidden'); hideAuthAlert('forgotAlert'); }
+    function closeForgotModal() { document.getElementById('forgotModal').classList.add('hidden'); }
+    
+    async function handleForgotPassword(e) {
+      e.preventDefault();
+      const email = document.getElementById('forgotEmail').value.trim();
+      const btn = document.getElementById('btnForgotSubmit');
+      
+      btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Memproses...';
+      try {
+        const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+          redirectTo: window.location.origin + window.location.pathname
+        });
+        if (error) throw error;
+        showAuthAlert('forgotAlert', 'Link pemulihan telah dikirim ke email kamu!', false);
+        setTimeout(() => closeForgotModal(), 3000);
+      } catch (err) {
+        showAuthAlert('forgotAlert', err.message);
+      } finally {
+        btn.disabled = false; btn.innerHTML = 'Kirim Link Pemulihan';
+      }
+    }
+
+    async function handleResetPassword(e) {
+      e.preventDefault();
+      const newPassword = document.getElementById('resetPasswordInput').value;
+      const btn = document.getElementById('btnResetSubmit');
+      
+      btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menyimpan...';
+      try {
+        const { error } = await supabaseClient.auth.updateUser({ password: newPassword });
+        if (error) throw error;
+        showAuthAlert('resetAlert', 'Sandi berhasil diubah!', false);
+        setTimeout(() => {
+          document.getElementById('resetModal').classList.add('hidden');
+          speak("Kata sandi berhasil diperbarui.");
+        }, 1500);
+      } catch (err) {
+        showAuthAlert('resetAlert', err.message);
+      } finally {
+        btn.disabled = false; btn.innerHTML = 'Simpan Sandi Baru';
       }
     }
 
