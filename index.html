@@ -24,41 +24,56 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
   <style>
-    /* Themes */
-    .theme-pastel { --bg-main: #fcfdf8; --card-bg: #ffffff; --primary: #10b981; --text-main: #1f2937; }
-    .theme-sunset { --bg-main: #fff645; --card-bg: #ffffff; --primary: #f97316; --text-main: #431407; }
-    .theme-berry  { --bg-main: #c963cf; --card-bg: #ffffff; --primary: #ec4899; --text-main: #831843; }
-    .theme-neon   { --bg-main: #0f172a; --card-bg: #1e293b; --primary: #06b6d4; --text-main: #f8fafc; }
-
+    :root {
+      --bg-main: #F5F5F7;
+      --card-bg: #FFFFFF;
+      --text-main: #1D1D1F;
+    }
     body {
       background-color: var(--bg-main);
       color: var(--text-main);
       transition: all 0.3s ease;
-      font-family: 'Segoe UI', Roboto, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
     }
     .card-style {
       background-color: var(--card-bg);
-      border-radius: 1.2rem;
-      box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.08);
-      border: 1px solid rgba(0,0,0,0.03);
+      border-radius: 1.5rem;
+      box-shadow: 0 8px 30px rgba(15, 44, 107, 0.04);
+      border: 1px solid rgba(0,0,0,0.02);
+    }
+    .glass-header {
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(0,0,0,0.05);
     }
     .mic-active {
-      animation: pulse 1.5s infinite;
+      animation: pulse-red 1.5s infinite;
     }
-    @keyframes pulse {
-      0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
-      70% { transform: scale(1.08); box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); }
-      100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+    @keyframes pulse-red {
+      0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.6); }
+      70% { transform: scale(1.08); box-shadow: 0 0 0 20px rgba(220, 38, 38, 0); }
+      100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
     }
-    /* Sembunyikan scrollbar tapi tetap bisa di-scroll (untuk tabel di HP) */
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    
+    .input-apple {
+      transition: all 0.2s ease;
+      border-color: #E5E7EB;
+    }
+    .input-apple:focus {
+      border-color: #FACC15 !important;
+      box-shadow: 0 0 0 4px rgba(250, 204, 21, 0.2) !important;
+      outline: none;
+    }
   </style>
 </head>
 <body class="theme-pastel min-h-screen pb-20 md:pb-12">
 
   <!-- Header & Navigation -->
-  <header class="p-3 md:p-4 shadow-sm bg-white border-b mb-4 md:mb-6 sticky top-0 z-40">
+  <header class="p-3 md:p-4 glass-header mb-4 md:mb-6 sticky top-0 z-40">
     <div class="max-w-4xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-3">
       
       <!-- BRANDING AREA -->
@@ -68,19 +83,19 @@
             <img src="LOGO FIX.png" alt="BeFAST Logo" class="w-full h-full object-contain">
           </div>
           <div class="flex flex-col justify-center">
-            <h1 class="text-xl md:text-2xl font-black text-[#5e2e10] tracking-tight leading-tight">BeFAST</h1>
-            <p class="text-[10px] md:text-[11px] font-bold text-[#8a5d43] leading-tight">Best Financial Assistant</p>
+            <h1 class="text-xl md:text-2xl font-black text-[#0F2C6B] tracking-tight leading-tight">BeFAST</h1>
+            <p class="text-[10px] md:text-[11px] font-bold text-[#0F2C6B] leading-tight">Best Financial Assistant</p>
           </div>
         </div>
         
         <!-- Tombol Panduan Pindah ke Sini di Mobile agar lebih ringkas -->
-        <button onclick="openGuideModal()" class="sm:hidden px-3 py-2 bg-[#ffb703] text-[#5e2e10] rounded-lg text-xs font-bold hover:bg-[#fb8500] transition shadow">
+        <button onclick="openGuideModal()" class="sm:hidden px-3 py-2 bg-[#FACC15] text-[#0F2C6B] rounded-lg text-xs font-bold hover:bg-[#eab308] transition shadow">
           <i class="fa-solid fa-book-open"></i>
         </button>
       </div>
       
       <div class="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
-        <button onclick="openGuideModal()" class="hidden sm:flex px-3 py-2 bg-[#ffb703] text-[#5e2e10] rounded-lg text-xs font-bold hover:bg-[#fb8500] transition items-center gap-1.5 shadow">
+        <button onclick="openGuideModal()" class="hidden sm:flex px-3 py-2 bg-[#FACC15] text-[#0F2C6B] rounded-lg text-xs font-bold hover:bg-[#eab308] transition items-center gap-1.5 shadow">
           <i class="fa-solid fa-book-open"></i> Panduan Suara
         </button>
 
@@ -88,13 +103,13 @@
           <button onclick="openLoginModal()" class="px-3 py-2 bg-white hover:bg-gray-50 text-blue-800 border border-blue-200 rounded-lg text-xs font-bold transition flex items-center gap-1 shadow-sm">
             <i class="fa-solid fa-right-to-bracket"></i> Masuk
           </button>
-          <button onclick="openSignupModal()" class="px-3 py-2 bg-[#023047] hover:bg-[#044c70] text-white rounded-lg text-xs font-bold transition flex items-center gap-1 shadow-sm">
+          <button onclick="openSignupModal()" class="px-3 py-2 bg-[#0F2C6B] hover:bg-[#0a1e4a] text-white rounded-lg text-xs font-bold transition flex items-center gap-1 shadow-sm">
             <i class="fa-solid fa-user-plus"></i> Daftar
           </button>
         </div>
 
         <div id="authLoggedIn" class="hidden flex items-center gap-2 w-full sm:w-auto justify-end">
-          <div class="flex items-center gap-1.5 bg-gray-50 px-2.5 py-1.5 rounded-lg border text-xs font-semibold text-[#023047] shadow-sm truncate max-w-[150px] md:max-w-xs">
+          <div class="flex items-center gap-1.5 bg-gray-50 px-2.5 py-1.5 rounded-lg border text-xs font-semibold text-[#0F2C6B] shadow-sm truncate max-w-[150px] md:max-w-xs">
             <img src="LOGO FIX.png" class="w-4 h-4 object-contain">
             <span id="userGreeting" class="truncate">Hai, Pengguna</span>
           </div>
@@ -109,12 +124,12 @@
   <main class="max-w-4xl mx-auto px-4 space-y-4 md:space-y-6">
 
     <!-- Voice Control Center -->
-    <section class="card-style p-5 md:p-6 text-center relative overflow-hidden bg-gradient-to-br from-[#f8fdf9] to-[#eefcf2]">
-      <h2 class="text-md md:text-lg font-black text-[#023047] mb-1">KONTROL SUARA CIEL</h2>
-      <p class="text-[10px] md:text-xs text-[#10b981] font-bold mb-3">(Catatan Intelijen Ekonomi Langsung)</p>
+    <section class="card-style p-5 md:p-6 text-center relative overflow-hidden bg-gradient-to-br from-[#ffffff] to-[#f8f9fa]">
+      <h2 class="text-md md:text-lg font-black text-[#0F2C6B] mb-1">KONTROL SUARA CIEL</h2>
+      <p class="text-[10px] md:text-xs text-[#16A34A] font-bold mb-3">(Catatan Intelijen Ekonomi Langsung)</p>
       <p id="speechStatus" class="text-xs md:text-sm text-gray-500 mb-5">Klik logo mic, lalu ucapkan perintahmu!</p>
 
-      <button id="btnMic" class="w-20 h-20 md:w-24 md:h-24 bg-[#10b981] text-white rounded-full text-3xl md:text-4xl shadow-xl hover:bg-[#059669] hover:scale-105 transition-all flex items-center justify-center mx-auto mb-5">
+      <button id="btnMic" class="w-20 h-20 md:w-24 md:h-24 bg-[#FACC15] text-[#0F2C6B] rounded-full text-3xl md:text-4xl shadow-[0_10px_30px_rgba(250,204,21,0.4)] hover:scale-105 transition-all flex items-center justify-center mx-auto mb-5">
         <i class="fa-solid fa-microphone"></i>
       </button>
 
@@ -132,23 +147,23 @@
     </div>
     <section id="manualFormSection" class="card-style p-5 md:p-6 hidden transition-all duration-300">
       <h3 class="text-sm md:text-md font-bold mb-4 flex items-center gap-2 text-gray-800">
-        <i class="fa-solid fa-keyboard text-[#ffb703]"></i> Input Transaksi Manual
+        <i class="fa-solid fa-keyboard text-[#FACC15]"></i> Input Transaksi Manual
       </h3>
       <form id="manualForm" onsubmit="addManualTransaction(event)" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 md:gap-4">
         <div>
           <label class="block text-[11px] md:text-xs font-bold text-gray-500 mb-1">Jenis</label>
-          <select id="manualType" class="w-full p-2.5 rounded-lg border text-xs bg-gray-50 text-gray-800 font-bold focus:ring-2 focus:ring-[#023047] outline-none">
+          <select id="manualType" class="w-full p-2.5 rounded-lg border text-xs bg-gray-50 text-gray-800 font-bold input-apple outline-none">
             <option value="pengeluaran">Pengeluaran</option>
             <option value="pemasukan">Pemasukan</option>
           </select>
         </div>
         <div>
           <label class="block text-[11px] md:text-xs font-bold text-gray-500 mb-1">Tanggal</label>
-          <input type="date" id="manualDate" class="w-full p-2.5 rounded-lg border text-xs bg-gray-50 text-gray-800 font-bold focus:ring-2 focus:ring-[#023047] outline-none" required>
+          <input type="date" id="manualDate" class="w-full p-2.5 rounded-lg border text-xs bg-gray-50 text-gray-800 font-bold input-apple outline-none" required>
         </div>
         <div>
           <label class="block text-[11px] md:text-xs font-bold text-gray-500 mb-1">Kategori</label>
-          <select id="manualCategory" class="w-full p-2.5 rounded-lg border text-xs bg-gray-50 text-gray-800 font-bold focus:ring-2 focus:ring-[#023047] outline-none">
+          <select id="manualCategory" class="w-full p-2.5 rounded-lg border text-xs bg-gray-50 text-gray-800 font-bold input-apple outline-none">
             <option value="Otomatis">✨ Otomatis (AI)</option>
             <option value="Makanan & Minuman">🍔 Makanan & Minuman</option>
             <option value="Transportasi">🚗 Transportasi</option>
@@ -162,14 +177,14 @@
         </div>
         <div>
           <label class="block text-[11px] md:text-xs font-bold text-gray-500 mb-1">Keterangan</label>
-          <input type="text" id="manualDesc" placeholder="Contoh: Beli Kopi" class="w-full p-2.5 rounded-lg border text-xs bg-gray-50 text-gray-800 font-bold focus:ring-2 focus:ring-[#023047] outline-none" required>
+          <input type="text" id="manualDesc" placeholder="Contoh: Beli Kopi" class="w-full p-2.5 rounded-lg border text-xs bg-gray-50 text-gray-800 font-bold input-apple outline-none" required>
         </div>
         <div>
           <label class="block text-[11px] md:text-xs font-bold text-gray-500 mb-1">Nominal (Rp)</label>
-          <input type="number" id="manualAmount" placeholder="25000" min="1" class="w-full p-2.5 rounded-lg border text-xs bg-gray-50 text-gray-800 font-bold focus:ring-2 focus:ring-[#023047] outline-none" required>
+          <input type="number" id="manualAmount" placeholder="25000" min="1" class="w-full p-2.5 rounded-lg border text-xs bg-gray-50 text-gray-800 font-bold input-apple outline-none" required>
         </div>
         <div class="flex items-end sm:col-span-2 lg:col-span-1 mt-2 lg:mt-0">
-          <button type="submit" class="w-full p-2.5 bg-[#023047] text-white rounded-lg text-xs font-bold hover:bg-[#044c70] transition shadow flex items-center justify-center gap-1.5">
+          <button type="submit" class="w-full p-2.5 bg-[#0F2C6B] text-white rounded-lg text-xs font-bold hover:bg-[#0a1e4a] transition shadow flex items-center justify-center gap-1.5">
             <i class="fa-solid fa-plus"></i> Tambah
           </button>
         </div>
@@ -178,15 +193,15 @@
 
     <!-- Quick Stats Cards -->
     <section class="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
-      <div class="card-style p-5 border-t-4 border-[#10b981] bg-white relative overflow-hidden">
+      <div class="card-style p-5 border-t-4 border-[#16A34A] bg-white relative overflow-hidden">
         <i class="fa-solid fa-arrow-trend-up absolute -bottom-4 -right-4 text-6xl text-green-50 opacity-50"></i>
         <div class="text-[10px] md:text-xs text-gray-400 font-black uppercase tracking-widest mb-1">Total Pemasukan</div>
-        <div id="cardIncome" class="text-2xl md:text-3xl font-black text-[#023047] truncate">Rp 0</div>
+        <div id="cardIncome" class="text-2xl md:text-3xl font-black text-[#0F2C6B] truncate">Rp 0</div>
       </div>
-      <div class="card-style p-5 border-t-4 border-[#ef4444] bg-white relative overflow-hidden">
+      <div class="card-style p-5 border-t-4 border-[#DC2626] bg-white relative overflow-hidden">
         <i class="fa-solid fa-arrow-trend-down absolute -bottom-4 -right-4 text-6xl text-red-50 opacity-50"></i>
         <div class="text-[10px] md:text-xs text-gray-400 font-black uppercase tracking-widest mb-1">Total Pengeluaran</div>
-        <div id="cardExpense" class="text-2xl md:text-3xl font-black text-[#023047] truncate">Rp 0</div>
+        <div id="cardExpense" class="text-2xl md:text-3xl font-black text-[#0F2C6B] truncate">Rp 0</div>
       </div>
       <div class="card-style p-5 border-t-4 border-[#3b82f6] bg-white relative overflow-hidden">
         <i class="fa-solid fa-scale-balanced absolute -bottom-4 -right-4 text-6xl text-blue-50 opacity-50"></i>
@@ -206,7 +221,7 @@
           <p class="text-[10px] md:text-xs text-gray-500">Download Excel estetik atau PDF Rekening Koran.</p>
         </div>
       </div>
-      <button onclick="openExportModal()" class="w-full md:w-auto px-6 py-3 bg-[#023047] text-white rounded-xl text-xs md:text-sm font-black hover:bg-[#044c70] transition shadow flex items-center justify-center gap-2">
+      <button onclick="openExportModal()" class="w-full md:w-auto px-6 py-3 bg-[#0F2C6B] text-white rounded-xl text-xs md:text-sm font-black hover:bg-[#0a1e4a] transition shadow flex items-center justify-center gap-2">
         <i class="fa-solid fa-download"></i> Buat Laporan
       </button>
     </section>
@@ -224,7 +239,7 @@
           <button onclick="executeVoiceReadout('spill bulan ini')" class="w-full md:w-auto px-3 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg text-[11px] md:text-xs font-bold flex justify-center items-center gap-1.5 transition shadow-sm" title="Bacakan Laporan Bulan Ini">
             <i class="fa-solid fa-bullhorn"></i> Bacakan
           </button>
-          <button onclick="showChartModal('bulan')" class="w-full md:w-auto px-3 py-2 bg-[#ffb703] hover:bg-[#fb8500] text-[#5e2e10] rounded-lg text-[11px] md:text-xs font-bold transition shadow-sm flex justify-center items-center gap-1.5">
+          <button onclick="showChartModal('bulan')" class="w-full md:w-auto px-3 py-2 bg-[#FACC15] hover:bg-[#eab308] text-[#0F2C6B] rounded-lg text-[11px] md:text-xs font-bold transition shadow-sm flex justify-center items-center gap-1.5">
             <i class="fa-solid fa-chart-pie"></i> Grafik BI
           </button>
         </div>
@@ -233,7 +248,7 @@
       <div class="overflow-x-auto no-scrollbar pb-2">
         <table class="w-full text-left text-sm whitespace-nowrap min-w-[600px]">
           <thead>
-            <tr class="text-[10px] text-gray-400 font-black uppercase tracking-wider border-b bg-gray-50/50">
+            <tr class="text-[10px] text-gray-400 font-black uppercase tracking-wider border-b bg-[#F5F5F7] text-[#0F2C6B]">
               <th class="p-3 rounded-tl-lg">Tanggal</th>
               <th class="p-3">Kategori</th>
               <th class="p-3">Keterangan</th>
@@ -254,19 +269,19 @@
   <!-- ======================================================= -->
   <!-- MODAL PANDUAN PERINTAH SUARA LENGKAP                    -->
   <!-- ======================================================= -->
-  <div id="guideModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center hidden z-50 p-3 md:p-4 transition-all">
+  <div id="guideModal" class="fixed inset-0 bg-slate-900/30 backdrop-blur-md flex items-center justify-center hidden z-50 p-3 md:p-4 transition-all">
     <div class="card-style w-full max-w-4xl p-4 md:p-6 relative max-h-[85vh] overflow-y-auto bg-white shadow-2xl rounded-2xl border border-gray-100 no-scrollbar">
       <div class="flex justify-between items-center mb-4 md:mb-6 sticky top-0 bg-white/95 backdrop-blur-sm py-3 border-b z-10">
-        <h3 class="font-black text-lg md:text-xl flex items-center gap-2 text-[#023047]">
-          <i class="fa-solid fa-book-open text-[#ffb703]"></i> Panduan Suara
+        <h3 class="font-black text-lg md:text-xl flex items-center gap-2 text-[#0F2C6B]">
+          <i class="fa-solid fa-book-open text-[#FACC15]"></i> Panduan Suara
         </h3>
         <button onclick="closeGuideModal()" class="text-gray-400 hover:text-red-500 transition-colors bg-gray-100 p-2 rounded-full w-8 h-8 flex items-center justify-center">
           <i class="fa-solid fa-xmark text-lg"></i>
         </button>
       </div>
 
-      <p class="text-[11px] md:text-sm text-[#044c70] mb-4 md:mb-6 font-bold bg-blue-50 p-3 rounded-xl border border-blue-100 flex items-start md:items-center gap-2">
-        <i class="fa-solid fa-lightbulb text-lg text-[#ffb703] mt-0.5 md:mt-0"></i> 
+      <p class="text-[11px] md:text-sm text-[#0a1e4a] mb-4 md:mb-6 font-bold bg-blue-50 p-3 rounded-xl border border-blue-100 flex items-start md:items-center gap-2">
+        <i class="fa-solid fa-lightbulb text-lg text-[#FACC15] mt-0.5 md:mt-0"></i> 
         Klik tombol "Dengar" untuk memutar contoh audio saat presentasi ke Juri.
       </p>
 
@@ -280,12 +295,12 @@
             <div class="bg-white p-3 rounded-lg border border-emerald-100 flex flex-col gap-2">
               <span class="font-bold text-emerald-800 text-[10px] md:text-xs uppercase tracking-wide">Hari Ini</span>
               <p class="italic text-gray-700 font-mono text-[11px] md:text-xs bg-gray-50 p-2 rounded">"Beli kopi dua puluh lima ribu"</p>
-              <button onclick="speak('Beli kopi dua puluh lima ribu')" class="mt-auto self-start px-3 py-1.5 bg-[#023047] text-white rounded-md text-[10px] md:text-xs font-bold hover:bg-[#044c70] transition flex items-center gap-1.5"><i class="fa-solid fa-volume-high"></i> Dengar</button>
+              <button onclick="speak('Beli kopi dua puluh lima ribu')" class="mt-auto self-start px-3 py-1.5 bg-[#0F2C6B] text-white rounded-md text-[10px] md:text-xs font-bold hover:bg-[#0a1e4a] transition flex items-center gap-1.5"><i class="fa-solid fa-volume-high"></i> Dengar</button>
             </div>
             <div class="bg-white p-3 rounded-lg border border-emerald-100 flex flex-col gap-2">
               <span class="font-bold text-emerald-800 text-[10px] md:text-xs uppercase tracking-wide">Kemarin</span>
               <p class="italic text-gray-700 font-mono text-[11px] md:text-xs bg-gray-50 p-2 rounded">"Kemarin isi bensin lima puluh ribu"</p>
-              <button onclick="speak('Kemarin isi bensin pertamax lima puluh ribu')" class="mt-auto self-start px-3 py-1.5 bg-[#023047] text-white rounded-md text-[10px] md:text-xs font-bold hover:bg-[#044c70] transition flex items-center gap-1.5"><i class="fa-solid fa-volume-high"></i> Dengar</button>
+              <button onclick="speak('Kemarin isi bensin pertamax lima puluh ribu')" class="mt-auto self-start px-3 py-1.5 bg-[#0F2C6B] text-white rounded-md text-[10px] md:text-xs font-bold hover:bg-[#0a1e4a] transition flex items-center gap-1.5"><i class="fa-solid fa-volume-high"></i> Dengar</button>
             </div>
           </div>
         </div>
@@ -299,19 +314,19 @@
             <div class="bg-white p-3 rounded-lg border border-indigo-100 flex flex-col gap-2">
               <span class="font-bold text-indigo-800 text-[10px] md:text-xs uppercase tracking-wide">Laporan Hari Ini</span>
               <p class="italic text-gray-700 font-mono text-[11px] md:text-xs bg-gray-50 p-2 rounded">"Spill pengeluaran hari ini"</p>
-              <button onclick="speak('Spill pengeluaran hari ini')" class="mt-auto self-start px-3 py-1.5 bg-[#023047] text-white rounded-md text-[10px] md:text-xs font-bold hover:bg-[#044c70] transition flex items-center gap-1.5"><i class="fa-solid fa-volume-high"></i> Dengar</button>
+              <button onclick="speak('Spill pengeluaran hari ini')" class="mt-auto self-start px-3 py-1.5 bg-[#0F2C6B] text-white rounded-md text-[10px] md:text-xs font-bold hover:bg-[#0a1e4a] transition flex items-center gap-1.5"><i class="fa-solid fa-volume-high"></i> Dengar</button>
             </div>
             <div class="bg-white p-3 rounded-lg border border-indigo-100 flex flex-col gap-2">
               <span class="font-bold text-indigo-800 text-[10px] md:text-xs uppercase tracking-wide">Laporan Bulan Lalu</span>
               <p class="italic text-gray-700 font-mono text-[11px] md:text-xs bg-gray-50 p-2 rounded">"Cek total pengeluaran bulan lalu"</p>
-              <button onclick="speak('Cek total pengeluaran bulan lalu')" class="mt-auto self-start px-3 py-1.5 bg-[#023047] text-white rounded-md text-[10px] md:text-xs font-bold hover:bg-[#044c70] transition flex items-center gap-1.5"><i class="fa-solid fa-volume-high"></i> Dengar</button>
+              <button onclick="speak('Cek total pengeluaran bulan lalu')" class="mt-auto self-start px-3 py-1.5 bg-[#0F2C6B] text-white rounded-md text-[10px] md:text-xs font-bold hover:bg-[#0a1e4a] transition flex items-center gap-1.5"><i class="fa-solid fa-volume-high"></i> Dengar</button>
             </div>
           </div>
         </div>
       </div>
 
       <div class="mt-6 text-center sticky bottom-0 bg-white/95 backdrop-blur-sm py-3 md:py-4 border-t">
-        <button onclick="closeGuideModal()" class="w-full md:w-auto px-8 py-3 bg-[#10b981] text-white font-black rounded-xl hover:bg-[#059669] transition shadow-lg shadow-emerald-500/30 text-xs md:text-sm">
+        <button onclick="closeGuideModal()" class="w-full md:w-auto px-8 py-3 bg-[#16A34A] text-white font-black rounded-xl hover:bg-[#15803d] transition shadow-lg shadow-emerald-500/30 text-xs md:text-sm">
           Saya Mengerti, Tutup Panduan
         </button>
       </div>
@@ -319,10 +334,10 @@
   </div>
 
   <!-- MODAL POP UP GRAFIK (BI DASHBOARD) -->
-  <div id="chartModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4 transition-all">
+  <div id="chartModal" class="fixed inset-0 bg-slate-900/30 backdrop-blur-md flex items-center justify-center hidden z-50 p-4 transition-all">
     <div class="card-style w-full max-w-md p-5 md:p-6 relative bg-white">
       <div class="flex justify-between items-center mb-4 border-b pb-3">
-        <h3 id="modalTitle" class="font-black text-lg md:text-xl text-[#023047]"><i class="fa-solid fa-chart-pie text-[#ffb703]"></i> Analisis BI</h3>
+        <h3 id="modalTitle" class="font-black text-lg md:text-xl text-[#0F2C6B]"><i class="fa-solid fa-chart-pie text-[#FACC15]"></i> Analisis BI</h3>
         <button onclick="closeChartModal()" class="text-gray-400 hover:text-red-500 transition-colors bg-gray-100 p-2 rounded-full w-8 h-8 flex items-center justify-center">
           <i class="fa-solid fa-xmark text-lg"></i>
         </button>
@@ -338,9 +353,9 @@
 
   
   <!-- MODAL POP UP LOGIN -->
-  <div id="loginModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4 transition-all">
+  <div id="loginModal" class="fixed inset-0 bg-slate-900/30 backdrop-blur-md flex items-center justify-center hidden z-50 p-4 transition-all">
     <div class="card-style w-full max-w-sm md:max-w-md p-6 md:p-8 relative bg-white text-gray-800 shadow-2xl overflow-hidden rounded-3xl">
-      <div class="absolute -top-16 -right-16 w-40 h-40 bg-[#ffb703] rounded-full blur-3xl opacity-20"></div>
+      <div class="absolute -top-16 -right-16 w-40 h-40 bg-[#FACC15] rounded-full blur-3xl opacity-20"></div>
       <button onclick="closeLoginModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center transition-colors z-20">
         <i class="fa-solid fa-xmark"></i>
       </button>
@@ -349,7 +364,7 @@
         <div class="w-16 h-16 md:w-20 md:h-20 mb-3 md:mb-4 p-2 bg-white rounded-3xl shadow-lg border border-gray-100 flex items-center justify-center">
           <img src="LOGO FIX.png" alt="BeFAST Logo" class="w-full h-full object-contain">
         </div>
-        <h3 class="font-black text-xl md:text-2xl text-[#023047]">Masuk ke BeFAST</h3>
+        <h3 class="font-black text-xl md:text-2xl text-[#0F2C6B]">Masuk ke BeFAST</h3>
         <p class="text-[11px] md:text-xs text-gray-500 mt-1 font-semibold text-center">Bicara 2 detik, langsung kecatat.</p>
       </div>
       
@@ -360,28 +375,28 @@
           <label class="block text-[11px] md:text-xs font-bold text-gray-700 mb-1 ml-1">Nomor HP</label>
           <div class="relative">
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400"><i class="fa-solid fa-phone text-sm"></i></div>
-            <input type="tel" id="loginPhone" required placeholder="081234567890" class="w-full pl-10 p-3 rounded-xl border border-gray-200 bg-gray-50 text-xs md:text-sm focus:ring-2 focus:ring-[#023047] outline-none font-bold">
+            <input type="tel" id="loginPhone" required placeholder="081234567890" class="w-full pl-10 p-3 rounded-xl border border-gray-200 bg-gray-50 text-xs md:text-sm input-apple outline-none font-bold">
           </div>
         </div>
         <div>
           <label class="block text-[11px] md:text-xs font-bold text-gray-700 mb-1 ml-1">Kata Sandi</label>
           <div class="relative">
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400"><i class="fa-solid fa-lock text-sm"></i></div>
-            <input type="password" id="loginPassword" required placeholder="••••••••" class="w-full pl-10 pr-10 p-3 rounded-xl border border-gray-200 bg-gray-50 text-xs md:text-sm focus:ring-2 focus:ring-[#023047] outline-none font-bold">
+            <input type="password" id="loginPassword" required placeholder="••••••••" class="w-full pl-10 pr-10 p-3 rounded-xl border border-gray-200 bg-gray-50 text-xs md:text-sm input-apple outline-none font-bold">
             <button type="button" onclick="togglePassword('loginPassword', 'eyeIconLogin')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none">
               <i id="eyeIconLogin" class="fa-solid fa-eye"></i>
             </button>
           </div>
           
         </div>
-        <button type="submit" id="btnLoginSubmit" class="w-full py-3.5 mt-2 bg-[#023047] text-white text-sm font-black rounded-xl hover:bg-[#044c70] transition shadow-lg shadow-blue-900/20 flex items-center justify-center gap-2">
+        <button type="submit" id="btnLoginSubmit" class="w-full py-3.5 mt-2 bg-[#0F2C6B] text-white text-sm font-black rounded-xl hover:bg-[#0a1e4a] transition shadow-lg shadow-blue-900/20 flex items-center justify-center gap-2">
           Masuk Sekarang
         </button>
       </form>
 
       <div class="mt-6 pt-4 border-t text-center text-xs md:text-sm font-semibold text-gray-600 relative z-10">
         Belum punya akun? 
-        <button type="button" onclick="switchAuthModal('signup')" class="text-[#023047] font-black hover:underline transition-all">
+        <button type="button" onclick="switchAuthModal('signup')" class="text-[#0F2C6B] font-black hover:underline transition-all">
           Daftar di sini
         </button>
       </div>
@@ -389,9 +404,9 @@
   </div>
 
   <!-- MODAL POP UP SIGN UP -->
-  <div id="signupModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4 transition-all">
+  <div id="signupModal" class="fixed inset-0 bg-slate-900/30 backdrop-blur-md flex items-center justify-center hidden z-50 p-4 transition-all">
     <div class="card-style w-full max-w-sm md:max-w-md p-6 md:p-8 relative bg-white text-gray-800 shadow-2xl overflow-hidden rounded-3xl max-h-[90vh] overflow-y-auto no-scrollbar">
-      <div class="absolute -top-16 -left-16 w-40 h-40 bg-[#10b981] rounded-full blur-3xl opacity-10"></div>
+      <div class="absolute -top-16 -left-16 w-40 h-40 bg-[#16A34A] rounded-full blur-3xl opacity-10"></div>
       <button onclick="closeSignupModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center transition-colors z-20">
         <i class="fa-solid fa-xmark"></i>
       </button>
@@ -400,7 +415,7 @@
         <div class="w-14 h-14 md:w-16 md:h-16 mb-2 p-1.5 bg-white rounded-2xl shadow-md border border-gray-100 flex items-center justify-center">
           <img src="LOGO FIX.png" alt="BeFAST Logo" class="w-full h-full object-contain">
         </div>
-        <h3 class="font-black text-lg md:text-xl text-[#023047]">Daftar Akun Baru</h3>
+        <h3 class="font-black text-lg md:text-xl text-[#0F2C6B]">Daftar Akun Baru</h3>
       </div>
       
       <div id="signupAlert" class="hidden mb-4 p-3 rounded-lg text-xs font-semibold relative z-10"></div>
@@ -408,33 +423,33 @@
       <form onsubmit="handleSignup(event)" class="space-y-3 relative z-10">
         <div>
           <label class="block text-[11px] md:text-xs font-bold text-gray-700 mb-1 ml-1">Nama Lengkap</label>
-          <input type="text" id="signupName" required placeholder="Budi Santoso" class="w-full p-2.5 rounded-xl border bg-gray-50 text-xs md:text-sm font-bold focus:ring-2 focus:ring-[#023047] outline-none">
+          <input type="text" id="signupName" required placeholder="Budi Santoso" class="w-full p-2.5 rounded-xl border bg-gray-50 text-xs md:text-sm font-bold input-apple outline-none">
         </div>
         <div>
           <label class="block text-[11px] md:text-xs font-bold text-gray-700 mb-1 ml-1">Email Resmi <span class="text-red-500 font-normal">*Wajib</span></label>
-          <input type="email" id="signupEmail" required placeholder="nama@gmail.com" class="w-full p-2.5 rounded-xl border bg-gray-50 text-xs md:text-sm font-bold focus:ring-2 focus:ring-[#023047] outline-none">
+          <input type="email" id="signupEmail" required placeholder="nama@gmail.com" class="w-full p-2.5 rounded-xl border bg-gray-50 text-xs md:text-sm font-bold input-apple outline-none">
         </div>
         <div>
           <label class="block text-[11px] md:text-xs font-bold text-gray-700 mb-1 ml-1">Nomor HP</label>
-          <input type="tel" id="signupPhone" required placeholder="081234567890" class="w-full p-2.5 rounded-xl border bg-gray-50 text-xs md:text-sm font-bold focus:ring-2 focus:ring-[#023047] outline-none">
+          <input type="tel" id="signupPhone" required placeholder="081234567890" class="w-full p-2.5 rounded-xl border bg-gray-50 text-xs md:text-sm font-bold input-apple outline-none">
         </div>
         <div>
           <label class="block text-[11px] md:text-xs font-bold text-gray-700 mb-1 ml-1">Kata Sandi (Min 6)</label>
           <div class="relative">
-            <input type="password" id="signupPassword" required minlength="6" placeholder="••••••••" class="w-full p-2.5 pr-10 rounded-xl border bg-gray-50 text-xs md:text-sm font-bold focus:ring-2 focus:ring-[#023047] outline-none">
+            <input type="password" id="signupPassword" required minlength="6" placeholder="••••••••" class="w-full p-2.5 pr-10 rounded-xl border bg-gray-50 text-xs md:text-sm font-bold input-apple outline-none">
             <button type="button" onclick="togglePassword('signupPassword', 'eyeIconSignup')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none">
               <i id="eyeIconSignup" class="fa-solid fa-eye"></i>
             </button>
           </div>
         </div>
-        <button type="submit" id="btnSignupSubmit" class="w-full py-3.5 mt-2 bg-[#10b981] text-white text-sm font-black rounded-xl hover:bg-[#059669] transition shadow-lg flex items-center justify-center gap-2">
+        <button type="submit" id="btnSignupSubmit" class="w-full py-3.5 mt-2 bg-[#16A34A] text-white text-sm font-black rounded-xl hover:bg-[#15803d] transition shadow-lg flex items-center justify-center gap-2">
           Buat Akun Sekarang
         </button>
       </form>
 
       <div class="mt-5 pt-4 border-t text-center text-xs md:text-sm font-semibold text-gray-600 relative z-10">
         Sudah punya akun? 
-        <button type="button" onclick="switchAuthModal('login')" class="text-[#023047] font-black hover:underline transition-all">
+        <button type="button" onclick="switchAuthModal('login')" class="text-[#0F2C6B] font-black hover:underline transition-all">
           Masuk di sini
         </button>
       </div>
@@ -442,18 +457,18 @@
   </div>
 
   <!-- MODAL POP UP EXPORT (BARU) -->
-  <div id="exportModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4 transition-all">
+  <div id="exportModal" class="fixed inset-0 bg-slate-900/30 backdrop-blur-md flex items-center justify-center hidden z-50 p-4 transition-all">
     <div class="card-style w-full max-w-md p-6 relative bg-white text-gray-800 shadow-2xl rounded-3xl overflow-hidden">
       <button onclick="closeExportModal()" class="absolute top-4 right-4 text-gray-400 hover:text-red-500 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center transition-colors z-20">
         <i class="fa-solid fa-xmark"></i>
       </button>
       
-      <h3 class="font-black text-lg text-[#023047] mb-5 border-b pb-3">⚙️ Pengaturan Laporan</h3>
+      <h3 class="font-black text-lg text-[#0F2C6B] mb-5 border-b pb-3">⚙️ Pengaturan Laporan</h3>
       
       <!-- Step 1: Pilih Waktu -->
       <div class="mb-5">
         <label class="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-widest">1. Pilih Periode Waktu</label>
-        <select id="exportPeriod" class="w-full p-3 rounded-xl border-2 border-gray-100 bg-gray-50 text-sm font-bold text-gray-800 outline-none focus:border-[#ffb703]">
+        <select id="exportPeriod" class="w-full p-3 rounded-xl border-2 border-gray-100 bg-gray-50 text-sm font-bold text-gray-800 outline-none focus:border-[#FACC15]">
           <option value="hari ini">Hari Ini</option>
           <option value="bulan ini">Bulan Ini</option>
           <option value="tahun ini">Tahun Ini</option>
@@ -488,7 +503,7 @@
         </div>
       </div>
 
-      <button onclick="processExport()" id="btnProcessExport" class="w-full py-3.5 bg-[#10b981] text-white text-sm font-black rounded-xl hover:bg-[#059669] transition shadow flex items-center justify-center gap-2">
+      <button onclick="processExport()" id="btnProcessExport" class="w-full py-3.5 bg-[#16A34A] text-white text-sm font-black rounded-xl hover:bg-[#15803d] transition shadow flex items-center justify-center gap-2">
         Download Sekarang <i class="fa-solid fa-arrow-down"></i>
       </button>
     </div>
@@ -1177,7 +1192,7 @@
 
       chartInstance = new Chart(ctx, {
         type: 'doughnut',
-        data: { labels: ['Pemasukan', 'Pengeluaran'], datasets: [{ data: [inc, exp], backgroundColor: ['#10b981', '#ef4444'], borderWidth: 0 }] },
+        data: { labels: ['Pemasukan', 'Pengeluaran'], datasets: [{ data: [inc, exp], backgroundColor: ['#16A34A', '#DC2626'], borderWidth: 0 }] },
         options: { responsive: true, maintainAspectRatio: false }
       });
 
@@ -1247,7 +1262,7 @@
             labels: Object.keys(catData),
             datasets: [{
               data: Object.values(catData),
-              backgroundColor: ['#ef4444', '#f97316', '#f59e0b', '#10b981', '#3b82f6', '#8b5cf6', '#ec4899', '#64748b'],
+              backgroundColor: ['#DC2626', '#f97316', '#f59e0b', '#16A34A', '#3b82f6', '#8b5cf6', '#ec4899', '#64748b'],
               borderWidth: 2, borderColor: '#ffffff'
             }]
           },
@@ -1392,7 +1407,7 @@
       let totalExp = dataList.filter(t => t.type === 'pengeluaran').reduce((a,b) => a + b.amount, 0);
 
       // Header PDF Laporan
-      doc.setFillColor(2, 48, 71); // Warna #023047
+      doc.setFillColor(2, 48, 71); // Warna #0F2C6B
       doc.rect(0, 0, 210, 40, 'F');
       
       // Render Logo di Kiri Atas
@@ -1508,7 +1523,7 @@
 
     if (SpeechRecognition) {
       recognition = new SpeechRecognition(); recognition.lang = 'id-ID'; recognition.continuous = false; recognition.interimResults = true;
-      recognition.onstart = () => { isListening = true; finalAccumulatedTranscript = ''; document.getElementById('btnMic').classList.add('mic-active', 'bg-red-500'); document.getElementById('speechStatus').innerText = "Sedang mendengarkan... Ngomong santai aja!"; };
+      recognition.onstart = () => { isListening = true; finalAccumulatedTranscript = ''; document.getElementById('btnMic').classList.add('mic-active', '!bg-[#DC2626]', '!text-white', '!shadow-[0_10px_30px_rgba(220,38,38,0.4)]'); document.getElementById('speechStatus').innerText = "Sedang mendengarkan... Ngomong santai aja!"; };
       recognition.onresult = (event) => {
         let interimTranscript = '';
         for (let i = event.resultIndex; i < event.results.length; i++) {
@@ -1520,7 +1535,7 @@
       };
       recognition.onerror = (event) => { if (event.error === 'no-speech') document.getElementById('speechStatus').innerText = "Belum terdengar suara nih."; };
       recognition.onend = () => {
-        isListening = false; document.getElementById('btnMic').classList.remove('mic-active', 'bg-red-500'); document.getElementById('speechStatus').innerText = "Klik mic lalu ngomong santai aja!";
+        isListening = false; document.getElementById('btnMic').classList.remove('mic-active', '!bg-[#DC2626]', '!text-white', '!shadow-[0_10px_30px_rgba(220,38,38,0.4)]'); document.getElementById('speechStatus').innerText = "Klik mic lalu ngomong santai aja!";
         const cmd = finalAccumulatedTranscript.toLowerCase().trim();
         if (cmd && cmd.length >= 3) processVoiceCommand(cmd);
       };
