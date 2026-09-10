@@ -2,7 +2,6 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <!-- Tag viewport ini WAJIB agar browser HP (Android/iOS) mengenali skala layar dengan benar -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>BeFAST - Best Financial Assistant</title>
   
@@ -15,6 +14,12 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <!-- Supabase CDN (v2) -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
+  <!-- TAMBAHAN LIBRARY EXPORT: EXCELJS & JSPDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+
   <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
@@ -50,7 +55,6 @@
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
 </head>
-<!-- Padding bawah diperbesar di mobile (pb-20) untuk menghindari tertutup menu navigasi browser HP -->
 <body class="theme-pastel min-h-screen pb-20 md:pb-12">
 
   <!-- Header & Navigation -->
@@ -124,7 +128,6 @@
       <h3 class="text-sm md:text-md font-bold mb-4 flex items-center gap-2 text-gray-800">
         <i class="fa-solid fa-keyboard text-[#ffb703]"></i> Input Transaksi Manual
       </h3>
-      <!-- Grid menyesuaikan layar: HP (1 kolom), Tablet (2 kolom), Laptop (6 kolom) -->
       <form id="manualForm" onsubmit="addManualTransaction(event)" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 md:gap-4">
         <div>
           <label class="block text-[11px] md:text-xs font-bold text-gray-500 mb-1">Jenis</label>
@@ -167,8 +170,7 @@
       </form>
     </section>
 
-    <!-- Quick Stats Cards (Corporate Style KPI) -->
-    <!-- Grid menyesuaikan layar: HP (1 kolom), Desktop (3 kolom) -->
+    <!-- Quick Stats Cards -->
     <section class="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
       <div class="card-style p-5 border-t-4 border-[#10b981] bg-white relative overflow-hidden">
         <i class="fa-solid fa-arrow-trend-up absolute -bottom-4 -right-4 text-6xl text-green-50 opacity-50"></i>
@@ -187,26 +189,20 @@
       </div>
     </section>
 
-    <!-- Download Buttons Section -->
-    <section class="card-style p-5 md:p-6 bg-white">
-      <h3 class="text-sm md:text-md font-bold mb-4 flex items-center gap-2 text-gray-800">
-        <i class="fa-solid fa-file-excel text-[#10b981]"></i> Download Laporan (CSV)
-      </h3>
-      <!-- Grid menyesuaikan layar: HP (2 kolom), Desktop (4 kolom) -->
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3">
-        <button onclick="downloadCSV('hari ini')" class="p-2.5 md:p-3 bg-[#ecfdf5] text-[#047857] rounded-lg text-xs font-bold hover:bg-[#d1fae5] transition flex items-center justify-center gap-1.5 shadow-sm">
-          <i class="fa-solid fa-calendar-day"></i> Hari Ini
-        </button>
-        <button onclick="downloadByPromptDate()" class="p-2.5 md:p-3 bg-[#ecfdf5] text-[#047857] rounded-lg text-xs font-bold hover:bg-[#d1fae5] transition flex items-center justify-center gap-1.5 shadow-sm">
-          <i class="fa-solid fa-calendar-days"></i> Per Tanggal
-        </button>
-        <button onclick="downloadCSV('bulan ini')" class="p-2.5 md:p-3 bg-[#ecfdf5] text-[#047857] rounded-lg text-xs font-bold hover:bg-[#d1fae5] transition flex items-center justify-center gap-1.5 shadow-sm">
-          <i class="fa-solid fa-calendar-week"></i> Bulan Ini
-        </button>
-        <button onclick="downloadCSV('tahun ini')" class="p-2.5 md:p-3 bg-[#ecfdf5] text-[#047857] rounded-lg text-xs font-bold hover:bg-[#d1fae5] transition flex items-center justify-center gap-1.5 shadow-sm">
-          <i class="fa-solid fa-calendar"></i> Tahun Ini
-        </button>
+    <!-- Download Buttons Section (SUDAH DIROMBAK) -->
+    <section class="card-style p-5 md:p-6 bg-white flex flex-col md:flex-row justify-between items-center gap-4">
+      <div class="flex items-center gap-3 w-full md:w-auto">
+        <div class="w-10 h-10 bg-emerald-100 rounded-xl flex items-center justify-center text-emerald-600 shadow-inner">
+          <i class="fa-solid fa-file-invoice text-lg"></i>
+        </div>
+        <div>
+          <h3 class="text-sm md:text-md font-bold text-gray-800">Export Laporan Keuangan</h3>
+          <p class="text-[10px] md:text-xs text-gray-500">Download Excel estetik atau PDF Rekening Koran.</p>
+        </div>
       </div>
+      <button onclick="openExportModal()" class="w-full md:w-auto px-6 py-3 bg-[#023047] text-white rounded-xl text-xs md:text-sm font-black hover:bg-[#044c70] transition shadow flex items-center justify-center gap-2">
+        <i class="fa-solid fa-download"></i> Buat Laporan
+      </button>
     </section>
 
     <!-- Transaction Table & Action Buttons -->
@@ -228,7 +224,6 @@
         </div>
       </div>
       
-      <!-- overflow-x-auto & whitespace-nowrap sangat penting agar tabel bisa digeser ke kanan di HP tanpa merusak desain -->
       <div class="overflow-x-auto no-scrollbar pb-2">
         <table class="w-full text-left text-sm whitespace-nowrap min-w-[600px]">
           <thead>
@@ -289,6 +284,7 @@
           </div>
         </div>
 
+        <!-- SECTION 2: BACA LAPORAN -->
         <div class="p-3 md:p-4 bg-indigo-50 rounded-xl border border-indigo-200">
           <h4 class="font-black text-indigo-900 text-xs md:text-sm mb-3 flex items-center gap-2">
             <i class="fa-solid fa-bullhorn text-indigo-600"></i> 2. Minta Dibacakan
@@ -426,6 +422,59 @@
           Masuk di sini
         </button>
       </div>
+    </div>
+  </div>
+
+  <!-- MODAL POP UP EXPORT (BARU) -->
+  <div id="exportModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4 transition-all">
+    <div class="card-style w-full max-w-md p-6 relative bg-white text-gray-800 shadow-2xl rounded-3xl overflow-hidden">
+      <button onclick="closeExportModal()" class="absolute top-4 right-4 text-gray-400 hover:text-red-500 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center transition-colors z-20">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      
+      <h3 class="font-black text-lg text-[#023047] mb-5 border-b pb-3">⚙️ Pengaturan Laporan</h3>
+      
+      <!-- Step 1: Pilih Waktu -->
+      <div class="mb-5">
+        <label class="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-widest">1. Pilih Periode Waktu</label>
+        <select id="exportPeriod" class="w-full p-3 rounded-xl border-2 border-gray-100 bg-gray-50 text-sm font-bold text-gray-800 outline-none focus:border-[#ffb703]">
+          <option value="hari ini">Hari Ini</option>
+          <option value="bulan ini">Bulan Ini</option>
+          <option value="tahun ini">Tahun Ini</option>
+          <option value="semua">Semua Waktu (All Time)</option>
+        </select>
+      </div>
+
+      <!-- Step 2: Pilih Format -->
+      <div class="mb-6">
+        <label class="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-widest">2. Pilih Format Dokumen</label>
+        <div class="grid grid-cols-2 gap-3">
+          <!-- Radio Excel -->
+          <label class="cursor-pointer relative">
+            <input type="radio" name="exportFormat" value="excel" class="peer sr-only" checked>
+            <div class="p-3 rounded-xl border-2 border-gray-100 hover:bg-green-50 peer-checked:border-green-500 peer-checked:bg-green-50 text-center transition">
+              <i class="fa-solid fa-file-excel text-3xl text-green-600 mb-2"></i>
+              <div class="font-bold text-sm text-gray-800">Microsoft Excel</div>
+              <div class="text-[10px] text-gray-400">Styling Rapi (.xlsx)</div>
+            </div>
+            <div class="absolute top-2 right-2 hidden peer-checked:block text-green-500"><i class="fa-solid fa-circle-check"></i></div>
+          </label>
+          <!-- Radio PDF -->
+          <label class="cursor-pointer relative">
+            <input type="radio" name="exportFormat" value="pdf" class="peer sr-only">
+            <div class="p-3 rounded-xl border-2 border-gray-100 hover:bg-red-50 peer-checked:border-red-500 peer-checked:bg-red-50 text-center transition">
+              <i class="fa-solid fa-file-pdf text-3xl text-red-600 mb-2"></i>
+              <div class="font-bold text-sm text-gray-800">Dokumen PDF</div>
+              <div class="text-[10px] text-gray-400">Siap Cetak (.pdf)</div>
+            </div>
+            <div class="absolute top-2 right-2 hidden peer-checked:block text-red-500"><i class="fa-solid fa-circle-check"></i></div>
+          </label>
+        </div>
+      </div>
+
+      <button onclick="processExport()" id="btnProcessExport" class="w-full py-3.5 bg-[#10b981] text-white text-sm font-black rounded-xl hover:bg-[#059669] transition shadow flex items-center justify-center gap-2">
+        Download Sekarang <i class="fa-solid fa-arrow-down"></i>
+      </button>
     </div>
   </div>
 
@@ -782,7 +831,7 @@
       document.getElementById('cardBalance').innerText = `Rp ${(totalInc - totalExp).toLocaleString('id-ID')}`;
     }
 
-    // Tools Tanggal dan Parsing Suara (Sama seperti sebelumnya)
+    // Tools Tanggal dan Parsing Suara
     function getLocalDateStr(dateObj = new Date()) {
       const year = dateObj.getFullYear();
       const month = String(dateObj.getMonth() + 1).padStart(2, '0');
@@ -820,11 +869,11 @@
     }
     window.speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.getVoices(); };
 
-    // --- Logika NLP dan Chart Sama ---
+    // --- Logika NLP dan Chart ---
     function parseNominal(str) {
       if (!str) return 0;
       let raw = str.toLowerCase().replace(/tanggal\s*\d{1,2}/gi, '').replace(/tahun\s*\d{4}/gi, '').replace(/rp|rupiah/gi, '').trim();
-      let formattedMatches = raw.match(/\b\d{1,3}(\.\d{3})+(,\d+)?\b|\b\d{1,3}(,\d{3})+(\.\d+)?\b/g);
+      let formattedMatches = raw.match(/ \d{1,3}(\.\d{3})+(,\d+)? | \d{1,3}(,\d{3})+(\.\d+)? /g);
       if (formattedMatches && formattedMatches.length > 0) {
         let maxVal = 0;
         for (let match of formattedMatches) {
@@ -834,7 +883,7 @@
         }
         if (maxVal > 0) return maxVal;
       }
-      let text = raw.replace(/\bjt\b/g, 'juta').replace(/\bsejuta\b/g, '1 juta').replace(/\bseribu\b/g, '1 ribu').replace(/\bseratus\b/g, '1 ratus').replace(/\bsebelas\b/g, '11').replace(/\bsepuluh\b/g, '10').replace(/(\d+|satu|dua|tiga|empat|lima|enam|tujuh|delapan|sembilan)?\s*setengah\s*(juta|milyar|miliar|ribu|rb|k)/gi, (m, p1, p2) => {
+      let text = raw.replace(/ jt /g, 'juta').replace(/ sejuta /g, '1 juta').replace(/ seribu /g, '1 ribu').replace(/ seratus /g, '1 ratus').replace(/ sebelas /g, '11').replace(/ sepuluh /g, '10').replace(/(\d+|satu|dua|tiga|empat|lima|enam|tujuh|delapan|sembilan)?\s*setengah\s*(juta|milyar|miliar|ribu|rb|k)/gi, (m, p1, p2) => {
         let base = 0;
         if (p1) {
           if (!isNaN(parseFloat(p1))) base = parseFloat(p1);
@@ -874,10 +923,10 @@
       
       let desc = cmd.replace(/(pemasukan|pengeluaran|masuk|keluar|beli|bayar|dapet|dapat|catat|tambah|tolong|rp|rupiah)/gi, '')
                     .replace(/(kemarin|kemaren|hari ini|tanggal\s*\d{1,2})/gi, '')
-                    .replace(/\b(bulan|tahun)\s+(lalu|kemarin|ini)\b/gi, '')
-                    .replace(/\b\d{1,3}(\.\d{3})+(,\d+)?\b|\b\d{1,3}(,\d{3})+(\.\d+)?\b/g, '')
-                    .replace(/\b(nol|satu|dua|tiga|empat|lima|enam|tujuh|delapan|sembilan|sepuluh|sebelas|belas|puluh|ratus|ribu|rb|k|juta|jt|miliar|milyar|setengah|se|sejuta|seribu|seratus)\b/gi, '')
-                    .replace(/\b\d+\b/g, '')
+                    .replace(/ (bulan|tahun)\s+(lalu|kemarin|ini) /gi, '')
+                    .replace(/ \d{1,3}(\.\d{3})+(,\d+)? | \d{1,3}(,\d{3})+(\.\d+)? /g, '')
+                    .replace(/ (nol|satu|dua|tiga|empat|lima|enam|tujuh|delapan|sembilan|sepuluh|sebelas|belas|puluh|ratus|ribu|rb|k|juta|jt|miliar|milyar|setengah|se|sejuta|seribu|seratus) /gi, '')
+                    .replace(/ \d+ /g, '')
                     .replace(/\s+/g, ' ').trim();
       
       if (!desc) { desc = type === 'pemasukan' ? 'Pemasukan Lain' : 'Pengeluaran Lain'; } else { desc = desc.charAt(0).toUpperCase() + desc.slice(1); }
@@ -899,7 +948,7 @@
         return { label: "tahun lalu", func: t => t.date.startsWith(yr) };
       }
 
-      let yearMatch = cmd.match(/tahun\s*(\d{4})/i) || cmd.match(/\b(20\d{2})\b/);
+      let yearMatch = cmd.match(/tahun\s*(\d{4})/i) || cmd.match(/ (20\d{2}) /);
       let targetYear = yearMatch ? (yearMatch[1] || yearMatch[0]) : null;
       let targetMonth = null;
       for (let mName in monthNames) { if (cmd.includes(mName)) { targetMonth = monthNames[mName]; break; } }
@@ -948,7 +997,7 @@
       let scope = parseDateScopeFromCommand(cmd);
 
       let keyword = cmd.replace(/(hapus|delete|hilangin|bersihin|buang|pemasukan|pengeluaran|masuk|keluar|dapet|dapat|beli|bayar|semua|semuanya)/gi, '')
-        .replace(/(kemarin|kemaren|hari ini|bulan ini|bulan lalu|bulan kemarin|tahun ini|tahun lalu|tahun kemarin|tanggal\s*\d{1,2}|tahun\s*\d{4}|\b20\d{2}\b)/gi, '').trim();
+        .replace(/(kemarin|kemaren|hari ini|bulan ini|bulan lalu|bulan kemarin|tahun ini|tahun lalu|tahun kemarin|tanggal\s*\d{1,2}|tahun\s*\d{4}| 20\d{2} )/gi, '').trim();
 
       let itemsToDelete = transactions.filter(t => {
         if (isIncome && t.type !== 'pemasukan') return false;
@@ -973,7 +1022,7 @@
     }
 
     async function executeVoiceEdit(cmd) {
-      let parts = cmd.split(/\b(jadi|menjadi)\b/i);
+      let parts = cmd.split(/ (jadi|menjadi) /i);
       if (parts.length < 3) return speak("Format edit belum pas nih gaes. Contohnya: Edit pengeluaran kopi kemarin jadi lima puluh ribu.");
 
       let targetPart = parts[0].trim();
@@ -986,7 +1035,7 @@
       let scope = parseDateScopeFromCommand(targetPart);
 
       let keyword = targetPart.replace(/(ubah|edit|ganti|pemasukan|pengeluaran|masuk|keluar|beli|bayar|dapet|dapat|transaksi|nominal|deskripsi|keterangan)/gi, '')
-        .replace(/(kemarin|kemaren|hari ini|bulan ini|bulan lalu|bulan kemarin|tahun ini|tahun lalu|tahun kemarin|tanggal\s*\d{1,2}|tahun\s*\d{4}|\b20\d{2}\b)/gi, '').trim();
+        .replace(/(kemarin|kemaren|hari ini|bulan ini|bulan lalu|bulan kemarin|tahun ini|tahun lalu|tahun kemarin|tanggal\s*\d{1,2}|tahun\s*\d{4}| 20\d{2} )/gi, '').trim();
 
       let matches = transactions.filter(t => {
         if (targetType && t.type !== targetType) return false;
@@ -1066,74 +1115,6 @@
       }
     }
 
-    function generateAndDownloadCSV(dataList, fileName, periodLabel) {
-      const user = getCurrentUser();
-      const userName = user ? (user.user_metadata?.full_name || user.user_metadata?.phone_number || user.email?.split('@')[0]) : 'Pengguna Tamu';
-      
-      let totalInc = dataList.filter(t => t.type === 'pemasukan').reduce((a,b) => a + b.amount, 0);
-      let totalExp = dataList.filter(t => t.type === 'pengeluaran').reduce((a,b) => a + b.amount, 0);
-      let netBalance = totalInc - totalExp;
-
-      const printDate = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' });
-
-      let csvContent = "\uFEFF"; 
-      csvContent += "BEFAST FINANCIAL INTELLIGENCE REPORT\n";
-      csvContent += "======================================================================\n\n";
-
-      csvContent += "1. INFORMASI DOKUMEN\n";
-      csvContent += "----------------------------------------------------------------------\n";
-      csvContent += `Nama Pemilik Akun,:,${userName}\n`;
-      csvContent += `Periode Analisis,:,${periodLabel.toUpperCase()}\n`;
-      csvContent += `Waktu Cetak Dokumen,:,${printDate}\n\n`;
-
-      csvContent += "2. RINGKASAN EKSEKUTIF (EXECUTIVE SUMMARY)\n";
-      csvContent += "----------------------------------------------------------------------\n";
-      csvContent += `Total Debit (Pemasukan),:,Rp ${totalInc.toLocaleString('id-ID')}\n`;
-      csvContent += `Total Kredit (Pengeluaran),:,Rp ${totalExp.toLocaleString('id-ID')}\n`;
-      csvContent += `NET BALANCE (Saldo Bersih),:,Rp ${netBalance.toLocaleString('id-ID')}\n`;
-      csvContent += `Total Transaksi Tercatat,:,${dataList.length} Transaksi\n\n`;
-
-      csvContent += "3. BUKU BESAR (LEDGER DETAIL)\n";
-      csvContent += "----------------------------------------------------------------------\n";
-      csvContent += "TANGGAL,KATEGORI,KETERANGAN,DEBIT (MASUK),KREDIT (KELUAR)\n";
-
-      dataList.sort((a,b) => new Date(b.date) - new Date(a.date)).forEach(t => {
-        const cat = t.category || detectCategory(t.desc, t.type);
-        const cleanDesc = t.desc.replace(/"/g, '""'); 
-        let masuk = t.type === 'pemasukan' ? t.amount : 0;
-        let keluar = t.type === 'pengeluaran' ? t.amount : 0;
-        csvContent += `"${t.date}","${cat}","${cleanDesc}",${masuk},${keluar}\n`;
-      });
-
-      csvContent += "\n======================================================================\n";
-      csvContent += "Dokumen ini di-generate secara otomatis oleh Sistem AI BeFAST.\n";
-
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a'); a.href = url; a.download = `${fileName}_${Date.now()}.csv`;
-      document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
-    }
-
-    function executeVoiceDownload(cmd) {
-      let scope = parseDateScopeFromCommand(cmd);
-      let filtered = transactions;
-      if (scope.label !== 'keseluruhan') filtered = transactions.filter(scope.func);
-
-      if (filtered.length === 0) return speak(`Gak ada data transaksi buat laporan ${scope.label}.`);
-      generateAndDownloadCSV(filtered, `Laporan_Keuangan_${scope.label.replace(/\s+/g, '_')}`, scope.label);
-      speak(`Laporan keuangan ${scope.label} berhasil di-download!`);
-    }
-
-    function downloadCSV(scope) { executeVoiceDownload(`download laporan ${scope}`); }
-    function downloadByPromptDate() {
-      let targetDate = prompt("Masukkan tanggal laporan (YYYY-MM-DD):", getLocalDateStr());
-      if (targetDate) {
-        let filtered = transactions.filter(t => t.date === targetDate);
-        if (filtered.length === 0) return alert("Tidak ada transaksi di tanggal tersebut.");
-        generateAndDownloadCSV(filtered, `Laporan_Keuangan_${targetDate}`, `TANGGAL ${targetDate}`);
-      }
-    }
-
     function showChartModal(scopeCmd) {
       const modal = document.getElementById('chartModal');
       modal.classList.remove('hidden');
@@ -1169,13 +1150,193 @@
     }
     function closeChartModal() { document.getElementById('chartModal').classList.add('hidden'); if (modalTimer) clearTimeout(modalTimer); }
 
+    // --- SISTEM EXPORT BARU (EXCELJS & JSPDF) ---
+    function openExportModal() { 
+      if (!getCurrentUser()) { openLoginModal(); return; }
+      document.getElementById('exportModal').classList.remove('hidden'); 
+    }
+    function closeExportModal() { document.getElementById('exportModal').classList.add('hidden'); }
+
+    async function processExport() {
+      const periodCmd = document.getElementById('exportPeriod').value;
+      const format = document.querySelector('input[name="exportFormat"]:checked').value;
+      
+      let scope = { label: 'semua', func: () => true };
+      if (periodCmd !== 'semua') scope = parseDateScopeFromCommand(periodCmd);
+
+      let filtered = transactions;
+      if (scope.label !== 'semua') filtered = transactions.filter(scope.func);
+
+      if (filtered.length === 0) return alert(`Tidak ada data transaksi untuk periode: ${scope.label}`);
+
+      const btn = document.getElementById('btnProcessExport');
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Memproses...';
+      
+      setTimeout(async () => {
+        if (format === 'excel') await generateExcel(filtered, scope.label);
+        else generatePDF(filtered, scope.label);
+        
+        btn.innerHTML = 'Download Sekarang <i class="fa-solid fa-arrow-down"></i>';
+        closeExportModal();
+        speak(`Dokumen ${format} untuk periode ${scope.label} berhasil didownload.`);
+      }, 800);
+    }
+
+    async function generateExcel(dataList, periodLabel) {
+      const user = getCurrentUser();
+      const userName = user ? (user.user_metadata?.full_name || 'Pengguna') : 'Pengguna';
+      
+      let totalInc = dataList.filter(t => t.type === 'pemasukan').reduce((a,b) => a + b.amount, 0);
+      let totalExp = dataList.filter(t => t.type === 'pengeluaran').reduce((a,b) => a + b.amount, 0);
+      let netBalance = totalInc - totalExp;
+
+      const workbook = new ExcelJS.Workbook();
+      const sheet = workbook.addWorksheet('Laporan Keuangan');
+
+      // Styling Background Header (Biru Corporate / Emerald)
+      sheet.mergeCells('A1:E2');
+      const titleCell = sheet.getCell('A1');
+      titleCell.value = 'LAPORAN KEUANGAN BeFAST';
+      titleCell.font = { name: 'Arial', size: 16, bold: true, color: { argb: 'FFFFFFFF' } };
+      titleCell.alignment = { vertical: 'middle', horizontal: 'center' };
+      titleCell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF023047' } };
+
+      // Metadata user
+      sheet.getCell('A4').value = 'Nama Pemilik:'; sheet.getCell('B4').value = userName;
+      sheet.getCell('A5').value = 'Periode:'; sheet.getCell('B5').value = periodLabel.toUpperCase();
+      sheet.getCell('A4').font = { bold: true }; sheet.getCell('A5').font = { bold: true };
+
+      // Kotak Rangkuman
+      sheet.getCell('D4').value = 'Total Pemasukan:'; sheet.getCell('E4').value = totalInc;
+      sheet.getCell('D5').value = 'Total Pengeluaran:'; sheet.getCell('E5').value = totalExp;
+      sheet.getCell('D6').value = 'Saldo Bersih:'; sheet.getCell('E6').value = netBalance;
+      
+      // Styling Angka Rangkuman
+      ['E4', 'E5', 'E6'].forEach(c => { 
+        sheet.getCell(c).numFmt = '"Rp"#,##0'; 
+        sheet.getCell(c).font = { bold: true };
+      });
+      sheet.getCell('E4').font.color = { argb: 'FF10B981' }; // Hijau
+      sheet.getCell('E5').font.color = { argb: 'FFEF4444' }; // Merah
+      sheet.getCell('E6').font.color = { argb: 'FF3B82F6' }; // Biru
+
+      // Header Tabel (Baris 8)
+      const headerRow = sheet.getRow(8);
+      headerRow.values = ['TANGGAL', 'KATEGORI', 'KETERANGAN', 'DEBIT (MASUK)', 'KREDIT (KELUAR)'];
+      headerRow.eachCell((cell) => {
+        cell.font = { bold: true, color: { argb: 'FFFFFFFF' } };
+        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF10B981' } };
+        cell.alignment = { horizontal: 'center', vertical: 'middle' };
+        cell.border = { top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'} };
+      });
+
+      // Data Baris
+      let currentRow = 9;
+      dataList.sort((a,b) => new Date(b.date) - new Date(a.date)).forEach((t, i) => {
+        const cat = t.category || detectCategory(t.desc, t.type);
+        let masuk = t.type === 'pemasukan' ? t.amount : 0;
+        let keluar = t.type === 'pengeluaran' ? t.amount : 0;
+        
+        const row = sheet.getRow(currentRow);
+        row.values = [t.date, cat, t.desc, masuk, keluar];
+        
+        // Zebra cross styling
+        if(i % 2 === 0) {
+          row.eachCell({ includeEmpty: true }, cell => { cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF9FAFB' } }; });
+        }
+
+        row.getCell(4).numFmt = '"Rp"#,##0';
+        row.getCell(5).numFmt = '"Rp"#,##0';
+        row.eachCell({ includeEmpty: true }, cell => { cell.border = { top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'} }; });
+        currentRow++;
+      });
+
+      // Atur Lebar Kolom
+      sheet.getColumn(1).width = 15;
+      sheet.getColumn(2).width = 25;
+      sheet.getColumn(3).width = 40;
+      sheet.getColumn(4).width = 20;
+      sheet.getColumn(5).width = 20;
+
+      // Ekspor & Download
+      const buffer = await workbook.xlsx.writeBuffer();
+      const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; 
+      a.download = `BeFAST_Report_${periodLabel.replace(/\s/g, '_')}.xlsx`;
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    }
+
+    function generatePDF(dataList, periodLabel) {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      
+      const user = getCurrentUser();
+      const userName = user ? (user.user_metadata?.full_name || 'Pengguna') : 'Pengguna';
+      const printDate = new Date().toLocaleDateString('id-ID');
+
+      let totalInc = dataList.filter(t => t.type === 'pemasukan').reduce((a,b) => a + b.amount, 0);
+      let totalExp = dataList.filter(t => t.type === 'pengeluaran').reduce((a,b) => a + b.amount, 0);
+
+      // Header Laporan
+      doc.setFillColor(2, 48, 71); // #023047
+      doc.rect(0, 0, 210, 40, 'F');
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(22);
+      doc.text("BeFAST FINANCIAL REPORT", 105, 20, { align: "center" });
+      doc.setFontSize(10);
+      doc.text(`Periode: ${periodLabel.toUpperCase()}`, 105, 28, { align: "center" });
+
+      // Info User
+      doc.setTextColor(50, 50, 50);
+      doc.setFontSize(10);
+      doc.text(`Nama Akun   : ${userName}`, 14, 50);
+      doc.text(`Tanggal Cetak : ${printDate}`, 14, 55);
+
+      // Rangkuman
+      doc.setFont("helvetica", "bold");
+      doc.text(`Total Pemasukan   : Rp ${totalInc.toLocaleString('id-ID')}`, 130, 50);
+      doc.text(`Total Pengeluaran : Rp ${totalExp.toLocaleString('id-ID')}`, 130, 55);
+      doc.text(`Saldo Bersih      : Rp ${(totalInc - totalExp).toLocaleString('id-ID')}`, 130, 60);
+
+      // Tabel Data Autotable
+      const tableData = dataList.sort((a,b) => new Date(b.date) - new Date(a.date)).map(t => {
+        let cat = t.category || detectCategory(t.desc, t.type);
+        let masuk = t.type === 'pemasukan' ? `Rp ${t.amount.toLocaleString('id-ID')}` : '-';
+        let keluar = t.type === 'pengeluaran' ? `Rp ${t.amount.toLocaleString('id-ID')}` : '-';
+        return [t.date, cat, t.desc, masuk, keluar];
+      });
+
+      doc.autoTable({
+        startY: 70,
+        head: [['Tanggal', 'Kategori', 'Keterangan', 'Masuk', 'Keluar']],
+        body: tableData,
+        headStyles: { fillColor: [16, 185, 129], textColor: [255, 255, 255], fontStyle: 'bold' },
+        alternateRowStyles: { fillColor: [249, 250, 251] },
+        columnStyles: {
+          0: { cellWidth: 25 },
+          3: { halign: 'right' },
+          4: { halign: 'right' }
+        },
+        styles: { fontSize: 9 }
+      });
+
+      doc.save(`BeFAST_Report_${periodLabel.replace(/\s/g, '_')}.pdf`);
+    }
+
+    // Eksekusi Download Suara diarahkan ke Modal Export
+    function executeVoiceDownload(cmd) {
+       openExportModal(); 
+       speak("Pilih periode dan format laporannya ya.");
+    }
+
     async function processVoiceCommand(cmd) {
       const user = getCurrentUser();
       if (!user) { openLoginModal(); return; }
 
       if (cmd.includes('edit') || cmd.includes('ubah') || cmd.includes('ganti')) { executeVoiceEdit(cmd); return; }
       if (cmd.includes('hapus') || cmd.includes('delete') || cmd.includes('hilangin') || cmd.includes('bersihin') || cmd.includes('buang')) { executeVoiceDelete(cmd); return; }
-      if (cmd.includes('download') || cmd.includes('unduh') || cmd.includes('simpan csv') || cmd.includes('ekspor')) { executeVoiceDownload(cmd); return; }
+      if (cmd.includes('download') || cmd.includes('unduh') || cmd.includes('simpan') || cmd.includes('ekspor') || cmd.includes('laporan pdf') || cmd.includes('laporan excel')) { executeVoiceDownload(cmd); return; }
       if (cmd.includes('grafik') || cmd.includes('chart')) { showChartModal(cmd); return; }
 
       const nominal = parseNominal(cmd);
