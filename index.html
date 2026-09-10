@@ -2,7 +2,8 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Tag viewport ini WAJIB agar browser HP (Android/iOS) mengenali skala layar dengan benar -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>BeFAST - Best Financial Assistant</title>
   
   <!-- INTEGRASI FAVICON LOGO -->
@@ -44,32 +45,42 @@
       70% { transform: scale(1.08); box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); }
       100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
     }
+    /* Sembunyikan scrollbar tapi tetap bisa di-scroll (untuk tabel di HP) */
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
 </head>
-<body class="theme-pastel min-h-screen pb-12">
+<!-- Padding bawah diperbesar di mobile (pb-20) untuk menghindari tertutup menu navigasi browser HP -->
+<body class="theme-pastel min-h-screen pb-20 md:pb-12">
 
   <!-- Header & Navigation -->
-  <header class="p-4 shadow-sm bg-white border-b mb-6">
-    <div class="max-w-4xl mx-auto flex justify-between items-center flex-wrap gap-3">
+  <header class="p-3 md:p-4 shadow-sm bg-white border-b mb-4 md:mb-6 sticky top-0 z-40">
+    <div class="max-w-4xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-3">
       
       <!-- BRANDING AREA -->
-      <div class="flex items-center gap-3">
-        <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center p-1 drop-shadow-md">
-          <img src="LOGO FIX.png" alt="BeFAST Logo" class="w-full h-full object-contain">
+      <div class="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-start">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 md:w-14 md:h-14 bg-white rounded-2xl flex items-center justify-center p-1 drop-shadow-md">
+            <img src="LOGO FIX.png" alt="BeFAST Logo" class="w-full h-full object-contain">
+          </div>
+          <div class="flex flex-col justify-center">
+            <h1 class="text-xl md:text-2xl font-black text-[#5e2e10] tracking-tight leading-tight">BeFAST</h1>
+            <p class="text-[10px] md:text-[11px] font-bold text-[#8a5d43] leading-tight">Best Financial Assistant</p>
+          </div>
         </div>
-        <div class="flex flex-col justify-center">
-          <h1 class="text-2xl font-black text-[#5e2e10] tracking-tight leading-tight">BeFAST</h1>
-          <p class="text-[11px] font-bold text-[#8a5d43] leading-tight">Best Financial Assistant</p>
-          <p class="text-[10px] text-gray-500 italic mt-0.5">"Catat Keuangan, Semudah Bicara"</p>
-        </div>
+        
+        <!-- Tombol Panduan Pindah ke Sini di Mobile agar lebih ringkas -->
+        <button onclick="openGuideModal()" class="sm:hidden px-3 py-2 bg-[#ffb703] text-[#5e2e10] rounded-lg text-xs font-bold hover:bg-[#fb8500] transition shadow">
+          <i class="fa-solid fa-microphone-lines"></i>
+        </button>
       </div>
       
-      <div class="flex items-center gap-2">
-        <button onclick="openGuideModal()" class="px-3 py-2 bg-[#ffb703] text-[#5e2e10] rounded-lg text-xs font-bold hover:bg-[#fb8500] transition flex items-center gap-1.5 shadow">
+      <div class="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
+        <button onclick="openGuideModal()" class="hidden sm:flex px-3 py-2 bg-[#ffb703] text-[#5e2e10] rounded-lg text-xs font-bold hover:bg-[#fb8500] transition items-center gap-1.5 shadow">
           <i class="fa-solid fa-microphone-lines"></i> Panduan Suara
         </button>
 
-        <div id="authLoggedOut" class="flex items-center gap-2">
+        <div id="authLoggedOut" class="flex items-center gap-2 w-full sm:w-auto justify-end">
           <button onclick="openLoginModal()" class="px-3 py-2 bg-white hover:bg-gray-50 text-blue-800 border border-blue-200 rounded-lg text-xs font-bold transition flex items-center gap-1 shadow-sm">
             <i class="fa-solid fa-right-to-bracket"></i> Masuk
           </button>
@@ -78,10 +89,10 @@
           </button>
         </div>
 
-        <div id="authLoggedIn" class="hidden flex items-center gap-2">
-          <div class="flex items-center gap-1.5 bg-gray-50 px-2.5 py-1.5 rounded-lg border text-xs font-semibold text-[#023047] shadow-sm">
+        <div id="authLoggedIn" class="hidden flex items-center gap-2 w-full sm:w-auto justify-end">
+          <div class="flex items-center gap-1.5 bg-gray-50 px-2.5 py-1.5 rounded-lg border text-xs font-semibold text-[#023047] shadow-sm truncate max-w-[150px] md:max-w-xs">
             <img src="LOGO FIX.png" class="w-4 h-4 object-contain">
-            <span id="userGreeting">Hai, Pengguna</span>
+            <span id="userGreeting" class="truncate">Hai, Pengguna</span>
           </div>
           <button onclick="handleLogout()" class="px-2.5 py-2 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 rounded-lg text-xs font-bold transition flex items-center gap-1" title="Keluar">
             <i class="fa-solid fa-arrow-right-from-bracket"></i>
@@ -91,42 +102,43 @@
     </div>
   </header>
 
-  <main class="max-w-4xl mx-auto px-4 space-y-6">
+  <main class="max-w-4xl mx-auto px-4 space-y-4 md:space-y-6">
 
     <!-- Voice Control Center -->
-    <section class="card-style p-6 text-center relative overflow-hidden bg-gradient-to-br from-[#f8fdf9] to-[#eefcf2]">
-      <h2 class="text-lg font-black text-[#023047] mb-1">KONTROL SUARA JARVIS</h2>
-      <p id="speechStatus" class="text-sm text-gray-500 mb-5">Klik logo mic, lalu ucapkan perintahmu!</p>
+    <section class="card-style p-5 md:p-6 text-center relative overflow-hidden bg-gradient-to-br from-[#f8fdf9] to-[#eefcf2]">
+      <h2 class="text-md md:text-lg font-black text-[#023047] mb-1">KONTROL SUARA JARVIS</h2>
+      <p id="speechStatus" class="text-xs md:text-sm text-gray-500 mb-5">Klik logo mic, lalu ucapkan perintahmu!</p>
 
-      <button id="btnMic" class="w-24 h-24 bg-[#10b981] text-white rounded-full text-4xl shadow-xl hover:bg-[#059669] hover:scale-105 transition-all flex items-center justify-center mx-auto mb-5">
+      <button id="btnMic" class="w-20 h-20 md:w-24 md:h-24 bg-[#10b981] text-white rounded-full text-3xl md:text-4xl shadow-xl hover:bg-[#059669] hover:scale-105 transition-all flex items-center justify-center mx-auto mb-5">
         <i class="fa-solid fa-microphone"></i>
       </button>
 
-      <div class="bg-white p-3 rounded-xl max-w-lg mx-auto border shadow-sm">
-        <p class="text-xs text-gray-400 font-bold mb-1 uppercase tracking-wider">Deteksi Suara AI:</p>
-        <p id="transcriptText" class="text-sm italic font-medium text-gray-700">"Belum ada ucapan..."</p>
+      <div class="bg-white p-3 rounded-xl w-full max-w-lg mx-auto border shadow-sm">
+        <p class="text-[10px] md:text-xs text-gray-400 font-bold mb-1 uppercase tracking-wider">Deteksi Suara AI:</p>
+        <p id="transcriptText" class="text-xs md:text-sm italic font-medium text-gray-700 break-words">"Belum ada ucapan..."</p>
       </div>
     </section>
 
     <!-- FORM INPUT MANUAL -->
-    <section class="card-style p-6">
-      <h3 class="text-md font-bold mb-4 flex items-center gap-2 text-gray-800">
+    <section class="card-style p-5 md:p-6">
+      <h3 class="text-sm md:text-md font-bold mb-4 flex items-center gap-2 text-gray-800">
         <i class="fa-solid fa-keyboard text-[#ffb703]"></i> Input Transaksi Manual
       </h3>
-      <form id="manualForm" onsubmit="addManualTransaction(event)" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-3">
+      <!-- Grid menyesuaikan layar: HP (1 kolom), Tablet (2 kolom), Laptop (6 kolom) -->
+      <form id="manualForm" onsubmit="addManualTransaction(event)" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 md:gap-4">
         <div>
-          <label class="block text-xs font-bold text-gray-500 mb-1">Jenis</label>
+          <label class="block text-[11px] md:text-xs font-bold text-gray-500 mb-1">Jenis</label>
           <select id="manualType" class="w-full p-2.5 rounded-lg border text-xs bg-gray-50 text-gray-800 font-bold focus:ring-2 focus:ring-[#023047] outline-none">
             <option value="pengeluaran">Pengeluaran</option>
             <option value="pemasukan">Pemasukan</option>
           </select>
         </div>
         <div>
-          <label class="block text-xs font-bold text-gray-500 mb-1">Tanggal</label>
+          <label class="block text-[11px] md:text-xs font-bold text-gray-500 mb-1">Tanggal</label>
           <input type="date" id="manualDate" class="w-full p-2.5 rounded-lg border text-xs bg-gray-50 text-gray-800 font-bold focus:ring-2 focus:ring-[#023047] outline-none" required>
         </div>
         <div>
-          <label class="block text-xs font-bold text-gray-500 mb-1">Kategori</label>
+          <label class="block text-[11px] md:text-xs font-bold text-gray-500 mb-1">Kategori</label>
           <select id="manualCategory" class="w-full p-2.5 rounded-lg border text-xs bg-gray-50 text-gray-800 font-bold focus:ring-2 focus:ring-[#023047] outline-none">
             <option value="Otomatis">✨ Otomatis (AI)</option>
             <option value="Makanan & Minuman">🍔 Makanan & Minuman</option>
@@ -140,14 +152,14 @@
           </select>
         </div>
         <div>
-          <label class="block text-xs font-bold text-gray-500 mb-1">Keterangan</label>
+          <label class="block text-[11px] md:text-xs font-bold text-gray-500 mb-1">Keterangan</label>
           <input type="text" id="manualDesc" placeholder="Contoh: Beli Kopi" class="w-full p-2.5 rounded-lg border text-xs bg-gray-50 text-gray-800 font-bold focus:ring-2 focus:ring-[#023047] outline-none" required>
         </div>
         <div>
-          <label class="block text-xs font-bold text-gray-500 mb-1">Nominal (Rp)</label>
+          <label class="block text-[11px] md:text-xs font-bold text-gray-500 mb-1">Nominal (Rp)</label>
           <input type="number" id="manualAmount" placeholder="25000" min="1" class="w-full p-2.5 rounded-lg border text-xs bg-gray-50 text-gray-800 font-bold focus:ring-2 focus:ring-[#023047] outline-none" required>
         </div>
-        <div class="flex items-end">
+        <div class="flex items-end sm:col-span-2 lg:col-span-1 mt-2 lg:mt-0">
           <button type="submit" class="w-full p-2.5 bg-[#023047] text-white rounded-lg text-xs font-bold hover:bg-[#044c70] transition shadow flex items-center justify-center gap-1.5">
             <i class="fa-solid fa-plus"></i> Tambah
           </button>
@@ -156,76 +168,80 @@
     </section>
 
     <!-- Quick Stats Cards (Corporate Style KPI) -->
-    <section class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <!-- Grid menyesuaikan layar: HP (1 kolom), Desktop (3 kolom) -->
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
       <div class="card-style p-5 border-t-4 border-[#10b981] bg-white relative overflow-hidden">
         <i class="fa-solid fa-arrow-trend-up absolute -bottom-4 -right-4 text-6xl text-green-50 opacity-50"></i>
-        <div class="text-[10px] text-gray-400 font-black uppercase tracking-widest mb-1">Total Pemasukan</div>
-        <div id="cardIncome" class="text-3xl font-black text-[#023047]">Rp 0</div>
+        <div class="text-[10px] md:text-xs text-gray-400 font-black uppercase tracking-widest mb-1">Total Pemasukan</div>
+        <div id="cardIncome" class="text-2xl md:text-3xl font-black text-[#023047] truncate">Rp 0</div>
       </div>
       <div class="card-style p-5 border-t-4 border-[#ef4444] bg-white relative overflow-hidden">
         <i class="fa-solid fa-arrow-trend-down absolute -bottom-4 -right-4 text-6xl text-red-50 opacity-50"></i>
-        <div class="text-[10px] text-gray-400 font-black uppercase tracking-widest mb-1">Total Pengeluaran</div>
-        <div id="cardExpense" class="text-3xl font-black text-[#023047]">Rp 0</div>
+        <div class="text-[10px] md:text-xs text-gray-400 font-black uppercase tracking-widest mb-1">Total Pengeluaran</div>
+        <div id="cardExpense" class="text-2xl md:text-3xl font-black text-[#023047] truncate">Rp 0</div>
       </div>
       <div class="card-style p-5 border-t-4 border-[#3b82f6] bg-white relative overflow-hidden">
         <i class="fa-solid fa-scale-balanced absolute -bottom-4 -right-4 text-6xl text-blue-50 opacity-50"></i>
-        <div class="text-[10px] text-gray-400 font-black uppercase tracking-widest mb-1">Net Balance (Saldo Bersih)</div>
-        <div id="cardBalance" class="text-3xl font-black text-[#3b82f6]">Rp 0</div>
+        <div class="text-[10px] md:text-xs text-gray-400 font-black uppercase tracking-widest mb-1">Net Balance (Bersih)</div>
+        <div id="cardBalance" class="text-2xl md:text-3xl font-black text-[#3b82f6] truncate">Rp 0</div>
       </div>
     </section>
 
     <!-- Download Buttons Section -->
-    <section class="card-style p-6 bg-white">
-      <h3 class="text-md font-bold mb-4 flex items-center gap-2 text-gray-800">
-        <i class="fa-solid fa-file-excel text-[#10b981]"></i> Tombol Download Laporan (CSV)
+    <section class="card-style p-5 md:p-6 bg-white">
+      <h3 class="text-sm md:text-md font-bold mb-4 flex items-center gap-2 text-gray-800">
+        <i class="fa-solid fa-file-excel text-[#10b981]"></i> Download Laporan (CSV)
       </h3>
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <button onclick="downloadCSV('hari ini')" class="p-3 bg-[#ecfdf5] text-[#047857] rounded-lg text-xs font-bold hover:bg-[#d1fae5] transition flex items-center justify-center gap-1.5 shadow-sm">
+      <!-- Grid menyesuaikan layar: HP (2 kolom), Desktop (4 kolom) -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3">
+        <button onclick="downloadCSV('hari ini')" class="p-2.5 md:p-3 bg-[#ecfdf5] text-[#047857] rounded-lg text-xs font-bold hover:bg-[#d1fae5] transition flex items-center justify-center gap-1.5 shadow-sm">
           <i class="fa-solid fa-calendar-day"></i> Hari Ini
         </button>
-        <button onclick="downloadByPromptDate()" class="p-3 bg-[#ecfdf5] text-[#047857] rounded-lg text-xs font-bold hover:bg-[#d1fae5] transition flex items-center justify-center gap-1.5 shadow-sm">
+        <button onclick="downloadByPromptDate()" class="p-2.5 md:p-3 bg-[#ecfdf5] text-[#047857] rounded-lg text-xs font-bold hover:bg-[#d1fae5] transition flex items-center justify-center gap-1.5 shadow-sm">
           <i class="fa-solid fa-calendar-days"></i> Per Tanggal
         </button>
-        <button onclick="downloadCSV('bulan ini')" class="p-3 bg-[#ecfdf5] text-[#047857] rounded-lg text-xs font-bold hover:bg-[#d1fae5] transition flex items-center justify-center gap-1.5 shadow-sm">
+        <button onclick="downloadCSV('bulan ini')" class="p-2.5 md:p-3 bg-[#ecfdf5] text-[#047857] rounded-lg text-xs font-bold hover:bg-[#d1fae5] transition flex items-center justify-center gap-1.5 shadow-sm">
           <i class="fa-solid fa-calendar-week"></i> Bulan Ini
         </button>
-        <button onclick="downloadCSV('tahun ini')" class="p-3 bg-[#ecfdf5] text-[#047857] rounded-lg text-xs font-bold hover:bg-[#d1fae5] transition flex items-center justify-center gap-1.5 shadow-sm">
+        <button onclick="downloadCSV('tahun ini')" class="p-2.5 md:p-3 bg-[#ecfdf5] text-[#047857] rounded-lg text-xs font-bold hover:bg-[#d1fae5] transition flex items-center justify-center gap-1.5 shadow-sm">
           <i class="fa-solid fa-calendar"></i> Tahun Ini
         </button>
       </div>
     </section>
 
     <!-- Transaction Table & Action Buttons -->
-    <section class="card-style p-6 bg-white">
-      <div class="flex justify-between items-center mb-6 flex-wrap gap-4 border-b pb-4">
-        <div class="flex items-center gap-2">
-          <h3 class="text-lg font-black text-gray-800 tracking-tight">Rincian Transaksi (Ledger)</h3>
-          <span id="syncStatusBadge" class="text-[10px] px-2 py-0.5 rounded font-bold bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center gap-1 shadow-sm">
+    <section class="card-style p-5 md:p-6 bg-white">
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 md:mb-6 gap-3 border-b pb-4">
+        <div class="flex items-center gap-2 w-full justify-between md:justify-start md:w-auto">
+          <h3 class="text-md md:text-lg font-black text-gray-800 tracking-tight">Rincian Transaksi</h3>
+          <span id="syncStatusBadge" class="text-[9px] md:text-[10px] px-2 py-0.5 rounded font-bold bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center gap-1 shadow-sm">
             <i class="fa-solid fa-cloud-check"></i> Tersinkron
           </span>
         </div>
-        <div class="flex items-center gap-2 flex-wrap">
-          <button onclick="executeVoiceReadout('spill bulan ini')" class="px-3 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg text-xs font-bold flex items-center gap-1.5 transition shadow-sm" title="Bacakan Laporan Bulan Ini">
+        <div class="flex items-center gap-2 w-full md:w-auto grid grid-cols-2 md:flex">
+          <button onclick="executeVoiceReadout('spill bulan ini')" class="w-full md:w-auto px-3 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg text-[11px] md:text-xs font-bold flex justify-center items-center gap-1.5 transition shadow-sm" title="Bacakan Laporan Bulan Ini">
             <i class="fa-solid fa-bullhorn"></i> Bacakan
           </button>
-          <button onclick="showChartModal('bulan')" class="px-3 py-2 bg-[#ffb703] hover:bg-[#fb8500] text-[#5e2e10] rounded-lg text-xs font-bold transition shadow-sm flex items-center gap-1.5">
-            <i class="fa-solid fa-chart-pie"></i> Visualisasi BI
+          <button onclick="showChartModal('bulan')" class="w-full md:w-auto px-3 py-2 bg-[#ffb703] hover:bg-[#fb8500] text-[#5e2e10] rounded-lg text-[11px] md:text-xs font-bold transition shadow-sm flex justify-center items-center gap-1.5">
+            <i class="fa-solid fa-chart-pie"></i> Grafik BI
           </button>
         </div>
       </div>
-      <div class="overflow-x-auto">
-        <table class="w-full text-left text-sm">
+      
+      <!-- overflow-x-auto & whitespace-nowrap sangat penting agar tabel bisa digeser ke kanan di HP tanpa merusak desain -->
+      <div class="overflow-x-auto no-scrollbar pb-2">
+        <table class="w-full text-left text-sm whitespace-nowrap min-w-[600px]">
           <thead>
-            <tr class="text-[10px] text-gray-400 font-black uppercase tracking-wider border-b">
-              <th class="p-3">Tanggal</th>
+            <tr class="text-[10px] text-gray-400 font-black uppercase tracking-wider border-b bg-gray-50/50">
+              <th class="p-3 rounded-tl-lg">Tanggal</th>
               <th class="p-3">Kategori</th>
               <th class="p-3">Keterangan</th>
               <th class="p-3 text-right">Debit (Masuk)</th>
               <th class="p-3 text-right">Kredit (Keluar)</th>
-              <th class="p-3 text-center">Aksi</th>
+              <th class="p-3 text-center rounded-tr-lg">Aksi</th>
             </tr>
           </thead>
-          <tbody id="transactionList" class="text-sm">
+          <tbody id="transactionList" class="text-xs md:text-sm divide-y divide-gray-100">
             <!-- Dynamic Rows -->
           </tbody>
         </table>
@@ -237,91 +253,63 @@
   <!-- ======================================================= -->
   <!-- MODAL PANDUAN PERINTAH SUARA LENGKAP                    -->
   <!-- ======================================================= -->
-  <div id="guideModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4 transition-all">
-    <div class="card-style w-full max-w-4xl p-6 relative max-h-[90vh] overflow-y-auto bg-white shadow-2xl rounded-2xl border border-gray-100">
-      <div class="flex justify-between items-center mb-6 sticky top-0 bg-white/90 backdrop-blur-sm py-3 border-b z-10">
-        <h3 class="font-black text-xl flex items-center gap-2 text-[#023047]">
-          <i class="fa-solid fa-microphone-lines text-[#ffb703]"></i> Master Panduan Suara JARVIS
+  <div id="guideModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center hidden z-50 p-3 md:p-4 transition-all">
+    <div class="card-style w-full max-w-4xl p-4 md:p-6 relative max-h-[85vh] overflow-y-auto bg-white shadow-2xl rounded-2xl border border-gray-100 no-scrollbar">
+      <div class="flex justify-between items-center mb-4 md:mb-6 sticky top-0 bg-white/95 backdrop-blur-sm py-3 border-b z-10">
+        <h3 class="font-black text-lg md:text-xl flex items-center gap-2 text-[#023047]">
+          <i class="fa-solid fa-microphone-lines text-[#ffb703]"></i> Panduan Suara
         </h3>
-        <button onclick="closeGuideModal()" class="text-gray-400 hover:text-red-500 transition-colors">
-          <i class="fa-solid fa-circle-xmark text-2xl"></i>
+        <button onclick="closeGuideModal()" class="text-gray-400 hover:text-red-500 transition-colors bg-gray-100 p-2 rounded-full w-8 h-8 flex items-center justify-center">
+          <i class="fa-solid fa-xmark text-lg"></i>
         </button>
       </div>
 
-      <p class="text-sm text-[#044c70] mb-6 font-bold bg-blue-50 p-3 rounded-xl border border-blue-100 flex items-center gap-2">
-        <i class="fa-solid fa-lightbulb text-xl text-[#ffb703]"></i> 
+      <p class="text-[11px] md:text-sm text-[#044c70] mb-4 md:mb-6 font-bold bg-blue-50 p-3 rounded-xl border border-blue-100 flex items-start md:items-center gap-2">
+        <i class="fa-solid fa-lightbulb text-lg text-[#ffb703] mt-0.5 md:mt-0"></i> 
         Klik tombol "Dengar" untuk memutar contoh audio saat presentasi ke Juri.
       </p>
 
-      <div class="space-y-6 text-sm text-gray-700">
+      <div class="space-y-4 md:space-y-6 text-xs md:text-sm text-gray-700">
         <!-- SECTION 1: INPUT DATA -->
-        <div class="p-4 bg-emerald-50 rounded-xl border border-emerald-200">
-          <h4 class="font-black text-emerald-900 text-sm mb-3 flex items-center gap-2">
-            <i class="fa-solid fa-plus-circle text-emerald-600"></i> 1. Input Transaksi (Catat)
+        <div class="p-3 md:p-4 bg-emerald-50 rounded-xl border border-emerald-200">
+          <h4 class="font-black text-emerald-900 text-xs md:text-sm mb-3 flex items-center gap-2">
+            <i class="fa-solid fa-plus-circle text-emerald-600"></i> 1. Input Transaksi
           </h4>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div class="bg-white p-3 rounded-lg border border-emerald-100 flex flex-col gap-2">
-              <span class="font-bold text-emerald-800 text-xs uppercase tracking-wide">Hari Ini</span>
-              <p class="italic text-gray-700 font-mono text-xs bg-gray-50 p-2 rounded">"Beli kopi dua puluh lima ribu"</p>
-              <button onclick="speak('Beli kopi dua puluh lima ribu')" class="mt-auto self-start px-3 py-1.5 bg-[#023047] text-white rounded-md text-xs font-bold hover:bg-[#044c70] transition flex items-center gap-1.5"><i class="fa-solid fa-volume-high"></i> Dengar</button>
+              <span class="font-bold text-emerald-800 text-[10px] md:text-xs uppercase tracking-wide">Hari Ini</span>
+              <p class="italic text-gray-700 font-mono text-[11px] md:text-xs bg-gray-50 p-2 rounded">"Beli kopi dua puluh lima ribu"</p>
+              <button onclick="speak('Beli kopi dua puluh lima ribu')" class="mt-auto self-start px-3 py-1.5 bg-[#023047] text-white rounded-md text-[10px] md:text-xs font-bold hover:bg-[#044c70] transition flex items-center gap-1.5"><i class="fa-solid fa-volume-high"></i> Dengar</button>
             </div>
             <div class="bg-white p-3 rounded-lg border border-emerald-100 flex flex-col gap-2">
-              <span class="font-bold text-emerald-800 text-xs uppercase tracking-wide">Kemarin</span>
-              <p class="italic text-gray-700 font-mono text-xs bg-gray-50 p-2 rounded">"Kemarin isi bensin pertamax lima puluh ribu"</p>
-              <button onclick="speak('Kemarin isi bensin pertamax lima puluh ribu')" class="mt-auto self-start px-3 py-1.5 bg-[#023047] text-white rounded-md text-xs font-bold hover:bg-[#044c70] transition flex items-center gap-1.5"><i class="fa-solid fa-volume-high"></i> Dengar</button>
-            </div>
-            <div class="bg-white p-3 rounded-lg border border-emerald-100 flex flex-col gap-2">
-              <span class="font-bold text-emerald-800 text-xs uppercase tracking-wide">Tanggal Spesifik</span>
-              <p class="italic text-gray-700 font-mono text-xs bg-gray-50 p-2 rounded">"Tanggal 15 bayar kos lima ratus ribu"</p>
-              <button onclick="speak('Tanggal 15 bayar kos lima ratus ribu')" class="mt-auto self-start px-3 py-1.5 bg-[#023047] text-white rounded-md text-xs font-bold hover:bg-[#044c70] transition flex items-center gap-1.5"><i class="fa-solid fa-volume-high"></i> Dengar</button>
-            </div>
-            <div class="bg-white p-3 rounded-lg border border-emerald-100 flex flex-col gap-2">
-              <span class="font-bold text-emerald-800 text-xs uppercase tracking-wide">Pemasukan</span>
-              <p class="italic text-gray-700 font-mono text-xs bg-gray-50 p-2 rounded">"Dapet transferan gaji lima juta rupiah"</p>
-              <button onclick="speak('Dapet transferan gaji lima juta rupiah')" class="mt-auto self-start px-3 py-1.5 bg-[#023047] text-white rounded-md text-xs font-bold hover:bg-[#044c70] transition flex items-center gap-1.5"><i class="fa-solid fa-volume-high"></i> Dengar</button>
+              <span class="font-bold text-emerald-800 text-[10px] md:text-xs uppercase tracking-wide">Kemarin</span>
+              <p class="italic text-gray-700 font-mono text-[11px] md:text-xs bg-gray-50 p-2 rounded">"Kemarin isi bensin lima puluh ribu"</p>
+              <button onclick="speak('Kemarin isi bensin pertamax lima puluh ribu')" class="mt-auto self-start px-3 py-1.5 bg-[#023047] text-white rounded-md text-[10px] md:text-xs font-bold hover:bg-[#044c70] transition flex items-center gap-1.5"><i class="fa-solid fa-volume-high"></i> Dengar</button>
             </div>
           </div>
         </div>
 
-        <div class="p-4 bg-indigo-50 rounded-xl border border-indigo-200">
-          <h4 class="font-black text-indigo-900 text-sm mb-3 flex items-center gap-2">
-            <i class="fa-solid fa-bullhorn text-indigo-600"></i> 2. Minta Dibacakan Laporan (Spill / Cek)
+        <div class="p-3 md:p-4 bg-indigo-50 rounded-xl border border-indigo-200">
+          <h4 class="font-black text-indigo-900 text-xs md:text-sm mb-3 flex items-center gap-2">
+            <i class="fa-solid fa-bullhorn text-indigo-600"></i> 2. Minta Dibacakan
           </h4>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div class="bg-white p-3 rounded-lg border border-indigo-100 flex flex-col gap-2">
-              <span class="font-bold text-indigo-800 text-xs uppercase tracking-wide">Laporan Hari Ini</span>
-              <p class="italic text-gray-700 font-mono text-xs bg-gray-50 p-2 rounded">"Spill pengeluaran hari ini"</p>
-              <button onclick="speak('Spill pengeluaran hari ini')" class="mt-auto self-start px-3 py-1.5 bg-[#023047] text-white rounded-md text-xs font-bold hover:bg-[#044c70] transition flex items-center gap-1.5"><i class="fa-solid fa-volume-high"></i> Dengar</button>
+              <span class="font-bold text-indigo-800 text-[10px] md:text-xs uppercase tracking-wide">Laporan Hari Ini</span>
+              <p class="italic text-gray-700 font-mono text-[11px] md:text-xs bg-gray-50 p-2 rounded">"Spill pengeluaran hari ini"</p>
+              <button onclick="speak('Spill pengeluaran hari ini')" class="mt-auto self-start px-3 py-1.5 bg-[#023047] text-white rounded-md text-[10px] md:text-xs font-bold hover:bg-[#044c70] transition flex items-center gap-1.5"><i class="fa-solid fa-volume-high"></i> Dengar</button>
             </div>
             <div class="bg-white p-3 rounded-lg border border-indigo-100 flex flex-col gap-2">
-              <span class="font-bold text-indigo-800 text-xs uppercase tracking-wide">Laporan Bulan Lalu</span>
-              <p class="italic text-gray-700 font-mono text-xs bg-gray-50 p-2 rounded">"Cek total pengeluaran bulan lalu"</p>
-              <button onclick="speak('Cek total pengeluaran bulan lalu')" class="mt-auto self-start px-3 py-1.5 bg-[#023047] text-white rounded-md text-xs font-bold hover:bg-[#044c70] transition flex items-center gap-1.5"><i class="fa-solid fa-volume-high"></i> Dengar</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="p-4 bg-amber-50 rounded-xl border border-amber-200">
-          <h4 class="font-black text-amber-900 text-sm mb-3 flex items-center gap-2">
-            <i class="fa-solid fa-cloud-arrow-down text-amber-600"></i> 3. Ekspor CSV & Grafik
-          </h4>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <div class="bg-white p-3 rounded-lg border border-amber-100 flex flex-col gap-2">
-              <span class="font-bold text-amber-800 text-xs uppercase tracking-wide">Download Laporan Resmi</span>
-              <p class="italic text-gray-700 font-mono text-xs bg-gray-50 p-2 rounded">"Download laporan bulan lalu"</p>
-              <button onclick="speak('Download laporan bulan lalu')" class="mt-auto self-start px-3 py-1.5 bg-[#023047] text-white rounded-md text-xs font-bold hover:bg-[#044c70] transition flex items-center gap-1.5"><i class="fa-solid fa-volume-high"></i> Dengar</button>
-            </div>
-            <div class="bg-white p-3 rounded-lg border border-amber-100 flex flex-col gap-2">
-              <span class="font-bold text-amber-800 text-xs uppercase tracking-wide">Tampilkan Grafik BI</span>
-              <p class="italic text-gray-700 font-mono text-xs bg-gray-50 p-2 rounded">"Tampilkan grafik keuangan tahun ini"</p>
-              <button onclick="speak('Tampilkan grafik keuangan tahun ini')" class="mt-auto self-start px-3 py-1.5 bg-[#023047] text-white rounded-md text-xs font-bold hover:bg-[#044c70] transition flex items-center gap-1.5"><i class="fa-solid fa-volume-high"></i> Dengar</button>
+              <span class="font-bold text-indigo-800 text-[10px] md:text-xs uppercase tracking-wide">Laporan Bulan Lalu</span>
+              <p class="italic text-gray-700 font-mono text-[11px] md:text-xs bg-gray-50 p-2 rounded">"Cek total pengeluaran bulan lalu"</p>
+              <button onclick="speak('Cek total pengeluaran bulan lalu')" class="mt-auto self-start px-3 py-1.5 bg-[#023047] text-white rounded-md text-[10px] md:text-xs font-bold hover:bg-[#044c70] transition flex items-center gap-1.5"><i class="fa-solid fa-volume-high"></i> Dengar</button>
             </div>
           </div>
         </div>
       </div>
 
-      <div class="mt-6 text-center sticky bottom-0 bg-white/90 backdrop-blur-sm py-4 border-t">
-        <button onclick="closeGuideModal()" class="px-8 py-3 bg-[#10b981] text-white font-black rounded-xl hover:bg-[#059669] transition shadow-lg shadow-emerald-500/30">
+      <div class="mt-6 text-center sticky bottom-0 bg-white/95 backdrop-blur-sm py-3 md:py-4 border-t">
+        <button onclick="closeGuideModal()" class="w-full md:w-auto px-8 py-3 bg-[#10b981] text-white font-black rounded-xl hover:bg-[#059669] transition shadow-lg shadow-emerald-500/30 text-xs md:text-sm">
           Saya Mengerti, Tutup Panduan
         </button>
       </div>
@@ -329,62 +317,62 @@
   </div>
 
   <!-- MODAL POP UP GRAFIK (BI DASHBOARD) -->
-  <div id="chartModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4 transition-all">
-    <div class="card-style w-full max-w-md p-6 relative bg-white">
-      <div class="flex justify-between items-center mb-6 border-b pb-3">
-        <h3 id="modalTitle" class="font-black text-xl text-[#023047]"><i class="fa-solid fa-chart-pie text-[#ffb703]"></i> Analisis BI</h3>
-        <button onclick="closeChartModal()" class="text-gray-400 hover:text-red-500 transition-colors">
-          <i class="fa-solid fa-xmark text-xl"></i>
+  <div id="chartModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4 transition-all">
+    <div class="card-style w-full max-w-md p-5 md:p-6 relative bg-white">
+      <div class="flex justify-between items-center mb-4 border-b pb-3">
+        <h3 id="modalTitle" class="font-black text-lg md:text-xl text-[#023047]"><i class="fa-solid fa-chart-pie text-[#ffb703]"></i> Analisis BI</h3>
+        <button onclick="closeChartModal()" class="text-gray-400 hover:text-red-500 transition-colors bg-gray-100 p-2 rounded-full w-8 h-8 flex items-center justify-center">
+          <i class="fa-solid fa-xmark text-lg"></i>
         </button>
       </div>
-      <div class="w-full h-64 mb-4">
+      <div class="w-full h-56 md:h-64 mb-4">
         <canvas id="financeChart"></canvas>
       </div>
-      <div id="aiAdvice" class="p-3 bg-indigo-50 border border-indigo-100 rounded-xl text-xs text-indigo-900 font-bold text-center">
+      <div id="aiAdvice" class="p-3 bg-indigo-50 border border-indigo-100 rounded-xl text-[11px] md:text-xs text-indigo-900 font-bold text-center">
         Memuat analisis data...
       </div>
     </div>
   </div>
 
   <!-- MODAL POP UP LOGIN -->
-  <div id="loginModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4 transition-all">
-    <div class="card-style w-full max-w-md p-8 relative bg-white text-gray-800 shadow-2xl overflow-hidden">
+  <div id="loginModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4 transition-all">
+    <div class="card-style w-full max-w-sm md:max-w-md p-6 md:p-8 relative bg-white text-gray-800 shadow-2xl overflow-hidden rounded-3xl">
       <div class="absolute -top-16 -right-16 w-40 h-40 bg-[#ffb703] rounded-full blur-3xl opacity-20"></div>
-      <button onclick="closeLoginModal()" class="absolute top-5 right-5 text-gray-400 hover:text-gray-600 text-xl transition-colors z-20">
+      <button onclick="closeLoginModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center transition-colors z-20">
         <i class="fa-solid fa-xmark"></i>
       </button>
 
       <div class="flex flex-col items-center mb-6 relative z-10">
-        <div class="w-20 h-20 mb-4 p-2 bg-white rounded-3xl shadow-lg border border-gray-100 flex items-center justify-center">
+        <div class="w-16 h-16 md:w-20 md:h-20 mb-3 md:mb-4 p-2 bg-white rounded-3xl shadow-lg border border-gray-100 flex items-center justify-center">
           <img src="LOGO FIX.png" alt="BeFAST Logo" class="w-full h-full object-contain">
         </div>
-        <h3 class="font-black text-2xl text-[#023047]">Masuk ke BeFAST</h3>
-        <p class="text-xs text-gray-500 mt-1 font-semibold text-center">Bicara 2 detik, langsung kecatat.</p>
+        <h3 class="font-black text-xl md:text-2xl text-[#023047]">Masuk ke BeFAST</h3>
+        <p class="text-[11px] md:text-xs text-gray-500 mt-1 font-semibold text-center">Bicara 2 detik, langsung kecatat.</p>
       </div>
       
       <div id="loginAlert" class="hidden mb-4 p-3 rounded-lg text-xs font-semibold relative z-10"></div>
 
       <form onsubmit="handleLogin(event)" class="space-y-4 relative z-10">
         <div>
-          <label class="block text-xs font-bold text-gray-700 mb-1.5 ml-1">Nomor HP</label>
+          <label class="block text-[11px] md:text-xs font-bold text-gray-700 mb-1 ml-1">Nomor HP</label>
           <div class="relative">
-            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400"><i class="fa-solid fa-phone"></i></div>
-            <input type="tel" id="loginPhone" required placeholder="081234567890" class="w-full pl-10 p-3 rounded-xl border border-gray-200 bg-gray-50 text-sm focus:ring-2 focus:ring-[#023047] outline-none font-bold">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400"><i class="fa-solid fa-phone text-sm"></i></div>
+            <input type="tel" id="loginPhone" required placeholder="081234567890" class="w-full pl-10 p-3 rounded-xl border border-gray-200 bg-gray-50 text-xs md:text-sm focus:ring-2 focus:ring-[#023047] outline-none font-bold">
           </div>
         </div>
         <div>
-          <label class="block text-xs font-bold text-gray-700 mb-1.5 ml-1">Kata Sandi</label>
+          <label class="block text-[11px] md:text-xs font-bold text-gray-700 mb-1 ml-1">Kata Sandi</label>
           <div class="relative">
-            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400"><i class="fa-solid fa-lock"></i></div>
-            <input type="password" id="loginPassword" required placeholder="••••••••" class="w-full pl-10 p-3 rounded-xl border border-gray-200 bg-gray-50 text-sm focus:ring-2 focus:ring-[#023047] outline-none font-bold">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400"><i class="fa-solid fa-lock text-sm"></i></div>
+            <input type="password" id="loginPassword" required placeholder="••••••••" class="w-full pl-10 p-3 rounded-xl border border-gray-200 bg-gray-50 text-xs md:text-sm focus:ring-2 focus:ring-[#023047] outline-none font-bold">
           </div>
         </div>
-        <button type="submit" id="btnLoginSubmit" class="w-full py-3.5 mt-2 bg-[#023047] text-white font-black rounded-xl hover:bg-[#044c70] transition shadow-lg shadow-blue-900/20 flex items-center justify-center gap-2">
+        <button type="submit" id="btnLoginSubmit" class="w-full py-3.5 mt-2 bg-[#023047] text-white text-sm font-black rounded-xl hover:bg-[#044c70] transition shadow-lg shadow-blue-900/20 flex items-center justify-center gap-2">
           Masuk Sekarang
         </button>
       </form>
 
-      <div class="mt-6 pt-4 border-t text-center text-sm font-semibold text-gray-600 relative z-10">
+      <div class="mt-6 pt-4 border-t text-center text-xs md:text-sm font-semibold text-gray-600 relative z-10">
         Belum punya akun? 
         <button type="button" onclick="switchAuthModal('signup')" class="text-[#023047] font-black hover:underline transition-all">
           Daftar di sini
@@ -394,45 +382,45 @@
   </div>
 
   <!-- MODAL POP UP SIGN UP -->
-  <div id="signupModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4 transition-all">
-    <div class="card-style w-full max-w-md p-8 relative bg-white text-gray-800 shadow-2xl overflow-hidden">
+  <div id="signupModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4 transition-all">
+    <div class="card-style w-full max-w-sm md:max-w-md p-6 md:p-8 relative bg-white text-gray-800 shadow-2xl overflow-hidden rounded-3xl max-h-[90vh] overflow-y-auto no-scrollbar">
       <div class="absolute -top-16 -left-16 w-40 h-40 bg-[#10b981] rounded-full blur-3xl opacity-10"></div>
-      <button onclick="closeSignupModal()" class="absolute top-5 right-5 text-gray-400 hover:text-gray-600 text-xl transition-colors z-20">
+      <button onclick="closeSignupModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center transition-colors z-20">
         <i class="fa-solid fa-xmark"></i>
       </button>
 
-      <div class="flex flex-col items-center mb-6 relative z-10">
-        <div class="w-16 h-16 mb-3 p-1.5 bg-white rounded-2xl shadow-md border border-gray-100 flex items-center justify-center">
+      <div class="flex flex-col items-center mb-5 relative z-10 mt-2">
+        <div class="w-14 h-14 md:w-16 md:h-16 mb-2 p-1.5 bg-white rounded-2xl shadow-md border border-gray-100 flex items-center justify-center">
           <img src="LOGO FIX.png" alt="BeFAST Logo" class="w-full h-full object-contain">
         </div>
-        <h3 class="font-black text-xl text-[#023047]">Daftar Akun Baru</h3>
+        <h3 class="font-black text-lg md:text-xl text-[#023047]">Daftar Akun Baru</h3>
       </div>
       
       <div id="signupAlert" class="hidden mb-4 p-3 rounded-lg text-xs font-semibold relative z-10"></div>
 
       <form onsubmit="handleSignup(event)" class="space-y-3 relative z-10">
         <div>
-          <label class="block text-xs font-bold text-gray-700 mb-1 ml-1">Nama Lengkap</label>
-          <input type="text" id="signupName" required placeholder="Contoh: Budi Santoso" class="w-full p-2.5 rounded-xl border bg-gray-50 text-sm font-bold focus:ring-2 focus:ring-[#023047] outline-none">
+          <label class="block text-[11px] md:text-xs font-bold text-gray-700 mb-1 ml-1">Nama Lengkap</label>
+          <input type="text" id="signupName" required placeholder="Budi Santoso" class="w-full p-2.5 rounded-xl border bg-gray-50 text-xs md:text-sm font-bold focus:ring-2 focus:ring-[#023047] outline-none">
         </div>
         <div>
-          <label class="block text-xs font-bold text-gray-700 mb-1 ml-1">Email Resmi <span class="text-red-500 font-normal">*Wajib (@gmail dsb)</span></label>
-          <input type="email" id="signupEmail" required placeholder="nama@gmail.com" class="w-full p-2.5 rounded-xl border bg-gray-50 text-sm font-bold focus:ring-2 focus:ring-[#023047] outline-none">
+          <label class="block text-[11px] md:text-xs font-bold text-gray-700 mb-1 ml-1">Email Resmi <span class="text-red-500 font-normal">*Wajib</span></label>
+          <input type="email" id="signupEmail" required placeholder="nama@gmail.com" class="w-full p-2.5 rounded-xl border bg-gray-50 text-xs md:text-sm font-bold focus:ring-2 focus:ring-[#023047] outline-none">
         </div>
         <div>
-          <label class="block text-xs font-bold text-gray-700 mb-1 ml-1">Nomor HP</label>
-          <input type="tel" id="signupPhone" required placeholder="081234567890" class="w-full p-2.5 rounded-xl border bg-gray-50 text-sm font-bold focus:ring-2 focus:ring-[#023047] outline-none">
+          <label class="block text-[11px] md:text-xs font-bold text-gray-700 mb-1 ml-1">Nomor HP</label>
+          <input type="tel" id="signupPhone" required placeholder="081234567890" class="w-full p-2.5 rounded-xl border bg-gray-50 text-xs md:text-sm font-bold focus:ring-2 focus:ring-[#023047] outline-none">
         </div>
         <div>
-          <label class="block text-xs font-bold text-gray-700 mb-1 ml-1">Kata Sandi (Min. 6 karakter)</label>
-          <input type="password" id="signupPassword" required minlength="6" placeholder="••••••••" class="w-full p-2.5 rounded-xl border bg-gray-50 text-sm font-bold focus:ring-2 focus:ring-[#023047] outline-none">
+          <label class="block text-[11px] md:text-xs font-bold text-gray-700 mb-1 ml-1">Kata Sandi (Min 6)</label>
+          <input type="password" id="signupPassword" required minlength="6" placeholder="••••••••" class="w-full p-2.5 rounded-xl border bg-gray-50 text-xs md:text-sm font-bold focus:ring-2 focus:ring-[#023047] outline-none">
         </div>
-        <button type="submit" id="btnSignupSubmit" class="w-full py-3.5 mt-3 bg-[#10b981] text-white font-black rounded-xl hover:bg-[#059669] transition shadow-lg flex items-center justify-center gap-2">
+        <button type="submit" id="btnSignupSubmit" class="w-full py-3.5 mt-2 bg-[#10b981] text-white text-sm font-black rounded-xl hover:bg-[#059669] transition shadow-lg flex items-center justify-center gap-2">
           Buat Akun Sekarang
         </button>
       </form>
 
-      <div class="mt-5 pt-4 border-t text-center text-sm font-semibold text-gray-600 relative z-10">
+      <div class="mt-5 pt-4 border-t text-center text-xs md:text-sm font-semibold text-gray-600 relative z-10">
         Sudah punya akun? 
         <button type="button" onclick="switchAuthModal('login')" class="text-[#023047] font-black hover:underline transition-all">
           Masuk di sini
@@ -442,6 +430,7 @@
   </div>
 
   <script>
+    // --- KONFIGURASI SUPABASE ---
     const SUPABASE_URL = "https://tdeqnnyauwsnpfslbhcj.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRkZXFubnlhdXdzbnBmc2xiaGNqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5Mjc0MTcsImV4cCI6MjEwNDUwMzQxN30.VbEC115BGzCAMsGE9wecXvhXLx3BwMZ1skPP3ibS0ew";
     
@@ -502,6 +491,7 @@
       }
     }
 
+    // Modal Handlers
     function openLoginModal() { document.getElementById('loginModal').classList.remove('hidden'); document.getElementById('signupModal').classList.add('hidden'); hideAuthAlert('loginAlert'); }
     function closeLoginModal() { document.getElementById('loginModal').classList.add('hidden'); }
     function openSignupModal() { document.getElementById('signupModal').classList.remove('hidden'); document.getElementById('loginModal').classList.add('hidden'); hideAuthAlert('signupAlert'); }
@@ -512,7 +502,7 @@
       const el = document.getElementById(id);
       if (!el) return;
       el.innerText = msg;
-      el.className = isError ? "mb-4 p-3 rounded-lg text-xs font-bold bg-red-100 text-red-700 border border-red-200 block" : "mb-4 p-3 rounded-lg text-xs font-bold bg-green-100 text-green-700 border border-green-200 block";
+      el.className = isError ? "mb-4 p-3 rounded-lg text-[11px] md:text-xs font-bold bg-red-100 text-red-700 border border-red-200 block" : "mb-4 p-3 rounded-lg text-[11px] md:text-xs font-bold bg-green-100 text-green-700 border border-green-200 block";
     }
     function hideAuthAlert(id) {
       const el = document.getElementById(id);
@@ -636,10 +626,10 @@
       const badge = document.getElementById('syncStatusBadge');
       if (!badge) return;
       if (isSynced) {
-        badge.className = "text-[10px] px-2 py-0.5 rounded font-bold bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center gap-1 shadow-sm";
+        badge.className = "text-[9px] md:text-[10px] px-2 py-0.5 rounded font-bold bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center gap-1 shadow-sm";
         badge.innerHTML = '<i class="fa-solid fa-cloud-check"></i> Tersinkron';
       } else {
-        badge.className = "text-[10px] px-2 py-0.5 rounded font-bold bg-red-50 text-red-600 border border-red-100 flex items-center gap-1 shadow-sm";
+        badge.className = "text-[9px] md:text-[10px] px-2 py-0.5 rounded font-bold bg-red-50 text-red-600 border border-red-100 flex items-center gap-1 shadow-sm";
         badge.innerHTML = `<i class="fa-solid fa-cloud-arrow-down"></i> ${message || 'Belum Login'}`;
       }
     }
@@ -772,11 +762,11 @@
         let kredit = item.type === 'pengeluaran' ? `Rp ${item.amount.toLocaleString('id-ID')}` : '-';
 
         const tr = document.createElement('tr');
-        tr.className = "border-b hover:bg-gray-50 transition text-gray-700";
+        tr.className = "hover:bg-gray-50 transition text-gray-700 group";
         tr.innerHTML = `
           <td class="p-3 font-mono text-[11px] opacity-75">${item.date}</td>
           <td class="p-3">${getCategoryBadge(cat)}</td>
-          <td class="p-3 font-bold">${item.desc}</td>
+          <td class="p-3 font-bold truncate max-w-[150px] md:max-w-xs" title="${item.desc}">${item.desc}</td>
           <td class="p-3 text-right font-bold text-green-600">${debit}</td>
           <td class="p-3 text-right font-bold text-red-600">${kredit}</td>
           <td class="p-3 text-center flex justify-center gap-3">
@@ -792,6 +782,7 @@
       document.getElementById('cardBalance').innerText = `Rp ${(totalInc - totalExp).toLocaleString('id-ID')}`;
     }
 
+    // Tools Tanggal dan Parsing Suara (Sama seperti sebelumnya)
     function getLocalDateStr(dateObj = new Date()) {
       const year = dateObj.getFullYear();
       const month = String(dateObj.getMonth() + 1).padStart(2, '0');
@@ -829,6 +820,7 @@
     }
     window.speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.getVoices(); };
 
+    // --- Logika NLP dan Chart Sama ---
     function parseNominal(str) {
       if (!str) return 0;
       let raw = str.toLowerCase().replace(/tanggal\s*\d{1,2}/gi, '').replace(/tahun\s*\d{4}/gi, '').replace(/rp|rupiah/gi, '').trim();
@@ -1259,16 +1251,6 @@
       if (!recognition) return alert("Browser belum mendukung.");
       if (isListening) recognition.stop(); else recognition.start();
     });
-
-    const skinSelect = document.getElementById('skinSelect');
-    skinSelect.addEventListener('change', (e) => {
-      document.body.className = `${e.target.value} min-h-screen pb-12`;
-      localStorage.setItem('voice_finance_skin', e.target.value);
-    });
-    if (localStorage.getItem('voice_finance_skin')) {
-      skinSelect.value = localStorage.getItem('voice_finance_skin');
-      document.body.className = `${skinSelect.value} min-h-screen pb-12`;
-    }
 
     updateAuthUI();
     if (getCurrentUser()) fetchTransactionsFromSupabase();
