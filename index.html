@@ -337,60 +337,6 @@
   </div>
 
   
-  <!-- MODAL POP UP LUPA PASSWORD -->
-  <div id="forgotModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4 transition-all">
-    <div class="card-style w-full max-w-sm md:max-w-md p-6 md:p-8 relative bg-white text-gray-800 shadow-2xl overflow-hidden rounded-3xl">
-      <button onclick="closeForgotModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center transition-colors z-20">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
-      <div class="flex flex-col items-center mb-4 relative z-10">
-        <div class="w-12 h-12 mb-3 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center text-xl">
-          <i class="fa-solid fa-key"></i>
-        </div>
-        <h3 class="font-black text-xl text-[#023047]">Lupa Kata Sandi?</h3>
-        <p class="text-[11px] md:text-xs text-gray-500 mt-1 font-semibold text-center">Masukkan email kamu, kami akan kirimkan link pemulihan.</p>
-      </div>
-      <div id="forgotAlert" class="hidden mb-4 p-3 rounded-lg text-xs font-semibold relative z-10"></div>
-      <form onsubmit="handleForgotPassword(event)" class="space-y-4 relative z-10">
-        <div>
-          <label class="block text-[11px] md:text-xs font-bold text-gray-700 mb-1 ml-1">Email Terdaftar</label>
-          <input type="email" id="forgotEmail" required placeholder="nama@gmail.com" class="w-full p-3 rounded-xl border border-gray-200 bg-gray-50 text-xs md:text-sm focus:ring-2 focus:ring-[#023047] outline-none font-bold">
-        </div>
-        <button type="submit" id="btnForgotSubmit" class="w-full py-3 mt-2 bg-[#023047] text-white text-sm font-black rounded-xl hover:bg-[#044c70] transition shadow flex items-center justify-center gap-2">
-          Kirim Link Pemulihan
-        </button>
-      </form>
-    </div>
-  </div>
-
-  <!-- MODAL POP UP RESET PASSWORD (KETIKA LINK DIKLIK) -->
-  <div id="resetModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4 transition-all">
-    <div class="card-style w-full max-w-sm md:max-w-md p-6 md:p-8 relative bg-white text-gray-800 shadow-2xl overflow-hidden rounded-3xl">
-      <div class="flex flex-col items-center mb-4 relative z-10">
-        <div class="w-12 h-12 mb-3 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center text-xl">
-          <i class="fa-solid fa-shield-halved"></i>
-        </div>
-        <h3 class="font-black text-xl text-[#023047]">Buat Sandi Baru</h3>
-        <p class="text-[11px] md:text-xs text-gray-500 mt-1 font-semibold text-center">Silakan masukkan kata sandi baru kamu.</p>
-      </div>
-      <div id="resetAlert" class="hidden mb-4 p-3 rounded-lg text-xs font-semibold relative z-10"></div>
-      <form onsubmit="handleResetPassword(event)" class="space-y-4 relative z-10">
-        <div>
-          <label class="block text-[11px] md:text-xs font-bold text-gray-700 mb-1 ml-1">Kata Sandi Baru (Min 6)</label>
-          <div class="relative">
-            <input type="password" id="resetPasswordInput" required minlength="6" placeholder="••••••••" class="w-full p-3 pr-10 rounded-xl border border-gray-200 bg-gray-50 text-xs md:text-sm focus:ring-2 focus:ring-[#023047] outline-none font-bold">
-            <button type="button" onclick="togglePassword('resetPasswordInput', 'eyeIconReset')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none">
-              <i id="eyeIconReset" class="fa-solid fa-eye"></i>
-            </button>
-          </div>
-        </div>
-        <button type="submit" id="btnResetSubmit" class="w-full py-3 mt-2 bg-[#10b981] text-white text-sm font-black rounded-xl hover:bg-[#059669] transition shadow flex items-center justify-center gap-2">
-          Simpan Sandi Baru
-        </button>
-      </form>
-    </div>
-  </div>
-
   <!-- MODAL POP UP LOGIN -->
   <div id="loginModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4 transition-all">
     <div class="card-style w-full max-w-sm md:max-w-md p-6 md:p-8 relative bg-white text-gray-800 shadow-2xl overflow-hidden rounded-3xl">
@@ -426,9 +372,7 @@
               <i id="eyeIconLogin" class="fa-solid fa-eye"></i>
             </button>
           </div>
-          <div class="text-right mt-1.5">
-            <button type="button" onclick="openForgotModal()" class="text-[10px] md:text-xs text-[#023047] font-bold hover:underline">Lupa Kata Sandi?</button>
-          </div>
+          
         </div>
         <button type="submit" id="btnLoginSubmit" class="w-full py-3.5 mt-2 bg-[#023047] text-white text-sm font-black rounded-xl hover:bg-[#044c70] transition shadow-lg shadow-blue-900/20 flex items-center justify-center gap-2">
           Masuk Sekarang
@@ -576,9 +520,7 @@
 
     if (supabaseClient) {
       supabaseClient.auth.onAuthStateChange((event, session) => {
-        if (event === 'PASSWORD_RECOVERY') {
-          document.getElementById('resetModal').classList.remove('hidden');
-        } else if (session && session.user) {
+        if (session && session.user) {
           localStorage.setItem('bf_user', JSON.stringify(session.user));
           fetchTransactionsFromSupabase(); 
         } else if (event === 'SIGNED_OUT') {
@@ -639,51 +581,6 @@
       } else {
         form.classList.add('hidden');
         btn.innerHTML = '<i class="fa-solid fa-pen-to-square"></i> Tampilkan Form Input Manual';
-      }
-    }
-
-    // --- FORGOT & RESET PASSWORD LOGIC ---
-    function openForgotModal() { closeLoginModal(); document.getElementById('forgotModal').classList.remove('hidden'); hideAuthAlert('forgotAlert'); }
-    function closeForgotModal() { document.getElementById('forgotModal').classList.add('hidden'); }
-    
-    async function handleForgotPassword(e) {
-      e.preventDefault();
-      const email = document.getElementById('forgotEmail').value.trim();
-      const btn = document.getElementById('btnForgotSubmit');
-      
-      btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Memproses...';
-      try {
-        const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
-          redirectTo: window.location.origin + window.location.pathname
-        });
-        if (error) throw error;
-        showAuthAlert('forgotAlert', 'Link pemulihan telah dikirim ke email kamu!', false);
-        setTimeout(() => closeForgotModal(), 3000);
-      } catch (err) {
-        showAuthAlert('forgotAlert', err.message);
-      } finally {
-        btn.disabled = false; btn.innerHTML = 'Kirim Link Pemulihan';
-      }
-    }
-
-    async function handleResetPassword(e) {
-      e.preventDefault();
-      const newPassword = document.getElementById('resetPasswordInput').value;
-      const btn = document.getElementById('btnResetSubmit');
-      
-      btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menyimpan...';
-      try {
-        const { error } = await supabaseClient.auth.updateUser({ password: newPassword });
-        if (error) throw error;
-        showAuthAlert('resetAlert', 'Sandi berhasil diubah!', false);
-        setTimeout(() => {
-          document.getElementById('resetModal').classList.add('hidden');
-          speak("Kata sandi berhasil diperbarui.");
-        }, 1500);
-      } catch (err) {
-        showAuthAlert('resetAlert', err.message);
-      } finally {
-        btn.disabled = false; btn.innerHTML = 'Simpan Sandi Baru';
       }
     }
 
