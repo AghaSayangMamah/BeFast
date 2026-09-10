@@ -63,6 +63,21 @@
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     
+    
+    select.input-apple {
+      appearance: none;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230F2C6B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 1rem center;
+      background-size: 1em;
+      padding-right: 2.5rem;
+    }
+    select.input-apple option {
+      background-color: #ffffff;
+      color: #0F2C6B;
+      font-weight: 600;
+    }
+
     .input-apple {
       transition: all 0.2s ease;
       border-color: #E5E7EB;
@@ -88,12 +103,11 @@
       <!-- BRANDING AREA -->
       <div class="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-start">
         <div class="flex items-center gap-3">
-          <div class="w-10 h-10 md:w-12 md:h-12 bg-white rounded-full flex items-center justify-center p-1 shadow-sm">
+          <div class="h-10 md:h-12 bg-white rounded-full flex items-center justify-center px-3 py-1 shadow-sm gap-2">
             <img src="LOGO FIX.png" alt="BeFAST Logo" class="w-full h-full object-contain">
           </div>
           <div class="flex flex-col justify-center">
-            <h1 class="text-xl md:text-2xl font-black text-[#0F2C6B] tracking-tight leading-tight">BeFAST</h1>
-            <p class="text-[10px] md:text-[11px] font-bold text-[#0F2C6B] leading-tight">Best Financial Assistant</p>
+            <h1 class="text-lg md:text-xl font-black text-[#0F2C6B] tracking-tight leading-tight">BeFAST</h1>
           </div>
         </div>
         
@@ -206,21 +220,21 @@
           <div class="w-10 h-10 rounded-full bg-green-50 text-[#16A34A] flex items-center justify-center"><i class="fa-solid fa-arrow-down"></i></div>
           <span class="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Pemasukan</span>
         </div>
-        <div id="cardIncome" class="text-3xl md:text-4xl font-black text-[#0F2C6B] tracking-tighter truncate">Rp 0</div>
+        <div id="cardIncome" class="text-3xl md:text-4xl font-black text-[#16A34A] tracking-tighter truncate">Rp 0</div>
       </div>
       <div class="card-style p-6 flex flex-col justify-between">
         <div class="flex items-center gap-3 mb-6">
           <div class="w-10 h-10 rounded-full bg-red-50 text-[#DC2626] flex items-center justify-center"><i class="fa-solid fa-arrow-up"></i></div>
           <span class="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Pengeluaran</span>
         </div>
-        <div id="cardExpense" class="text-3xl md:text-4xl font-black text-[#0F2C6B] tracking-tighter truncate">Rp 0</div>
+        <div id="cardExpense" class="text-3xl md:text-4xl font-black text-[#DC2626] tracking-tighter truncate">Rp 0</div>
       </div>
       <div class="card-style p-6 flex flex-col justify-between">
         <div class="flex items-center gap-3 mb-6">
-          <div class="w-10 h-10 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center"><i class="fa-solid fa-scale-balanced"></i></div>
+          <div class="w-10 h-10 rounded-full bg-[#0F2C6B]/10 text-[#0F2C6B] flex items-center justify-center"><i class="fa-solid fa-scale-balanced"></i></div>
           <span class="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Saldo Bersih</span>
         </div>
-        <div id="cardBalance" class="text-3xl md:text-4xl font-black text-blue-600 tracking-tighter truncate">Rp 0</div>
+        <div id="cardBalance" class="text-3xl md:text-4xl font-black text-[#0F2C6B] tracking-tighter truncate">Rp 0</div>
       </div>
     </section>
 
@@ -888,7 +902,7 @@
         const cat = item.category || detectCategory(item.desc, item.type);
         const style = getCategoryStyle(cat);
         const amountSign = item.type === 'pemasukan' ? '+' : '-';
-        const amountColor = item.type === 'pemasukan' ? 'text-[#16A34A]' : 'text-[#1D1D1F]';
+        const amountColor = item.type === 'pemasukan' ? 'text-[#16A34A]' : 'text-[#DC2626]';
 
         const row = document.createElement('div');
         row.className = "flex items-center justify-between p-4 bg-[#F9FAFB] rounded-2xl border border-gray-100 hover:shadow-md transition-shadow group";
