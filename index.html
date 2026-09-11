@@ -16,6 +16,9 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   
   <style>
     :root {
@@ -85,7 +88,8 @@
 
     body {
       background-color: var(--bg-main); color: var(--text-main); transition: background-color 0.3s ease, color 0.3s ease;
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      /* Font Outfit memberikan kesan geometris, modern, dan sangat premium */
+      font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
       -webkit-font-smoothing: antialiased;
     }
     
@@ -151,7 +155,7 @@
     
     <!-- Kiri: Logo + Brand (Maskot Tanpa Background) -->
     <div class="flex items-center gap-1.5 relative group cursor-pointer" id="logoContainer">
-      <img src="LOGO FIX.png" alt="BeFAST Logo" id="mascotLogo" class="w-14 h-14 md:w-16 md:h-16 object-contain transition-transform">
+      <img src="LOGO FIX.png" alt="BeFAST Logo" id="mascotLogo" class="w-10 h-10 md:w-12 md:h-12 object-contain transition-transform">
       <h1 class="text-xl md:text-2xl font-black text-[var(--primary)] tracking-tight leading-none pt-0.5">BeFAST</h1>
       
       <!-- Cloud Bubble -->
@@ -288,27 +292,37 @@
     </section>
 
     <!-- iOS Widget Cards (Dengan Ikon Baru) -->
-    <section class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5">
-      <div class="card-style p-6 flex flex-col justify-between border-t-4" style="border-top-color: var(--primary);">
-        <div class="flex items-center gap-3 mb-6">
-          <div class="w-10 h-10 rounded-full bg-[#10b981]/15 text-[#10b981] flex items-center justify-center"><i class="fa-solid fa-arrow-trend-up text-lg"></i></div>
-          <span class="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-widest">Pemasukan</span>
+    <!-- Ubah pembungkus grid jadi 2 kolom di HP (grid-cols-2) dan jarak lebih rapat (gap-3) -->
+    <section class="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-5">
+      
+      <!-- KARTU 1: PEMASUKAN (Kiri Atas) -->
+      <!-- Ubah p-6 jadi p-4 md:p-6 agar lebih ramping di HP -->
+      <div class="card-style p-4 md:p-6 flex flex-col justify-between border-t-4 border-[#10b981]">
+        <div class="flex items-center gap-2 md:gap-3 mb-4 md:mb-6">
+          <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-[#10b981]/15 text-[#10b981] flex items-center justify-center"><i class="fa-solid fa-arrow-trend-up text-sm md:text-lg"></i></div>
+          <span class="text-[9px] md:text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-widest">Pemasukan</span>
         </div>
-        <div id="cardIncome" class="text-3xl md:text-4xl font-black text-[#10b981] tracking-tighter truncate">Rp 0</div>
+        <div id="cardIncome" class="text-xl md:text-3xl lg:text-4xl font-black text-[#10b981] tracking-tighter truncate">Rp 0</div>
       </div>
-      <div class="card-style p-6 flex flex-col justify-between border-t-4" style="border-top-color: var(--primary);">
-        <div class="flex items-center gap-3 mb-6">
-          <div class="w-10 h-10 rounded-full bg-[#ef4444]/15 text-[#ef4444] flex items-center justify-center"><i class="fa-solid fa-arrow-trend-down text-lg"></i></div>
-          <span class="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-widest">Pengeluaran</span>
+
+      <!-- KARTU 2: PENGELUARAN (Kanan Atas) -->
+      <!-- Ubah p-6 jadi p-4 md:p-6 agar lebih ramping di HP -->
+      <div class="card-style p-4 md:p-6 flex flex-col justify-between border-t-4 border-[#ef4444]">
+        <div class="flex items-center gap-2 md:gap-3 mb-4 md:mb-6">
+          <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-[#ef4444]/15 text-[#ef4444] flex items-center justify-center"><i class="fa-solid fa-arrow-trend-down text-sm md:text-lg"></i></div>
+          <span class="text-[9px] md:text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-widest">Pengeluaran</span>
         </div>
-        <div id="cardExpense" class="text-3xl md:text-4xl font-black text-[#ef4444] tracking-tighter truncate">Rp 0</div>
+        <div id="cardExpense" class="text-xl md:text-3xl lg:text-4xl font-black text-[#ef4444] tracking-tighter truncate">Rp 0</div>
       </div>
-      <div class="card-style p-6 flex flex-col justify-between border-t-4" style="border-top-color: var(--primary);">
-        <div class="flex items-center gap-3 mb-6">
-          <div class="w-10 h-10 rounded-full bg-[var(--primary)]/15 text-[var(--primary)] flex items-center justify-center"><i class="fa-solid fa-wallet text-lg"></i></div>
-          <span class="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-widest">Saldo Bersih</span>
+
+      <!-- KARTU 3: SALDO BERSIH (Bawah, membentang penuh di HP) -->
+      <!-- Tambahkan col-span-2 khusus untuk HP agar panjangnya membentang -->
+      <div class="card-style p-4 md:p-6 col-span-2 md:col-span-1 flex flex-col justify-between border-t-4" style="border-top-color: var(--primary);">
+        <div class="flex items-center gap-2 md:gap-3 mb-4 md:mb-6">
+          <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-[var(--primary)]/15 text-[var(--primary)] flex items-center justify-center"><i class="fa-solid fa-wallet text-sm md:text-lg"></i></div>
+          <span class="text-[9px] md:text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-widest">Saldo Bersih</span>
         </div>
-        <div id="cardBalance" class="text-3xl md:text-4xl font-black text-[var(--text-main)] tracking-tighter truncate">Rp 0</div>
+        <div id="cardBalance" class="text-2xl md:text-3xl lg:text-4xl font-black text-[var(--text-main)] tracking-tighter truncate">Rp 0</div>
       </div>
     </section>
 
