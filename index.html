@@ -116,7 +116,7 @@
     }
     .animate-mascot-wave {
       animation: mascotWave 2s ease-in-out;
-      transform-origin: bottom left;
+      transform-origin: center left;
       z-index: 9999;
       position: relative;
     }
@@ -139,8 +139,8 @@
         transform-origin: bottom left;
     }
     .tooltip-bubble {
-        border-radius: 20px 4px 20px 20px;
-        transform-origin: top right;
+        border-radius: 4px 20px 20px 20px; /* Ujung lancip pindah ke kiri atas */
+        transform-origin: top left;
     }
   </style>
 </head>
@@ -167,7 +167,8 @@
         <button onclick="openGuideModal()" class="flex px-3 py-1.5 bg-[#FACC15] text-[#1D1D1F] rounded-full text-[11px] font-bold hover:bg-[#eab308] transition items-center gap-1.5 shadow-sm">
           <i class="fa-solid fa-book-open"></i> <span class="hidden sm:inline">Panduan Suara</span>
         </button>
-        <div id="onboardingTooltip" class="absolute top-[130%] right-0 md:left-1/2 md:-translate-x-1/2 bg-[var(--primary)] text-white shadow-xl tooltip-bubble px-4 py-2 text-[11px] font-bold opacity-0 transition-opacity duration-300 whitespace-nowrap z-[100] pointer-events-none">
+<!-- KODE BARU (Sudah ditambahkan w-max) -->
+        <div id="onboardingTooltip" class="absolute top-[130%] left-2 md:left-4 w-max bg-[var(--primary)] text-white shadow-xl tooltip-bubble px-4 py-2 text-[11px] font-bold opacity-0 transition-opacity duration-300 whitespace-nowrap z-[100] pointer-events-none">
           Hei, baca panduan suaranya dulu yuk!
         </div>
       </div>
