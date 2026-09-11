@@ -910,12 +910,37 @@
       grandTotal += currentGroup + tempVal; if (foundNumber && grandTotal > 0) return Math.round(grandTotal); return 0;
     }
 
-    function extractTransactionDetails(cmd, type) {
+   function extractTransactionDetails(cmd, type) {
       let amount = parseNominal(cmd); let transactionDate = getLocalDateStr();
-      if (cmd.includes('kemarin') || cmd.includes('kemaren')) { transactionDate = getRelativeDateStr('kemarin').full; } 
-      else { let dateMatch = cmd.match(/tanggal\s*(\d{1,2})/i); if (dateMatch) { let dayNum = parseInt(dateMatch[1], 10); if (dayNum >= 1 && dayNum <= 31) { let target = new Date(); target.setDate(dayNum); transactionDate = getLocalDateStr(target); } } }
-      let desc = cmd.replace(/(pemasukan|pengeluaran|masuk|keluar|beli|bayar|dapet|dapat|catat|tambah|tolong|rp|rupiah)/gi, '').replace(/(kemarin|kemaren|hari ini|tanggal\s*\d{1,2})/gi, '').replace(/ (bulan|tahun)\s+(lalu|kemarin|ini) /gi, '').replace(/ \d{1,3}(\.\d{3})+(,\d+)? | \d{1,3}(,\d{3})+(\.\d+)? /g, '').replace(/ (nol|satu|dua|tiga|empat|lima|enam|tujuh|delapan|sembilan|sepuluh|sebelas|belas|puluh|ratus|ribu|rb|k|juta|jt|miliar|milyar|setengah|se|sejuta|seribu|seratus) /gi, '').replace(/ \d+ /g, '').replace(/\s+/g, ' ').trim();
-      if (!desc) { desc = type === 'pemasukan' ? 'Pemasukan Lain' : 'Pengeluaran Lain'; } else { desc = desc.charAt(0).toUpperCase() + desc.slice(1); }
+      
+      if (cmd.includes('kemarin') || cmd.includes('kemaren')) { 
+        transactionDate = getRelativeDateStr('kemarin').full; 
+      } else { 
+        let dateMatch = cmd.match(/tanggal\s*(\d{1,2})/i); 
+        if (dateMatch) { 
+          let dayNum = parseInt(dateMatch[1], 10); 
+          if (dayNum >= 1 && dayNum <= 31) { 
+            let target = new Date(); target.setDate(dayNum); transactionDate = getLocalDateStr(target); 
+          } 
+        } 
+      }
+      
+      let desc = cmd
+        .replace(/\b(pemasukan|pengeluaran|masuk|keluar|beli|bayar|dapet|dapat|catat|tambah|tolong|rp|rupiah)\b/gi, '')
+        .replace(/\b(kemarin|kemaren|hari ini|tanggal\s*\d{1,2})\b/gi, '')
+        .replace(/\b(bulan|tahun)\s+(lalu|kemarin|ini)\b/gi, '')
+        .replace(/\b\d{1,3}(\.\d{3})+(,\d+)?\b|\b\d{1,3}(,\d{3})+(\.\d+)?\b/g, '')
+        .replace(/\b(nol|satu|dua|tiga|empat|lima|enam|tujuh|delapan|sembilan|sepuluh|sebelas|belas|puluh|ratus|ribu|rb|k|juta|jt|miliar|milyar|setengah|se|sejuta|seribu|seratus)\b/gi, '')
+        .replace(/\b\d+\b/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+        
+      if (!desc) { 
+        desc = type === 'pemasukan' ? 'Pemasukan Lain' : 'Pengeluaran Lain'; 
+      } else { 
+        desc = desc.charAt(0).toUpperCase() + desc.slice(1); 
+      }
+      
       return { amount, desc, date: transactionDate };
     }
 
