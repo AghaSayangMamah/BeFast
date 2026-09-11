@@ -42,6 +42,7 @@
       --text-main: #f8fafc;
       --text-muted: #94a3b8;
       --border-color: #334155;
+      --card-border: #334155;
       --primary: #496af1;
       --primary-hover: #3b5bdb;
       --header-bg: rgba(30, 41, 59, 0.85);
@@ -55,6 +56,7 @@
       --text-main: #831843;
       --text-muted: #be185d;
       --border-color: #fbcfe8;
+      --card-border: #ec4899;
       --primary: #ec4899;
       --primary-hover: #db2777;
       --header-bg: rgba(252, 231, 243, 0.88);
@@ -64,10 +66,11 @@
 [data-theme="green"] {
       --bg-main: #ecfdf5;
       --bg-sec: #d1fae5;
-  --card-bg: #d1fae5;
+      --card-bg: #d1fae5;
       --text-main: #064e3b;
       --text-muted: #047857;
       --border-color: #a7f3d0;
+      --card-border: #10b981;
       --primary: #10b981;
       --primary-hover: #059669;
       --header-bg: rgba(209, 250, 229, 0.88);
@@ -77,10 +80,11 @@
 [data-theme="yellow"] {
       --bg-main: #fefce8;
       --bg-sec: #fef9c3;
-  --card-bg: #fef9c3;
+      --card-bg: #fef9c3;
       --text-main: #713f12;
       --text-muted: #a16207;
       --border-color: #fde047;
+      --card-border: #eab308;
       --primary: #eab308;
       --primary-hover: #ca8a04;
       --header-bg: rgba(254, 249, 195, 0.88);
@@ -93,9 +97,9 @@
       -webkit-font-smoothing: antialiased;
     }
     
-    .card-style { background-color: var(--card-bg); border-color: var(--border-color); border-width: 1px; border-radius: 1.5rem; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03); transition: all 0.3s ease; }
+    .card-style { background-color: var(--card-bg); border-color: var(--card-border, var(--border-color)); border-width: 1px; border-radius: 1.5rem; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03); transition: all 0.3s ease; }
 
-    .signup-panel { background-color: var(--card-bg); color: var(--text-main); border-color: var(--border-color); }
+    .signup-panel { background-color: var(--card-bg); color: var(--text-main); border-color: var(--card-border, var(--border-color)); }
     
     .glass-header {
       background-color: var(--header-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
@@ -166,17 +170,6 @@
     
     <!-- Kanan: Actions -->
     <div class="flex items-center gap-2 md:gap-3">
-      <!-- Tooltip Panduan -->
-      <div class="relative">
-        <button onclick="openGuideModal()" class="flex px-3 py-1.5 bg-[#FACC15] text-[#1D1D1F] rounded-full text-[11px] font-bold hover:bg-[#eab308] transition items-center gap-1.5 shadow-sm">
-          <i class="fa-solid fa-book-open"></i> <span class="hidden sm:inline">Panduan Suara</span>
-        </button>
-<!-- KODE BARU (Sudah ditambahkan w-max) -->
-        <div id="onboardingTooltip" class="absolute top-[130%] left-2 md:left-4 w-max bg-[var(--primary)] text-white shadow-xl tooltip-bubble px-4 py-2 text-[11px] font-bold opacity-0 transition-opacity duration-300 whitespace-nowrap z-[100] pointer-events-none">
-          Hei, baca panduan suaranya dulu yuk!
-        </div>
-      </div>
-
       <div id="authLoggedOut" class="flex items-center gap-2">
         <button onclick="openLoginModal()" class="px-3 py-1.5 bg-[var(--bg-main)] hover:bg-[var(--border-color)] text-[var(--text-main)] rounded-full text-[11px] font-bold transition border border-[var(--border-color)]">Masuk</button>
         <button onclick="openSignupModal()" class="hidden sm:block px-3 py-1.5 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white rounded-full text-[11px] font-bold transition">Daftar</button>
@@ -187,23 +180,32 @@
           <img src="LOGO FIX.png" class="w-3.5 h-3.5 object-contain">
           <span id="userGreeting" class="truncate max-w-[80px] md:max-w-[100px]">Hai, User</span>
         </div>
-        <button onclick="handleLogout()" class="w-7 h-7 flex items-center justify-center bg-red-50 hover:bg-red-100 text-red-600 rounded-full text-xs font-bold transition border border-red-100" title="Keluar">
-          <i class="fa-solid fa-arrow-right-from-bracket"></i>
-        </button>
-      </div>
 
-      <!-- Theme Switcher -->
-      <div class="relative custom-dropdown" data-id="themeSelector">
-        <button class="w-7 h-7 flex items-center justify-center bg-[var(--bg-main)] hover:bg-[var(--border-color)] text-[var(--text-main)] rounded-full text-xs transition border border-[var(--border-color)] select-trigger">
-          <i class="fa-solid fa-palette"></i>
-        </button>
-        <ul class="absolute z-20 right-0 mt-2 w-32 options-list rounded-xl shadow-xl hidden overflow-hidden py-1 border">
-          <li class="px-4 py-2 text-xs font-bold cursor-pointer flex items-center gap-2 transition" onclick="setTheme('light')"><div class="w-3 h-3 rounded-full bg-[#496af1]"></div> Tech Blue</li>
-          <li class="px-4 py-2 text-xs font-bold cursor-pointer flex items-center gap-2 transition" onclick="setTheme('dark')"><div class="w-3 h-3 rounded-full bg-[#0B1120]"></div> Midnight</li>
-          <li class="px-4 py-2 text-xs font-bold cursor-pointer flex items-center gap-2 transition" onclick="setTheme('pink')"><div class="w-3 h-3 rounded-full bg-[#ec4899]"></div> Sakura</li>
-          <li class="px-4 py-2 text-xs font-bold cursor-pointer flex items-center gap-2 transition" onclick="setTheme('green')"><div class="w-3 h-3 rounded-full bg-[#10b981]"></div> Emerald</li>
-          <li class="px-4 py-2 text-xs font-bold cursor-pointer flex items-center gap-2 transition" onclick="setTheme('yellow')"><div class="w-3 h-3 rounded-full bg-[#eab308]"></div> Sunset</li>
-        </ul>
+        <div class="relative custom-dropdown" data-id="loggedInMenu">
+          <button class="w-9 h-9 flex items-center justify-center bg-[var(--bg-main)] hover:bg-[var(--border-color)] text-[var(--text-main)] rounded-full text-sm transition border border-[var(--border-color)] select-trigger" title="Menu">
+            <i class="fa-solid fa-bars"></i>
+          </button>
+          <ul class="absolute z-20 right-0 mt-2 w-44 options-list rounded-xl shadow-xl hidden overflow-hidden py-1 border bg-[var(--card-bg)]">
+            <li class="px-3 py-2 text-xs font-bold cursor-pointer transition hover:bg-[var(--bg-main)]">
+              <button onclick="openGuideModal()" class="w-full text-left flex items-center gap-2 text-[var(--text-main)]">
+                <i class="fa-solid fa-book-open text-[#FACC15]"></i> Panduan Suara
+              </button>
+            </li>
+            <li class="px-3 py-2 text-xs font-bold cursor-pointer transition hover:bg-[var(--bg-main)]">
+              <span class="block text-[10px] font-black uppercase tracking-wide text-[var(--text-muted)]">Tema</span>
+            </li>
+            <li class="px-4 py-2 text-xs font-bold cursor-pointer flex items-center gap-2 transition hover:bg-[var(--bg-main)]" onclick="setTheme('light')"><div class="w-3 h-3 rounded-full bg-[#496af1]"></div> Tech Blue</li>
+            <li class="px-4 py-2 text-xs font-bold cursor-pointer flex items-center gap-2 transition hover:bg-[var(--bg-main)]" onclick="setTheme('dark')"><div class="w-3 h-3 rounded-full bg-[#0B1120]"></div> Midnight</li>
+            <li class="px-4 py-2 text-xs font-bold cursor-pointer flex items-center gap-2 transition hover:bg-[var(--bg-main)]" onclick="setTheme('pink')"><div class="w-3 h-3 rounded-full bg-[#ec4899]"></div> Sakura</li>
+            <li class="px-4 py-2 text-xs font-bold cursor-pointer flex items-center gap-2 transition hover:bg-[var(--bg-main)]" onclick="setTheme('green')"><div class="w-3 h-3 rounded-full bg-[#10b981]"></div> Emerald</li>
+            <li class="px-4 py-2 text-xs font-bold cursor-pointer flex items-center gap-2 transition hover:bg-[var(--bg-main)]" onclick="setTheme('yellow')"><div class="w-3 h-3 rounded-full bg-[#eab308]"></div> Sunset</li>
+            <li class="px-3 py-2 text-xs font-bold cursor-pointer transition hover:bg-[var(--bg-main)] border-t border-[var(--border-color)]">
+              <button onclick="handleLogout()" class="w-full text-left flex items-center gap-2 text-[var(--text-main)]">
+                <i class="fa-solid fa-arrow-right-from-bracket text-red-500"></i> Logout
+              </button>
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
   </header>
@@ -610,12 +612,28 @@
         const isDropdown = e.target.closest('.custom-dropdown');
         document.querySelectorAll('.options-list').forEach(list => { if (!isDropdown || list !== isDropdown.querySelector('.options-list')) list.classList.add('hidden'); });
       });
+
       document.querySelectorAll('.custom-dropdown').forEach(dropdown => {
-        const trigger = dropdown.querySelector('.select-trigger'); const list = dropdown.querySelector('.options-list');
-        const textSpan = trigger.querySelector('.selected-text'); const hiddenInput = document.getElementById(dropdown.dataset.id);
-        trigger.addEventListener('click', () => list.classList.toggle('hidden'));
+        const trigger = dropdown.querySelector('.select-trigger');
+        const list = dropdown.querySelector('.options-list');
+        if (!trigger || !list) return;
+
+        const textSpan = trigger.querySelector('.selected-text');
+        const hiddenInput = dropdown.dataset.id ? document.getElementById(dropdown.dataset.id) : null;
+
+        trigger.addEventListener('click', (event) => {
+          event.stopPropagation();
+          list.classList.toggle('hidden');
+        });
+
         list.querySelectorAll('li').forEach(option => {
-          option.addEventListener('click', () => { textSpan.innerHTML = option.innerHTML; hiddenInput.value = option.dataset.value || option.innerText.trim(); list.classList.add('hidden'); });
+          option.addEventListener('click', () => {
+            if (textSpan && hiddenInput) {
+              textSpan.innerHTML = option.innerHTML;
+              hiddenInput.value = option.dataset.value || option.innerText.trim();
+            }
+            list.classList.add('hidden');
+          });
         });
       });
     }
