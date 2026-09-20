@@ -128,3 +128,12 @@
         border-radius: 4px 20px 20px 20px; /* Ujung lancip pindah ke kiri atas */
         transform-origin: top left;
     }
+
+    /* Animasi Progress Bar Verifikasi */
+@keyframes shrinkBar {
+    from { width: 100%; }
+    to { width: 0%; }
+}
+.animate-shrink {
+    animation: shrinkBar 6s linear forwards;
+}

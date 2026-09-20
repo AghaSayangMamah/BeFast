@@ -72,10 +72,11 @@ async function handleSignup(e) {
     if (existingUser) throw new Error('Nomor sudah terdaftar.');
     const { data, error } = await supabaseClient.auth.signUp({ email: email, password: password, options: { data: { full_name: name, phone_number: formattedPhone } } });
     if (error) throw error;
-    if (data.user) {
+if (data.user) {
       await supabaseClient.from('users').upsert({ id: data.user.id, username: name, email: email, phone_number: formattedPhone });
-      showAuthAlert('signupAlert', 'Pendaftaran berhasil!', false); 
-      setTimeout(() => { closeSignupModal(); if(typeof playWelcomeAnimation === 'function') playWelcomeAnimation(name.split(' ')[0]); }, 1000);
+      // Hapus alert bawaan, ganti dengan memanggil modal animasi baru
+      closeSignupModal(); 
+      showVerifyEmailModal();
     }
   } catch (err) { showAuthAlert('signupAlert', err.message); } finally { btn.disabled = false; btn.innerHTML = 'Buat Akun Sekarang'; }
 }
@@ -91,3 +92,33 @@ async function handleLogout() {
 
 // Inisialisasi awal auth
 updateAuthUI();
+
+function showVerifyEmailModal() {
+  const modal = document.getElementById('verifyEmailModal');
+  const progressBar = document.getElementById('verifyProgressBar');
+  const countdownText = document.getElementById('verifyCountdown');
+  
+  modal.classList.remove('hidden');
+  
+  // Reset dan jalankan animasi progress bar
+  progressBar.classList.remove('animate-shrink');
+  void progressBar.offsetWidth; // Trigger reflow agar animasi ter-reset
+  progressBar.classList.add('animate-shrink');
+  
+  if(typeof speak === 'function') {
+    speak("Pendaftaran berhasil. Silakan cek kotak masuk email kamu untuk verifikasi.");
+  }
+  
+  let timeLeft = 6;
+  countdownText.innerText = timeLeft;
+  
+  const interval = setInterval(() => {
+    timeLeft--;
+    countdownText.innerText = timeLeft;
+    if(timeLeft <= 0) {
+      clearInterval(interval);
+      modal.classList.add('hidden');
+      openLoginModal(); // Otomatis buka pop-up login setelah tertutup
+    }
+  }, 1000);
+}
