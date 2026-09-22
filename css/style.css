@@ -1,139 +1,36 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap');
 
-    :root {
-      /* Tema Default: Tech Blue */
-    --bg-main: #F4F6F8;
-    --bg-sec: #FFFFFF;
-    --card-bg: #FFFFFF;
-    --text-main: #1D1D1F;
-    --text-muted: #6B7280;
-    --border-color: #E5E7EB;
-    --primary: #496af1;
-    --primary-hover: #3b5bdb;
-    --header-bg: rgba(255, 255, 255, 0.85);
-    }
-    
-    /* Tema Midnight */
-    [data-theme="dark"] {
-    --bg-main: #0B1120;
-    --bg-sec: #0f172a;
-    --card-bg: #1e293b;
-    --text-main: #f8fafc;
-    --text-muted: #94a3b8;
-    --border-color: #334155;
-    --card-border: #334155;
-    --primary: #496af1;
-    --primary-hover: #3b5bdb;
-    --header-bg: rgba(30, 41, 59, 0.85);
-    }
-
-    /* Tema Sakura Pink */
-[data-theme="pink"] {
-    --bg-main: #f4b2d689;
-    --bg-sec: #fce7f3;
-    --card-bg: #f7c7e2;
-    --text-main: #831843;
-    --text-muted: #be185d;
-    --border-color: #fbcfe8;
-    --card-border: #ec4899;
-    --primary: #ec4899;
-    --primary-hover: #db2777;
-    --header-bg: rgba(252, 231, 243, 0.88);
-    }
-
-    /* Tema Emerald Green */
-[data-theme="green"] {
-    --bg-main: #ecfdf5;
-    --bg-sec: #d1fae5;
-    --card-bg: #d1fae5;
-    --text-main: #064e3b;
-    --text-muted: #047857;
-    --border-color: #a7f3d0;
-    --card-border: #10b981;
-    --primary: #10b981;
-    --primary-hover: #059669;
-    --header-bg: rgba(209, 250, 229, 0.88);
-    }
-
-    /* Tema Sunset Yellow */
-[data-theme="yellow"] {
-    --bg-main: #fefce8;
-    --bg-sec: #fef9c3;
-    --card-bg: #fef9c3;
-    --text-main: #713f12;
-    --text-muted: #a16207;
-    --border-color: #fde047;
-    --card-border: #eab308;
-    --primary: #eab308;
-    --primary-hover: #ca8a04;
-    --header-bg: rgba(254, 249, 195, 0.88);
-    }
-
-    body {
-    background-color: var(--bg-main); color: var(--text-main); transition: background-color 0.3s ease, color 0.3s ease;
-      /* Font Outfit memberikan kesan geometris, modern, dan sangat premium */
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    }
-    
-    .card-style { background-color: var(--card-bg); border-color: var(--card-border, var(--border-color)); border-width: 1px; border-radius: 1.5rem; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03); transition: all 0.3s ease; }
-
-    .signup-panel { background-color: var(--card-bg); color: var(--text-main); border-color: var(--card-border, var(--border-color)); }
-    
-    .glass-header {
-    background-color: var(--header-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-    border: 1px solid var(--border-color); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04); transition: all 0.3s ease;
-    }
-    
-    .mic-active { animation: pulse-red 1.5s infinite; }
-    @keyframes pulse-red {
-    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.6); }
-    70% { transform: scale(1.08); box-shadow: 0 0 0 20px rgba(220, 38, 38, 0); }
-    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
-    }
-
-    /* Animasi Maskot Menyapa */
-    @keyframes mascotWave {
-    0% { transform: scale(1) rotate(0deg); }
-    20% { transform: scale(2.5) rotate(-15deg); }
-    40% { transform: scale(2.5) rotate(15deg); }
-    60% { transform: scale(2.5) rotate(-15deg); }
-    80% { transform: scale(2.5) rotate(15deg); }
-    100% { transform: scale(1) rotate(0deg); }
-    }
-    .animate-mascot-wave {
-    animation: mascotWave 2s ease-in-out;
-    transform-origin: center left;
-    z-index: 9999;
-    position: relative;
-    }
-
-    .no-scrollbar::-webkit-scrollbar { display: none; }
-    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-    
-    .input-apple { transition: all 0.2s ease; border-color: var(--border-color); border-radius: 1rem; background-color: var(--bg-sec); color: var(--text-main); }
-    .input-apple:focus { border-color: var(--primary) !important; outline: none; }
-    .mic-glow { background: radial-gradient(circle, rgba(250,204,21,0.15) 0%, transparent 70%); }
-    
-    /* Custom Dropdown CSS */
-    .custom-dropdown .options-list { border-color: var(--border-color); background-color: var(--card-bg); }
-    .custom-dropdown .options-list li { color: var(--text-main); }
-    .custom-dropdown .options-list li:hover { background-color: var(--bg-main); }
-    
-    /* Balon melayang */
-    .cloud-bubble {
-        border-radius: 20px 20px 20px 4px;
-        transform-origin: bottom left;
-    }
-    .tooltip-bubble {
-        border-radius: 4px 20px 20px 20px; /* Ujung lancip pindah ke kiri atas */
-        transform-origin: top left;
-    }
-
-    /* Animasi Progress Bar Verifikasi */
-@keyframes shrinkBar {
-    from { width: 100%; }
-    to { width: 0%; }
+body {
+  color: #1e293b;
+  font-family: 'Outfit', sans-serif;
+  background-image: url('../bg-room.jpg'); 
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-color: #f0f4f8; 
 }
-.animate-shrink {
-    animation: shrinkBar 6s linear forwards;
+
+.glass-panel {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 1.5rem;
+  box-shadow: 0 10px 30px 0 rgba(31, 38, 135, 0.07);
 }
+
+.card-style { background-color: #fff; border-radius: 1.5rem; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+
+.mic-btn-shadow { box-shadow: 0 8px 25px rgba(73, 106, 241, 0.4); }
+.mic-active { animation: pulse-blue 1.5s infinite; }
+@keyframes pulse-blue {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(73, 106, 241, 0.6); }
+  70% { transform: scale(1.08); box-shadow: 0 0 0 20px rgba(73, 106, 241, 0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(73, 106, 241, 0); }
+}
+
+@keyframes shrinkBar { from { width: 100%; } to { width: 0%; } }
+.animate-shrink { animation: shrinkBar 6s linear forwards; }
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
