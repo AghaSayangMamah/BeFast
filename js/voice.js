@@ -1,8 +1,10 @@
 function getLocalDateStr(dateObj = new Date()) { const year = dateObj.getFullYear(); const month = String(dateObj.getMonth() + 1).padStart(2, '0'); const day = String(dateObj.getDate()).padStart(2, '0'); return `${year}-${month}-${day}`; }
+function getRelativeDateStr(modifier) {
+  let d = new Date(); if (modifier === 'kemarin') d.setDate(d.getDate() - 1); else if (modifier === 'bulan_lalu') d.setMonth(d.getMonth() - 1); else if (modifier === 'tahun_lalu') d.setFullYear(d.getFullYear() - 1);
+  const year = d.getFullYear(); const month = String(d.getMonth() + 1).padStart(2, '0'); const day = String(d.getDate()).padStart(2, '0'); return { full: `${year}-${month}-${day}`, ym: `${year}-${month}`, year: `${year}` };
+}
 
-document.addEventListener('DOMContentLoaded', () => {
-  const mDate = document.getElementById('manualDate'); if(mDate) mDate.value = getLocalDateStr();
-});
+document.addEventListener('DOMContentLoaded', () => { const mDate = document.getElementById('manualDate'); if(mDate) mDate.value = getLocalDateStr(); });
 
 function speak(text) {
   if (!('speechSynthesis' in window)) return; window.speechSynthesis.cancel(); 
@@ -42,50 +44,120 @@ function extractTransactionDetails(cmd, type) {
   let amount = parseNominal(cmd); let transactionDate = getLocalDateStr();
   
   if (cmd.includes('kemarin') || cmd.includes('kemaren')) { 
-    let d = new Date(); d.setDate(d.getDate() - 1);
-    transactionDate = getLocalDateStr(d); 
+    transactionDate = getRelativeDateStr('kemarin').full; 
   } else { 
     let dateMatch = cmd.match(/tanggal\s*(\d{1,2})/i); 
     if (dateMatch) { 
       let dayNum = parseInt(dateMatch[1], 10); 
-      if (dayNum >= 1 && dayNum <= 31) { 
-        let target = new Date(); target.setDate(dayNum); transactionDate = getLocalDateStr(target); 
-      } 
+      if (dayNum >= 1 && dayNum <= 31) { let target = new Date(); target.setDate(dayNum); transactionDate = getLocalDateStr(target); } 
     } 
   }
   
   let desc = cmd
-    .replace(/\b(pemasukan|pengeluaran|masuk|keluar|beli|bayar|dapet|dapat|catat|tambah|tolong|rp|rupiah)\b/gi, '')
+    .replace(/\b(pemasukan|pengeluaran|masuk|keluar|beli|bayar|dapet|dapat|catat|tambah|tolong)\b/gi, '')
     .replace(/\b(kemarin|kemaren|hari ini|tanggal\s*\d{1,2})\b/gi, '')
     .replace(/\b(bulan|tahun)\s+(lalu|kemarin|ini)\b/gi, '')
+    .replace(/rp\s*\d+([.,]\d+)?/gi, '') // Membunuh kata "rp200" atau "rp 200.000"
     .replace(/\b\d{1,3}(\.\d{3})+(,\d+)?\b|\b\d{1,3}(,\d{3})+(\.\d+)?\b/g, '')
     .replace(/\b(nol|satu|dua|tiga|empat|lima|enam|tujuh|delapan|sembilan|sepuluh|sebelas|belas|puluh|ratus|ribu|rb|k|juta|jt|miliar|milyar|setengah|se|sejuta|seribu|seratus)\b/gi, '')
     .replace(/\b\d+\b/g, '')
+    .replace(/[.,]/g, '') // Membunuh titik/koma sisa
     .replace(/\s+/g, ' ')
     .trim();
     
-  if (!desc) { 
-    desc = type === 'pemasukan' ? 'Pemasukan Lain' : 'Pengeluaran Lain'; 
-  } else { 
-    desc = desc.charAt(0).toUpperCase() + desc.slice(1); 
-  }
+  if (!desc) { desc = type === 'pemasukan' ? 'Pemasukan Lain' : 'Pengeluaran Lain'; } 
+  else { desc = desc.charAt(0).toUpperCase() + desc.slice(1); }
   
   return { amount, desc, date: transactionDate };
 }
 
+function parseDateScopeFromCommand(cmd) {
+  const monthNames = { 'januari': '01', 'jan': '01', 'februari': '02', 'feb': '02', 'maret': '03', 'mar': '03', 'april': '04', 'apr': '04', 'mei': '05', 'juni': '06', 'juli': '07', 'agustus': '08', 'agu': '08', 'september': '09', 'sep': '09', 'oktober': '10', 'okt': '10', 'november': '11', 'nov': '11', 'desember': '12', 'des': '12' };
+  let periodLabel = "keseluruhan"; let filterFunc = () => true;
+  if (cmd.includes('bulan lalu') || cmd.includes('bulan kemarin')) return { label: "bulan lalu", func: t => t.date.startsWith(getRelativeDateStr('bulan_lalu').ym) };
+  if (cmd.includes('tahun lalu') || cmd.includes('tahun kemarin')) return { label: "tahun lalu", func: t => t.date.startsWith(getRelativeDateStr('tahun_lalu').year) };
+
+  let yearMatch = cmd.match(/tahun\s*(\d{4})/i) || cmd.match(/ (20\d{2}) /); let targetYear = yearMatch ? (yearMatch[1] || yearMatch[0]) : null;
+  let targetMonth = null; for (let mName in monthNames) { if (cmd.includes(mName)) { targetMonth = monthNames[mName]; break; } }
+  let dateMatch = cmd.match(/tanggal\s*(\d{1,2})/i); let targetDay = dateMatch ? dateMatch[1].padStart(2, '0') : null;
+  const todayStr = getLocalDateStr();
+
+  if (targetDay && targetMonth && targetYear) return { label: `tanggal ${targetDay} bulan ${targetMonth} tahun ${targetYear}`, func: t => t.date === `${targetYear}-${targetMonth}-${targetDay}` };
+  else if (targetDay && targetMonth) return { label: `tanggal ${targetDay} bulan ${targetMonth}`, func: t => t.date === `${todayStr.slice(0, 4)}-${targetMonth}-${targetDay}` };
+  else if (targetMonth && targetYear) return { label: `bulan ${targetMonth} tahun ${targetYear}`, func: t => t.date.startsWith(`${targetYear}-${targetMonth}`) };
+  else if (targetMonth) return { label: `bulan ${targetMonth}`, func: t => t.date.startsWith(`${todayStr.slice(0, 4)}-${targetMonth}`) };
+  else if (targetDay) return { label: `tanggal ${targetDay} bulan ini`, func: t => t.date === `${todayStr.slice(0, 7)}-${targetDay}` };
+  else if (targetYear) return { label: `tahun ${targetYear}`, func: t => t.date.startsWith(targetYear) };
+  else if (cmd.includes('hari ini')) return { label: "hari ini", func: t => t.date === todayStr };
+  else if (cmd.includes('kemarin') || cmd.includes('kemaren')) return { label: "kemarin", func: t => t.date === getRelativeDateStr('kemarin').full };
+  else if (cmd.includes('bulan ini')) return { label: "bulan ini", func: t => t.date.startsWith(todayStr.slice(0, 7)) };
+  else if (cmd.includes('tahun ini')) return { label: "tahun ini", func: t => t.date.startsWith(todayStr.slice(0, 4)) };
+  return { label: periodLabel, func: filterFunc };
+}
+
+async function executeVoiceDelete(cmd) {
+  let isIncome = cmd.includes('pemasukan') || cmd.includes('masuk'); let isExpense = cmd.includes('pengeluaran') || cmd.includes('keluar') || cmd.includes('beli') || cmd.includes('bayar');
+  let scope = parseDateScopeFromCommand(cmd);
+  let keyword = cmd.replace(/(hapus|delete|hilangin|bersihin|buang|pemasukan|pengeluaran|masuk|keluar|dapet|dapat|beli|bayar|semua|semuanya)/gi, '').replace(/(kemarin|kemaren|hari ini|bulan ini|bulan lalu|bulan kemarin|tahun ini|tahun lalu|tahun kemarin|tanggal\s*\d{1,2}|tahun\s*\d{4}| 20\d{2} )/gi, '').trim();
+
+  let itemsToDelete = transactions.filter(t => {
+    if (isIncome && t.type !== 'pemasukan') return false; if (isExpense && t.type !== 'pengeluaran') return false;
+    if (scope.label !== 'keseluruhan' && !scope.func(t)) return false; if (keyword && !t.desc.toLowerCase().includes(keyword.toLowerCase())) return false; return true;
+  });
+
+  if (itemsToDelete.length === 0) return speak(`Aduh, tidak ditemukan transaksi yang cocok untuk dihapus.`);
+  const user = getCurrentUser();
+  if (user && supabaseClient) {
+    updateSyncStatusUI(false, 'Menghapus Cloud...');
+    const { error } = await supabaseClient.from('transactions').delete().in('id', itemsToDelete.map(i => i.id));
+    if (error) return alert(`Gagal hapus Cloud: ${error.message}`);
+  }
+  await fetchTransactionsFromSupabase(); speak(`Sip! Berhasil menghapus ${itemsToDelete.length} data transaksi.`);
+}
+
+async function executeVoiceEdit(cmd) {
+  let parts = cmd.split(/ (jadi|menjadi) /i); if (parts.length < 3) return speak("Format edit belum pas nih gaes. Contohnya: Edit pengeluaran kopi kemarin jadi lima puluh ribu.");
+  let targetPart = parts[0].trim(); let newValPart = parts.slice(2).join(' ').trim();
+  let targetType = null; if (targetPart.includes('pemasukan') || targetPart.includes('masuk')) targetType = 'pemasukan'; if (targetPart.includes('pengeluaran') || targetPart.includes('keluar') || targetPart.includes('beli') || targetPart.includes('bayar')) targetType = 'pengeluaran';
+  let scope = parseDateScopeFromCommand(targetPart);
+  let keyword = targetPart.replace(/(ubah|edit|ganti|pemasukan|pengeluaran|masuk|keluar|beli|bayar|dapet|dapat|transaksi|nominal|deskripsi|keterangan)/gi, '').replace(/(kemarin|kemaren|hari ini|bulan ini|bulan lalu|bulan kemarin|tahun ini|tahun lalu|tahun kemarin|tanggal\s*\d{1,2}|tahun\s*\d{4}| 20\d{2} )/gi, '').trim();
+
+  let matches = transactions.filter(t => {
+    if (targetType && t.type !== targetType) return false; if (scope.label !== 'keseluruhan' && !scope.func(t)) return false; if (keyword && !t.desc.toLowerCase().includes(keyword.toLowerCase())) return false; return true;
+  });
+
+  if (matches.length === 0) return speak("Aduh, data transaksi yang mau diedit gak ditemukan nih.");
+  let itemToEdit = matches[0]; let newAmount = parseNominal(newValPart);
+  let user = getCurrentUser(); if (!user) return openLoginModal();
+
+  if (newAmount > 0) {
+    updateSyncStatusUI(false, 'Menyimpan Cloud...');
+    const { error } = await supabaseClient.from('transactions').update({ amount: newAmount }).eq('id', itemToEdit.id);
+    if (!error) { await fetchTransactionsFromSupabase(); speak(`Sip! Nominal diubah jadi ${newAmount.toLocaleString('id-ID')} rupiah.`); }
+  } else {
+    let newDesc = newValPart.charAt(0).toUpperCase() + newValPart.slice(1); updateSyncStatusUI(false, 'Menyimpan Cloud...');
+    const { error } = await supabaseClient.from('transactions').update({ desc: newDesc, category: detectCategory(newDesc, itemToEdit.type) }).eq('id', itemToEdit.id);
+    if (!error) { await fetchTransactionsFromSupabase(); speak(`Sip! Keterangan diubah menjadi ${newDesc}.`); }
+  }
+}
+
 function executeVoiceDownload(cmd) { openExportModal(); speak("Silakan download laporannya."); }
-function executeVoiceReadout(cmd) { speak("Ini adalah fitur baca laporan. Ringkasannya telah ditampilkan."); }
+function executeVoiceReadout(cmd) { speak("Ini fitur baca laporan. Cek visualnya ya."); }
 
 async function processVoiceCommand(cmd) {
   const user = getCurrentUser(); if (!user) { openLoginModal(); return; }
-  if (cmd.includes('download')) { executeVoiceDownload(cmd); return; }
-  if (cmd.includes('grafik') || cmd.includes('analisis')) { showChartModal(cmd); return; }
-  if (cmd.includes('baca') || cmd.includes('cek')) { executeVoiceReadout(cmd); return; }
+  
+  // LOGIKA RESTORASI: Panggil fungsi edit, hapus, grafik, baca
+  if (cmd.includes('edit') || cmd.includes('ubah') || cmd.includes('ganti')) { executeVoiceEdit(cmd); return; }
+  if (cmd.includes('hapus') || cmd.includes('delete') || cmd.includes('hilangin') || cmd.includes('buang')) { executeVoiceDelete(cmd); return; }
+  if (cmd.includes('download') || cmd.includes('unduh') || cmd.includes('simpan') || cmd.includes('ekspor')) { executeVoiceDownload(cmd); return; }
+  if (cmd.includes('grafik') || cmd.includes('analisis') || cmd.includes('chart')) { showChartModal(cmd); return; }
+  if (cmd.includes('baca') || cmd.includes('cek') || cmd.includes('spill') || cmd.includes('total')) { executeVoiceReadout(cmd); return; }
 
   const nominal = parseNominal(cmd);
   if (nominal > 0) {
     let type = 'pengeluaran'; 
-    if (/(pemasukan|masuk|dapet|dapat|gaji|thr|transferan|honor|bonus)/i.test(cmd)) type = 'pemasukan';
+    if (/(pemasukan|masuk|dapet|dapat|gaji|thr|transferan|honor|bonus|dikasih|nemu)/i.test(cmd)) type = 'pemasukan';
     
     let { amount, desc, date } = extractTransactionDetails(cmd, type);
 

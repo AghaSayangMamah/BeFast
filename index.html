@@ -80,11 +80,14 @@
   <!-- MAIN CONTENT -->
   <main class="max-w-[1400px] mx-auto pt-24 pb-8 px-4 md:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-4 gap-6 min-h-screen">
     
-    <!-- KOLOM KIRI: Aktivitas Terakhir -->
+<!-- KOLOM KIRI: Riwayat Transaksi -->
     <aside class="glass-panel p-5 flex flex-col h-[500px]">
-      <div class="flex justify-between items-center mb-4">
-        <h3 class="font-bold text-lg text-[#1e3a8a]">Aktivitas Terakhir</h3>
-        <span id="syncStatusBadge" class="text-[9px] px-2 py-0.5 rounded font-bold bg-green-100 text-green-600"><i class="fa-solid fa-cloud-check"></i> Sinkron</span>
+      <div class="flex justify-between items-center mb-4 border-b border-gray-200/50 pb-3">
+        <h3 class="font-black text-lg text-[#1e3a8a]">Riwayat Transaksi</h3>
+        <div class="flex items-center gap-2">
+          <span id="syncStatusBadge" class="text-[9px] px-2 py-0.5 rounded font-bold bg-green-100 text-green-600"><i class="fa-solid fa-cloud-check"></i> Sinkron</span>
+          <a href="riwayat.html" class="text-[10px] bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white transition px-2 py-1 rounded font-bold shadow-sm">Lihat Semua <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
       </div>
       <div id="transactionList" class="flex flex-col gap-3 overflow-y-auto no-scrollbar pb-2">
         <p class="text-sm text-center text-gray-400 mt-10">Memuat data...</p>
