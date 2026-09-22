@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Riwayat Transaksi - BeFAST</title>
+  
+  <link rel="icon" type="image/png" href="LOGO FIX.png">
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="min-h-screen pb-10">
+
+  <!-- Header Sederhana -->
+  <header class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50 border-b border-gray-200">
+    <div class="max-w-[1200px] mx-auto px-4 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-4">
+        <a href="index.html" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-blue-100 hover:text-blue-600 transition">
+          <i class="fa-solid fa-arrow-left"></i>
+        </a>
+        <h1 class="text-xl font-black text-[#1e3a8a]">Semua Transaksi</h1>
+      </div>
+      <img src="mascot-3d.png" alt="BeFAST" class="w-10 h-10 object-contain drop-shadow-sm">
+    </div>
+  </header>
+
+  <!-- Konten Tabel -->
+  <main class="max-w-[1200px] mx-auto px-4 pt-8">
+    <div class="glass-panel p-6 overflow-hidden">
+      <div class="overflow-x-auto no-scrollbar">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="border-b-2 border-gray-200 text-gray-500 text-xs uppercase tracking-wider">
+              <th class="p-3 font-black">Tanggal</th>
+              <th class="p-3 font-black">Jenis</th>
+              <th class="p-3 font-black">Kategori</th>
+              <th class="p-3 font-black">Keterangan</th>
+              <th class="p-3 font-black text-right">Nominal (Rp)</th>
+              <th class="p-3 font-black text-center">Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody" class="text-sm">
+            <tr><td colspan="6" class="p-6 text-center text-gray-400 font-bold">Memuat data dari database...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- Menggunakan config.js untuk koneksi database -->
+  <script src="js/config.js"></script>
+  
+  <script>
+    // Logika Khusus Halaman Riwayat
+    document.addEventListener('DOMContentLoaded', async () => {
+      const userStr = localStorage.getItem('bf_user');
+      if (!userStr || !supabaseClient) {
+        window.location.href = 'index.html'; // Usir ke depan kalau belum login
+        return;
+      }
+      
+      const user = JSON.parse(userStr);
+      const tbody = document.getElementById('tableBody');
+
+      // Ambil data dari Supabase
+      const { data, error } = await supabaseClient
+        .from('transactions')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('date', { ascending: false });
+
+      if (error) {
+        tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-red-500 font-bold">Gagal memuat data.</td></tr>`;
+        return;
+      }
+
+      if (!data || data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-gray-400 font-bold">Belum ada riwayat transaksi.</td></tr>`;
+        return;
+      }
+
+      // Render Tabel
+      tbody.innerHTML = '';
+      data.forEach((t, index) => {
+        const isIncome = t.type === 'pemasukan';
+        const typeBadge = isIncome 
+          ? `<span class="bg-green-100 text-green-700 px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider">Pemasukan</span>`
+          : `<span class="bg-red-100 text-red-700 px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider">Pengeluaran</span>`;
+        
+        const amountColor = isIncome ? 'text-green-600' : 'text-red-600';
+        const amountSign = isIncome ? '+' : '-';
+        const rowBg = index % 2 === 0 ? 'bg-transparent' : 'bg-gray-50/50';
+
+        const tr = document.createElement('tr');
+        tr.className = `border-b border-gray-100 hover:bg-blue-50/50 transition ${rowBg}`;
+        tr.innerHTML = `
+          <td class="p-3 font-semibold text-gray-600 whitespace-nowrap">${t.date}</td>
+          <td class="p-3">${typeBadge}</td>
+          <td class="p-3 font-bold text-gray-700 whitespace-nowrap">${t.category || '-'}</td>
+          <td class="p-3 font-semibold text-gray-800">${t.desc}</td>
+          <td class="p-3 font-black ${amountColor} text-right whitespace-nowrap">${amountSign} Rp ${Number(t.amount).toLocaleString('id-ID')}</td>
+          <td class="p-3 text-center">
+            <button onclick="deleteTransaction('${t.id}')" class="w-8 h-8 rounded-full bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition" title="Hapus">
+              <i class="fa-solid fa-trash text-xs"></i>
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    });
+
+    // Fungsi Hapus Khusus Halaman Tabel
+    async function deleteTransaction(id) {
+      if(confirm('Yakin ingin menghapus transaksi ini?')) {
+        const { error } = await supabaseClient.from('transactions').delete().eq('id', id);
+        if(!error) {
+          location.reload(); // Refresh halaman tabel setelah dihapus
+        } else {
+          alert("Gagal menghapus data.");
+        }
+      }
+    }
+  </script>
+</body>
+</html>

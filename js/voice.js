@@ -57,11 +57,11 @@ function extractTransactionDetails(cmd, type) {
     .replace(/\b(pemasukan|pengeluaran|masuk|keluar|beli|bayar|dapet|dapat|catat|tambah|tolong)\b/gi, '')
     .replace(/\b(kemarin|kemaren|hari ini|tanggal\s*\d{1,2})\b/gi, '')
     .replace(/\b(bulan|tahun)\s+(lalu|kemarin|ini)\b/gi, '')
-    .replace(/rp\s*\d+([.,]\d+)?/gi, '') // Membunuh kata "rp200" atau "rp 200.000"
+    .replace(/rp\s*\d+([.,]\d+)?/gi, '') 
     .replace(/\b\d{1,3}(\.\d{3})+(,\d+)?\b|\b\d{1,3}(,\d{3})+(\.\d+)?\b/g, '')
     .replace(/\b(nol|satu|dua|tiga|empat|lima|enam|tujuh|delapan|sembilan|sepuluh|sebelas|belas|puluh|ratus|ribu|rb|k|juta|jt|miliar|milyar|setengah|se|sejuta|seribu|seratus)\b/gi, '')
     .replace(/\b\d+\b/g, '')
-    .replace(/[.,]/g, '') // Membunuh titik/koma sisa
+    .replace(/[.,]/g, '')
     .replace(/\s+/g, ' ')
     .trim();
     
@@ -78,7 +78,14 @@ function parseDateScopeFromCommand(cmd) {
   if (cmd.includes('tahun lalu') || cmd.includes('tahun kemarin')) return { label: "tahun lalu", func: t => t.date.startsWith(getRelativeDateStr('tahun_lalu').year) };
 
   let yearMatch = cmd.match(/tahun\s*(\d{4})/i) || cmd.match(/ (20\d{2}) /); let targetYear = yearMatch ? (yearMatch[1] || yearMatch[0]) : null;
-  let targetMonth = null; for (let mName in monthNames) { if (cmd.includes(mName)) { targetMonth = monthNames[mName]; break; } }
+  let targetMonth = null; 
+  
+  for (let mName in monthNames) { 
+    if (new RegExp('\\b' + mName + '\\b', 'i').test(cmd)) { 
+      targetMonth = monthNames[mName]; break; 
+    } 
+  }
+
   let dateMatch = cmd.match(/tanggal\s*(\d{1,2})/i); let targetDay = dateMatch ? dateMatch[1].padStart(2, '0') : null;
   const todayStr = getLocalDateStr();
 
@@ -98,11 +105,14 @@ function parseDateScopeFromCommand(cmd) {
 async function executeVoiceDelete(cmd) {
   let isIncome = cmd.includes('pemasukan') || cmd.includes('masuk'); let isExpense = cmd.includes('pengeluaran') || cmd.includes('keluar') || cmd.includes('beli') || cmd.includes('bayar');
   let scope = parseDateScopeFromCommand(cmd);
+  
   let keyword = cmd.replace(/(hapus|delete|hilangin|bersihin|buang|pemasukan|pengeluaran|masuk|keluar|dapet|dapat|beli|bayar|semua|semuanya)/gi, '').replace(/(kemarin|kemaren|hari ini|bulan ini|bulan lalu|bulan kemarin|tahun ini|tahun lalu|tahun kemarin|tanggal\s*\d{1,2}|tahun\s*\d{4}| 20\d{2} )/gi, '').trim();
 
   let itemsToDelete = transactions.filter(t => {
     if (isIncome && t.type !== 'pemasukan') return false; if (isExpense && t.type !== 'pengeluaran') return false;
-    if (scope.label !== 'keseluruhan' && !scope.func(t)) return false; if (keyword && !t.desc.toLowerCase().includes(keyword.toLowerCase())) return false; return true;
+    if (scope.label !== 'keseluruhan' && !scope.func(t)) return false; 
+    if (keyword && !t.desc.toLowerCase().includes(keyword.toLowerCase())) return false; 
+    return true;
   });
 
   if (itemsToDelete.length === 0) return speak(`Aduh, tidak ditemukan transaksi yang cocok untuk dihapus.`);
@@ -116,18 +126,33 @@ async function executeVoiceDelete(cmd) {
 }
 
 async function executeVoiceEdit(cmd) {
-  let parts = cmd.split(/ (jadi|menjadi) /i); if (parts.length < 3) return speak("Format edit belum pas nih gaes. Contohnya: Edit pengeluaran kopi kemarin jadi lima puluh ribu.");
-  let targetPart = parts[0].trim(); let newValPart = parts.slice(2).join(' ').trim();
-  let targetType = null; if (targetPart.includes('pemasukan') || targetPart.includes('masuk')) targetType = 'pemasukan'; if (targetPart.includes('pengeluaran') || targetPart.includes('keluar') || targetPart.includes('beli') || targetPart.includes('bayar')) targetType = 'pengeluaran';
-  let scope = parseDateScopeFromCommand(targetPart);
-  let keyword = targetPart.replace(/(ubah|edit|ganti|pemasukan|pengeluaran|masuk|keluar|beli|bayar|dapet|dapat|transaksi|nominal|deskripsi|keterangan)/gi, '').replace(/(kemarin|kemaren|hari ini|bulan ini|bulan lalu|bulan kemarin|tahun ini|tahun lalu|tahun kemarin|tanggal\s*\d{1,2}|tahun\s*\d{4}| 20\d{2} )/gi, '').trim();
+  let newAmount = parseNominal(cmd);
+  
+  let targetType = null; 
+  if (/(pemasukan|masuk|dapat|dapet)/i.test(cmd)) targetType = 'pemasukan'; 
+  if (/(pengeluaran|keluar|beli|bayar)/i.test(cmd)) targetType = 'pengeluaran';
+  
+  let scope = parseDateScopeFromCommand(cmd);
+  
+  let keyword = cmd.replace(/(ubah|edit|ganti|jadi|menjadi|pemasukan|pengeluaran|masuk|keluar|beli|bayar|dapet|dapat)/gi, '')
+                   .replace(/(kemarin|kemaren|hari ini|bulan ini|bulan lalu|bulan kemarin|tahun ini|tahun lalu|tahun kemarin|tanggal\s*\d{1,2}|tahun\s*\d{4}| 20\d{2} )/gi, '')
+                   .replace(/rp\s*\d+([.,]\d+)?/gi, '')
+                   .replace(/\b\d{1,3}(\.\d{3})+(,\d+)?\b|\b\d{1,3}(,\d{3})+(\.\d+)?\b/g, '')
+                   .replace(/\b(nol|satu|dua|tiga|empat|lima|enam|tujuh|delapan|sembilan|sepuluh|sebelas|belas|puluh|ratus|ribu|rb|k|juta|jt|miliar|milyar|setengah|se|sejuta|seribu|seratus)\b/gi, '')
+                   .replace(/\b\d+\b/g, '')
+                   .replace(/[.,]/g, '')
+                   .replace(/\s+/g, ' ')
+                   .trim();
 
   let matches = transactions.filter(t => {
-    if (targetType && t.type !== targetType) return false; if (scope.label !== 'keseluruhan' && !scope.func(t)) return false; if (keyword && !t.desc.toLowerCase().includes(keyword.toLowerCase())) return false; return true;
+    if (targetType && t.type !== targetType) return false; 
+    if (scope.label !== 'keseluruhan' && !scope.func(t)) return false; 
+    if (keyword && !t.desc.toLowerCase().includes(keyword.toLowerCase())) return false; 
+    return true;
   });
 
   if (matches.length === 0) return speak("Aduh, data transaksi yang mau diedit gak ditemukan nih.");
-  let itemToEdit = matches[0]; let newAmount = parseNominal(newValPart);
+  let itemToEdit = matches[0]; 
   let user = getCurrentUser(); if (!user) return openLoginModal();
 
   if (newAmount > 0) {
@@ -135,9 +160,16 @@ async function executeVoiceEdit(cmd) {
     const { error } = await supabaseClient.from('transactions').update({ amount: newAmount }).eq('id', itemToEdit.id);
     if (!error) { await fetchTransactionsFromSupabase(); speak(`Sip! Nominal diubah jadi ${newAmount.toLocaleString('id-ID')} rupiah.`); }
   } else {
-    let newDesc = newValPart.charAt(0).toUpperCase() + newValPart.slice(1); updateSyncStatusUI(false, 'Menyimpan Cloud...');
-    const { error } = await supabaseClient.from('transactions').update({ desc: newDesc, category: detectCategory(newDesc, itemToEdit.type) }).eq('id', itemToEdit.id);
-    if (!error) { await fetchTransactionsFromSupabase(); speak(`Sip! Keterangan diubah menjadi ${newDesc}.`); }
+    let parts = cmd.split(/ (jadi|menjadi) /i);
+    if (parts.length >= 3) {
+      let newDesc = parts.slice(2).join(' ').trim();
+      newDesc = newDesc.charAt(0).toUpperCase() + newDesc.slice(1);
+      updateSyncStatusUI(false, 'Menyimpan Cloud...');
+      const { error } = await supabaseClient.from('transactions').update({ desc: newDesc, category: detectCategory(newDesc, itemToEdit.type) }).eq('id', itemToEdit.id);
+      if (!error) { await fetchTransactionsFromSupabase(); speak(`Sip! Keterangan diubah menjadi ${newDesc}.`); }
+    } else {
+      return speak("Sebutkan nominal baru untuk diedit. Contoh: Edit pengeluaran kopi dua puluh ribu.");
+    }
   }
 }
 
@@ -147,7 +179,6 @@ function executeVoiceReadout(cmd) { speak("Ini fitur baca laporan. Cek visualnya
 async function processVoiceCommand(cmd) {
   const user = getCurrentUser(); if (!user) { openLoginModal(); return; }
   
-  // LOGIKA RESTORASI: Panggil fungsi edit, hapus, grafik, baca
   if (cmd.includes('edit') || cmd.includes('ubah') || cmd.includes('ganti')) { executeVoiceEdit(cmd); return; }
   if (cmd.includes('hapus') || cmd.includes('delete') || cmd.includes('hilangin') || cmd.includes('buang')) { executeVoiceDelete(cmd); return; }
   if (cmd.includes('download') || cmd.includes('unduh') || cmd.includes('simpan') || cmd.includes('ekspor')) { executeVoiceDownload(cmd); return; }
@@ -157,7 +188,8 @@ async function processVoiceCommand(cmd) {
   const nominal = parseNominal(cmd);
   if (nominal > 0) {
     let type = 'pengeluaran'; 
-    if (/(pemasukan|masuk|dapet|dapat|gaji|thr|transferan|honor|bonus|dikasih|nemu)/i.test(cmd)) type = 'pemasukan';
+    // REVISI: Tambahkan "uang bulanan" ke Pemasukan
+    if (/(pemasukan|masuk|dapet|dapat|gaji|thr|transferan|honor|bonus|dikasih|nemu|uang bulanan)/i.test(cmd)) type = 'pemasukan';
     
     let { amount, desc, date } = extractTransactionDetails(cmd, type);
 

@@ -39,31 +39,42 @@ function renderMiniBarChart() {
   if (miniChartInstance) miniChartInstance.destroy();
   
   const labels = [];
-  const dataPoints = [];
+  const expenseData = [];
+  const incomeData = [];
   
+  // Ambil 7 hari terakhir
   for(let i=6; i>=0; i--) {
     let d = new Date();
     d.setDate(d.getDate() - i);
     let dateStr = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
     let displayDate = `${d.getDate()}/${d.getMonth()+1}`;
     
-    let dailyExpense = transactions
-        .filter(t => t.type === 'pengeluaran' && t.date === dateStr)
-        .reduce((sum, t) => sum + t.amount, 0);
+    let dailyExpense = transactions.filter(t => t.type === 'pengeluaran' && t.date === dateStr).reduce((sum, t) => sum + t.amount, 0);
+    let dailyIncome = transactions.filter(t => t.type === 'pemasukan' && t.date === dateStr).reduce((sum, t) => sum + t.amount, 0);
         
     labels.push(displayDate);
-    dataPoints.push(dailyExpense);
+    expenseData.push(dailyExpense);
+    incomeData.push(dailyIncome);
   }
 
   miniChartInstance = new Chart(ctx, {
     type: 'bar',
     data: {
       labels: labels,
-      datasets: [{
-        data: dataPoints, 
-        backgroundColor: '#ef4444', 
-        borderRadius: 4, borderSkipped: false
-      }]
+      datasets: [
+        {
+          label: 'Pemasukan',
+          data: incomeData, 
+          backgroundColor: '#10b981', // Hijau Pemasukan
+          borderRadius: 4, borderSkipped: false
+        },
+        {
+          label: 'Pengeluaran',
+          data: expenseData, 
+          backgroundColor: '#ef4444', // Merah Pengeluaran
+          borderRadius: 4, borderSkipped: false
+        }
+      ]
     },
     options: {
       responsive: true, maintainAspectRatio: false,
