@@ -79,8 +79,15 @@ async function handleSignup(e) {
   btn.disabled=true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
   try {
     const fP = formatPhoneNumber(p);
-    const { data: d1 } = await supabaseClient.from('users').select('id').eq('phone_number', fP).single();
-    if(d1) throw new Error('HP sudah terdaftar.');
+    
+    // LOGIKA BARU: Cek Nomor HP Ganda
+    const { data: d1 } = await supabaseClient.from('users').select('id').eq('phone_number', fP).maybeSingle();
+    if(d1) throw new Error('Nomor HP sudah terdaftar.');
+    
+    // LOGIKA BARU: Cek Email Ganda
+    const { data: d2 } = await supabaseClient.from('users').select('id').eq('email', m).maybeSingle();
+    if(d2) throw new Error('Email sudah terdaftar. Silakan gunakan email lain.');
+
     const { data, error } = await supabaseClient.auth.signUp({ email: m, password: pw, options: { data: { full_name: n, phone_number: fP } } });
     if(error) throw error;
     if(data.user) {

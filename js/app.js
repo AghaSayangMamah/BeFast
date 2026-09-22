@@ -36,14 +36,32 @@ function renderMiniBarChart() {
   const ctx = document.getElementById('miniBarChart'); if(!ctx) return;
   if (miniChartInstance) miniChartInstance.destroy();
   
-  // Data Chart Dummy (Bisa dikembangkan sesuai transaksi asli)
+  // LOGIKA BARU: Kalkulasi Pengeluaran 7 Hari Terakhir
+  const labels = [];
+  const dataPoints = [];
+  
+  for(let i=6; i>=0; i--) {
+    let d = new Date();
+    d.setDate(d.getDate() - i);
+    let dateStr = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    let displayDate = `${d.getDate()}/${d.getMonth()+1}`;
+    
+    let dailyExpense = transactions
+        .filter(t => t.type === 'pengeluaran' && t.date === dateStr)
+        .reduce((sum, t) => sum + t.amount, 0);
+        
+    labels.push(displayDate);
+    dataPoints.push(dailyExpense);
+  }
+
   miniChartInstance = new Chart(ctx, {
     type: 'bar',
     data: {
-      labels: ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'],
+      labels: labels,
       datasets: [{
-        data: [100, 200, 150, 400, 800, 300, 50], 
-        backgroundColor: '#60a5fa', borderRadius: 4, borderSkipped: false
+        data: dataPoints, 
+        backgroundColor: '#ef4444', // Merah (Khas Pengeluaran)
+        borderRadius: 4, borderSkipped: false
       }]
     },
     options: {
