@@ -93,23 +93,38 @@
       </div>
     </aside>
 
-    <!-- KOLOM TENGAH: Hero & Voice Control -->
+<!-- KOLOM TENGAH: Hero & Voice Control -->
     <section class="lg:col-span-2 flex flex-col items-center justify-center relative">
       
-      <!-- TEKS SAPAAN (Lebih Padat, tanpa teks pertanyaan) -->
-      <div class="text-center mb-6 z-10">
+      <!-- TEKS SAPAAN -->
+      <div class="text-center mb-2 z-10">
         <p class="text-base font-bold text-gray-600">Halo,</p>
         <h2 id="userGreetingCenter" class="text-4xl font-black text-[#1e3a8a] leading-none">User 👋</h2>
       </div>
 
-      <!-- MASKOT 3D (Margin bawahnya aku bikin pas agar status suara naik) -->
-      <div class="relative w-72 h-72 flex items-center justify-center mb-8 z-10">
-        <div class="absolute inset-0 bg-white/40 rounded-full blur-2xl"></div>
-        <div class="absolute inset-4 bg-white/60 rounded-full blur-xl"></div>
-        <img src="mascot-3d.png" alt="JARVIS Mascot" class="w-56 h-56 object-contain relative z-20 drop-shadow-2xl">
-        <button id="btnMic" class="absolute -bottom-4 w-16 h-16 bg-[#496af1] text-white rounded-full text-2xl flex items-center justify-center z-30 mic-btn-shadow hover:scale-105 transition-transform border-4 border-white/50">
-          <i class="fa-solid fa-microphone"></i>
-        </button>
+      <!-- MASKOT ILUSI 3D & MIC PODIUM -->
+      <div class="relative w-full max-w-[320px] h-[380px] flex flex-col items-center justify-end mb-8 z-10">
+        
+        <!-- Gambar Maskot Melayang -->
+        <div class="absolute inset-x-0 top-0 h-[280px] z-20 flex items-center justify-center pointer-events-none">
+          <img src="mascot-3d.png" alt="BeFAST Mascot" class="w-56 h-56 object-contain drop-shadow-2xl animate-float">
+        </div>
+
+        <!-- Cahaya Panggung (Glow) di belakang Mic -->
+        <div class="absolute bottom-10 w-36 h-36 bg-[#496af1]/30 rounded-full blur-2xl animate-pulse z-10 pointer-events-none"></div>
+        
+        <!-- MIC PODIUM -->
+        <div class="relative z-30 flex flex-col items-center mt-auto">
+          <button id="btnMic" class="w-20 h-20 bg-gradient-to-b from-[#496af1] to-[#2546c7] text-white rounded-full text-3xl flex items-center justify-center mic-btn-shadow hover:scale-105 transition-transform border-[3px] border-white relative group">
+            <i class="fa-solid fa-microphone relative z-10"></i>
+            
+            <!-- Efek Denyut Permanen (Sonar) untuk menarik mata User -->
+            <div class="absolute inset-0 rounded-full border-2 border-[#496af1] animate-[ping_2s_cubic-bezier(0,0,0.2,1)_infinite] opacity-75"></div>
+          </button>
+          
+          <!-- Bayangan Podium -->
+          <div class="w-24 h-3 bg-gray-300/50 rounded-[100%] blur-sm mt-3 pointer-events-none"></div>
+        </div>
       </div>
 
       <!-- STATUS SUARA -->
