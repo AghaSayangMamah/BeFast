@@ -87,13 +87,30 @@ function renderData() {
          <p class="font-black text-sm ${col}">${sign} Rp ${t.amount.toLocaleString('id-ID')}</p>
          <button onclick="deleteSingleItem('${t.id}')" class="text-[9px] text-red-400 hover:text-red-600 mt-1 font-bold">Hapus</button>
       </div>`;
-    container.appendChild(row);
+    if(container) container.appendChild(row);
   });
-  if(transactions.length===0) container.innerHTML = '<p class="text-sm text-center text-gray-400 mt-10">Belum ada aktivitas</p>';
   
-  document.getElementById('cardIncome').innerText = `Rp ${inc.toLocaleString('id-ID')}`;
-  document.getElementById('cardExpense').innerText = `Rp ${exp.toLocaleString('id-ID')}`;
-  document.getElementById('cardBalance').innerText = `Rp ${(inc-exp).toLocaleString('id-ID')}`;
+  if(transactions.length===0 && container) {
+      container.innerHTML = '<p class="text-sm text-center text-gray-400 mt-10">Belum ada aktivitas</p>';
+  }
+  
+  const elInc = document.getElementById('cardIncome');
+  const elExp = document.getElementById('cardExpense');
+  const elBal = document.getElementById('cardBalance');
+  
+  if(elInc) elInc.innerText = `Rp ${inc.toLocaleString('id-ID')}`;
+  if(elExp) elExp.innerText = `Rp ${exp.toLocaleString('id-ID')}`;
+  if(elBal) elBal.innerText = `Rp ${(inc-exp).toLocaleString('id-ID')}`;
   
   if(typeof updateSummaryUI === 'function') updateSummaryUI();
 }
+
+// =====================================================================
+// TRIGGER AUTO-LOAD (MEMPERBAIKI BUG BLANK SAAT RELOAD / BACK PAGE)
+// =====================================================================
+document.addEventListener('DOMContentLoaded', () => {
+  // Mengecek apakah user sudah login di local storage saat halaman selesai dimuat
+  if (getCurrentUser()) {
+    fetchTransactionsFromSupabase();
+  }
+});
