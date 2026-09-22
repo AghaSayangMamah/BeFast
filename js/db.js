@@ -1,11 +1,19 @@
-function detectCategory(d, t) {
-  if(!d) return t==='pemasukan'?'Pendapatan':'Lain-lain'; let x = d.toLowerCase();
-  if(t==='pemasukan') {
-    if(/(gaji|bonus)/i.test(x)) return 'Pendapatan';
-    if(/(jual)/i.test(x)) return 'Penjualan / Usaha'; return 'Pemasukan Lain';
+function detectCategory(desc, type) {
+  if (!desc) return type === 'pemasukan' ? 'Pendapatan' : 'Lain-lain'; 
+  const text = desc.toLowerCase();
+  
+  if (type === 'pemasukan') {
+    if (/(gaji|upah|honor|bonus|thr|dividen|uang jajan|sangu|transferan|masuk)/i.test(text)) return 'Pendapatan';
+    if (/(jual|omset|laba|dagang|toko|jualan|penjualan)/i.test(text)) return 'Penjualan / Usaha';
+    if (/(hadiah|giveaway|cashback|undian|angpao|bonus)/i.test(text)) return 'Hadiah / Bonus'; return 'Pemasukan Lain';
   }
-  if(/(makan|minum|kopi)/i.test(x)) return 'Makanan & Minuman';
-  if(/(bensin|gojek)/i.test(x)) return 'Transportasi'; return 'Lain-lain';
+  if (/(makan|minum|kopi|cafe|resto|mie|nasi|roti|jajan|es|bakso|burger|pizza|gofood|grabfood|shopeefood)/i.test(text)) return 'Makanan & Minuman';
+  if (/(gojek|grab|maxim|ojek|bensin|pertalite|pertamax|spbu|parkir|tol|kereta|krl|mrt|bus|taksi|pesawat)/i.test(text)) return 'Transportasi';
+  if (/(belanja|baju|celana|sepatu|shopee|tokped|lazada|skincare|makeup|sabun|odol|deterjen|kaos)/i.test(text)) return 'Belanja';
+  if (/(listrik|pln|wifi|indihome|internet|pulsa|kuota|pdam|air|bpjs|sewa|kos|kontrakan|cicilan|tagihan)/i.test(text)) return 'Tagihan & Utilitas';
+  if (/(nonton|bioskop|cinema|xxi|game|topup|diamond|steam|spotify|netflix|healing|nongkrong|liburan)/i.test(text)) return 'Hiburan & Hobi';
+  if (/(obat|dokter|rumah sakit|klinik|apotek|vitamin|buku|kursus|spp|kuliah|sekolah|bimbel|fotocopy|print)/i.test(text)) return 'Kesehatan & Edukasi'; 
+  return 'Lain-lain';
 }
 
 function updateSyncStatusUI(ok, msg='') {

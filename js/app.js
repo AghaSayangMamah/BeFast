@@ -29,6 +29,8 @@ function updateSummaryUI() {
     emptyState.classList.add('hidden'); chartContainer.classList.remove('hidden');
     renderMiniBarChart();
   }
+  
+  if(typeof updateAIInsight === 'function') updateAIInsight();
 }
 
 let miniChartInstance = null;
@@ -36,7 +38,6 @@ function renderMiniBarChart() {
   const ctx = document.getElementById('miniBarChart'); if(!ctx) return;
   if (miniChartInstance) miniChartInstance.destroy();
   
-  // LOGIKA BARU: Kalkulasi Pengeluaran 7 Hari Terakhir
   const labels = [];
   const dataPoints = [];
   
@@ -60,7 +61,7 @@ function renderMiniBarChart() {
       labels: labels,
       datasets: [{
         data: dataPoints, 
-        backgroundColor: '#ef4444', // Merah (Khas Pengeluaran)
+        backgroundColor: '#ef4444', 
         borderRadius: 4, borderSkipped: false
       }]
     },
@@ -73,4 +74,50 @@ function renderMiniBarChart() {
       }
     }
   });
+}
+
+function updateAIInsight() {
+  const insightTitle = document.getElementById('insightTitle');
+  const insightDesc = document.getElementById('insightDesc');
+  const insightIcon = document.getElementById('insightIcon');
+  if(!insightTitle || !insightDesc) return;
+
+  const currentMonth = new Date().toISOString().slice(0, 7);
+  const monthlyExpenses = transactions.filter(t => t.type === 'pengeluaran' && t.date.startsWith(currentMonth));
+
+  if (monthlyExpenses.length === 0) {
+    insightTitle.innerText = "Belum Ada Pola";
+    insightDesc.innerText = "Yuk catat pengeluaran pertamamu bulan ini agar AI bisa menganalisa.";
+    if(insightIcon) insightIcon.innerText = "💡";
+    return;
+  }
+
+  const categoryTotals = {};
+  monthlyExpenses.forEach(t => {
+    const cat = t.category || 'Lain-lain';
+    categoryTotals[cat] = (categoryTotals[cat] || 0) + t.amount;
+  });
+
+  let maxCategory = ''; let maxAmount = 0;
+  for (const [cat, amt] of Object.entries(categoryTotals)) {
+    if (amt > maxAmount) { maxAmount = amt; maxCategory = cat; }
+  }
+
+  if (maxCategory === 'Makanan & Minuman') {
+    insightTitle.innerText = "Pengeluaran makanmu mendominasi.";
+    insightDesc.innerText = `Kurangi jajan/gofood biar lebih hemat! Kamu udah habis Rp ${maxAmount.toLocaleString('id-ID')} buat makan.`;
+    if(insightIcon) insightIcon.innerText = "🍔";
+  } else if (maxCategory === 'Belanja') {
+    insightTitle.innerText = "Awas lapar mata!";
+    insightDesc.innerText = `Pengeluaran belanja kamu tinggi (Rp ${maxAmount.toLocaleString('id-ID')}). Tahan dulu belanjanya ya.`;
+    if(insightIcon) insightIcon.innerText = "🛍️";
+  } else if (maxCategory === 'Transportasi') {
+    insightTitle.innerText = "Biaya mobilitas bengkak.";
+    insightDesc.innerText = `Kamu habis Rp ${maxAmount.toLocaleString('id-ID')} buat transportasi. Coba cari opsi lebih hemat.`;
+    if(insightIcon) insightIcon.innerText = "🚗";
+  } else {
+    insightTitle.innerText = `Pengeluaran ${maxCategory} tertinggi.`;
+    insightDesc.innerText = `Bulan ini kamu menghabiskan Rp ${maxAmount.toLocaleString('id-ID')} untuk ${maxCategory}. Tetap kontrol pengeluaranmu!`;
+    if(insightIcon) insightIcon.innerText = "💡";
+  }
 }
