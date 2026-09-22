@@ -26,7 +26,7 @@ function updateAuthUI() {
   if (user) {
     if (loggedOutDiv) loggedOutDiv.classList.add('hidden'); 
     if (loggedInDiv) { loggedInDiv.classList.remove('hidden'); loggedInDiv.classList.add('flex'); }
-    let fname = user.user_metadata?.full_name?.split(' ')[0] || 'User';
+    let fname = user.user_metadata?.full_name || 'User';
     if(greetHead) greetHead.innerText = `Hai, ${fname}`;
     if(greetCent) greetCent.innerText = `${fname} 👋`;
   } else {
@@ -40,7 +40,13 @@ function updateAuthUI() {
 
 function openLoginModal() { document.getElementById('loginModal').classList.remove('hidden'); document.getElementById('signupModal').classList.add('hidden'); hideAlert('loginAlert'); }
 function closeLoginModal() { document.getElementById('loginModal').classList.add('hidden'); }
-function openSignupModal() { document.getElementById('signupModal').classList.remove('hidden'); document.getElementById('loginModal').classList.add('hidden'); hideAlert('signupAlert'); }
+function openSignupModal() { 
+  document.getElementById('signupModal').classList.remove('hidden'); 
+  document.getElementById('loginModal').classList.add('hidden'); 
+  hideAlert('signupAlert'); 
+  // Ubah placeholder untuk mencerminkan standarisasi baru
+  document.getElementById('signupName').placeholder = "Username unik (misal: izan_99)";
+}
 function closeSignupModal() { document.getElementById('signupModal').classList.add('hidden'); }
 function switchAuthModal(to) { if (to === 'signup') openSignupModal(); else openLoginModal(); }
 
@@ -57,7 +63,7 @@ function showVerifyEmailModal() {
 
 function showAlert(id, msg, isErr=true) {
   const el = document.getElementById(id); if(!el) return; el.innerText = msg;
-  el.className = isErr ? "mb-4 p-3 rounded-full text-xs font-bold bg-red-100 text-red-700 block" : "mb-4 p-3 rounded-full text-xs font-bold bg-green-100 text-green-700 block";
+  el.className = isErr ? "mb-4 p-3 rounded-xl text-xs font-bold bg-red-100 text-red-700 block text-center" : "mb-4 p-3 rounded-xl text-xs font-bold bg-green-100 text-green-700 block text-center";
 }
 function hideAlert(id) { const el = document.getElementById(id); if(el) el.className = "hidden"; }
 
@@ -66,35 +72,71 @@ async function handleLogin(e) {
   if(!supabaseClient) return showAlert('loginAlert', 'Koneksi terputus.');
   btn.disabled=true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
   try {
-    const { data: u, error: e1 } = await supabaseClient.from('users').select('email, username').eq('phone_number', formatPhoneNumber(p)).single();
-    if(e1 || !u?.email) throw new Error('HP tidak terdaftar.');
+    const { data: u, error: e1 } = await supabaseClient.from('users').select('email, username').eq('phone_number', formatPhoneNumber(p)).maybeSingle();
+    if(e1 || !u?.email) throw new Error('Nomor HP tidak terdaftar.');
     const { error: e2 } = await supabaseClient.auth.signInWithPassword({ email: u.email, password: pw });
     if(e2) throw e2; closeLoginModal();
-  } catch(err) { showAlert('loginAlert', err.message.includes('Invalid')?'Sandi salah.':err.message); } finally { btn.disabled=false; btn.innerHTML = 'Masuk Sekarang'; }
+  } catch(err) { showAlert('loginAlert', err.message.includes('Invalid')?'Kata sandi salah.':err.message); } finally { btn.disabled=false; btn.innerHTML = 'Masuk Sekarang'; }
 }
 
 async function handleSignup(e) {
-  e.preventDefault(); const n = document.getElementById('signupName').value.trim(); const m = document.getElementById('signupEmail').value.trim(); const p = document.getElementById('signupPhone').value.trim(); const pw = document.getElementById('signupPassword').value; const btn = document.getElementById('btnSignupSubmit');
-  if(!['@gmail.com','@yahoo.com'].some(d=>m.toLowerCase().endsWith(d))) return showAlert('signupAlert','Pakai email resmi (@gmail.com)');
-  btn.disabled=true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+  e.preventDefault(); 
+  const n = document.getElementById('signupName').value.trim(); 
+  const m = document.getElementById('signupEmail').value.trim(); 
+  const p = document.getElementById('signupPhone').value.trim(); 
+  const pw = document.getElementById('signupPassword').value; 
+  const btn = document.getElementById('btnSignupSubmit');
+
+  // STANDARISASI 1: Validasi Username (huruf kecil, angka, underscore, tanpa spasi, 3-15 karakter)
+  const usernameRegex = /^[a-z0-9_]{3,15}$/;
+  if(!usernameRegex.test(n)) {
+    return showAlert('signupAlert', 'Username hanya boleh huruf kecil, angka, dan garis bawah (_). Tanpa spasi. 3-15 Karakter.');
+  }
+
+  // STANDARISASI 2: Validasi Format Email Resmi
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@(gmail\.com|yahoo\.com)$/;
+  if(!emailRegex.test(m)) {
+    return showAlert('signupAlert', 'Gunakan email format resmi (@gmail.com atau @yahoo.com).');
+  }
+
+  btn.disabled=true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Memproses...';
+  
   try {
     const fP = formatPhoneNumber(p);
     
-    // LOGIKA BARU: Cek Nomor HP Ganda
-    const { data: d1 } = await supabaseClient.from('users').select('id').eq('phone_number', fP).maybeSingle();
-    if(d1) throw new Error('Nomor HP sudah terdaftar.');
-    
-    // LOGIKA BARU: Cek Email Ganda
-    const { data: d2 } = await supabaseClient.from('users').select('id').eq('email', m).maybeSingle();
-    if(d2) throw new Error('Email sudah terdaftar. Silakan gunakan email lain.');
+    // CEK DB 1: Apakah Username sudah dipakai?
+    const { data: checkName } = await supabaseClient.from('users').select('id').eq('username', n).maybeSingle();
+    if(checkName) throw new Error('Username ini sudah dipakai orang lain. Cari nama unik lain!');
 
-    const { data, error } = await supabaseClient.auth.signUp({ email: m, password: pw, options: { data: { full_name: n, phone_number: fP } } });
+    // CEK DB 2: Apakah Nomor HP sudah dipakai?
+    const { data: checkPhone } = await supabaseClient.from('users').select('id').eq('phone_number', fP).maybeSingle();
+    if(checkPhone) throw new Error('Nomor HP ini sudah terdaftar.');
+    
+    // CEK DB 3: Apakah Email sudah dipakai?
+    const { data: checkEmail } = await supabaseClient.from('users').select('id').eq('email', m).maybeSingle();
+    if(checkEmail) throw new Error('Email ini sudah terdaftar. Silakan gunakan email lain.');
+
+    // Jika lolos semua validasi di atas, buat akun ke Supabase Auth
+    const { data, error } = await supabaseClient.auth.signUp({ 
+      email: m, 
+      password: pw, 
+      options: { data: { full_name: n, phone_number: fP } } 
+    });
+    
     if(error) throw error;
+    
+    // Simpan data unik ke tabel users
     if(data.user) {
       await supabaseClient.from('users').upsert({ id: data.user.id, username: n, email: m, phone_number: fP });
-      closeSignupModal(); showVerifyEmailModal();
+      closeSignupModal(); 
+      showVerifyEmailModal();
     }
-  } catch(err) { showAlert('signupAlert', err.message); } finally { btn.disabled=false; btn.innerHTML = 'Buat Akun'; }
+  } catch(err) { 
+    showAlert('signupAlert', err.message); 
+  } finally { 
+    btn.disabled=false; 
+    btn.innerHTML = 'Buat Akun'; 
+  }
 }
 
 async function handleLogout() { if(supabaseClient) await supabaseClient.auth.signOut(); localStorage.removeItem('bf_user'); transactions=[]; if(typeof renderData==='function') renderData(); updateAuthUI(); if(typeof speak==='function') speak("Keluar."); }
