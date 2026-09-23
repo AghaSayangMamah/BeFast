@@ -26,13 +26,15 @@ function updateAuthUI() {
   if (user) {
     if (loggedOutDiv) loggedOutDiv.classList.add('hidden'); 
     if (loggedInDiv) { loggedInDiv.classList.remove('hidden'); loggedInDiv.classList.add('flex'); }
+    
+    // Teks profil dibuat bersih (Hanya nama)
     let fname = user.user_metadata?.full_name || 'User';
-    if(greetHead) greetHead.innerText = `Hai, ${fname}`;
+    if(greetHead) greetHead.innerText = fname;
     if(greetCent) greetCent.innerText = `${fname} 👋`;
   } else {
     if (loggedOutDiv) loggedOutDiv.classList.remove('hidden'); 
     if (loggedInDiv) { loggedInDiv.classList.add('hidden'); loggedInDiv.classList.remove('flex'); }
-    if(greetHead) greetHead.innerText = `Hai, User`;
+    if(greetHead) greetHead.innerText = `User`;
     if(greetCent) greetCent.innerText = `User 👋`;
   }
   if(typeof updateSummaryUI === 'function') updateSummaryUI();
@@ -44,7 +46,6 @@ function openSignupModal() {
   document.getElementById('signupModal').classList.remove('hidden'); 
   document.getElementById('loginModal').classList.add('hidden'); 
   hideAlert('signupAlert'); 
-  // Ubah placeholder untuk mencerminkan standarisasi baru
   document.getElementById('signupName').placeholder = "Username unik (misal: izan_99)";
 }
 function closeSignupModal() { document.getElementById('signupModal').classList.add('hidden'); }
@@ -87,55 +88,40 @@ async function handleSignup(e) {
   const pw = document.getElementById('signupPassword').value; 
   const btn = document.getElementById('btnSignupSubmit');
 
-  // STANDARISASI 1: Validasi Username (huruf kecil, angka, underscore, tanpa spasi, 3-15 karakter)
   const usernameRegex = /^[a-z0-9_]{3,15}$/;
-  if(!usernameRegex.test(n)) {
-    return showAlert('signupAlert', 'Username hanya boleh huruf kecil, angka, dan garis bawah (_). Tanpa spasi. 3-15 Karakter.');
-  }
+  if(!usernameRegex.test(n)) return showAlert('signupAlert', 'Username hanya boleh huruf kecil, angka, dan garis bawah (_). Tanpa spasi. 3-15 Karakter.');
 
-  // STANDARISASI 2: Validasi Format Email Resmi
   const emailRegex = /^[a-zA-Z0-9._%+-]+@(gmail\.com|yahoo\.com)$/;
-  if(!emailRegex.test(m)) {
-    return showAlert('signupAlert', 'Gunakan email format resmi (@gmail.com atau @yahoo.com).');
-  }
+  if(!emailRegex.test(m)) return showAlert('signupAlert', 'Gunakan email format resmi (@gmail.com atau @yahoo.com).');
 
   btn.disabled=true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Memproses...';
   
   try {
     const fP = formatPhoneNumber(p);
     
-    // CEK DB 1: Apakah Username sudah dipakai?
     const { data: checkName } = await supabaseClient.from('users').select('id').eq('username', n).maybeSingle();
     if(checkName) throw new Error('Username ini sudah dipakai orang lain. Cari nama unik lain!');
 
-    // CEK DB 2: Apakah Nomor HP sudah dipakai?
     const { data: checkPhone } = await supabaseClient.from('users').select('id').eq('phone_number', fP).maybeSingle();
     if(checkPhone) throw new Error('Nomor HP ini sudah terdaftar.');
     
-    // CEK DB 3: Apakah Email sudah dipakai?
     const { data: checkEmail } = await supabaseClient.from('users').select('id').eq('email', m).maybeSingle();
     if(checkEmail) throw new Error('Email ini sudah terdaftar. Silakan gunakan email lain.');
 
-    // Jika lolos semua validasi di atas, buat akun ke Supabase Auth
     const { data, error } = await supabaseClient.auth.signUp({ 
-      email: m, 
-      password: pw, 
-      options: { data: { full_name: n, phone_number: fP } } 
+      email: m, password: pw, options: { data: { full_name: n, phone_number: fP } } 
     });
     
     if(error) throw error;
     
-    // Simpan data unik ke tabel users
     if(data.user) {
       await supabaseClient.from('users').upsert({ id: data.user.id, username: n, email: m, phone_number: fP });
-      closeSignupModal(); 
-      showVerifyEmailModal();
+      closeSignupModal(); showVerifyEmailModal();
     }
   } catch(err) { 
     showAlert('signupAlert', err.message); 
   } finally { 
-    btn.disabled=false; 
-    btn.innerHTML = 'Buat Akun'; 
+    btn.disabled=false; btn.innerHTML = 'Buat Akun'; 
   }
 }
 

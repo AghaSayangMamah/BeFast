@@ -19,332 +19,253 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body class="min-h-screen">
 
-  <!-- HEADER MELAYANG (TENGAH SEMPURNA) -->
   <header class="fixed top-0 left-0 w-full z-50 px-4 md:px-6 lg:px-8 py-4 pointer-events-none flex justify-center">
     <div class="w-full max-w-[1400px] flex justify-between items-center relative">
       
-      <!-- Kiri: Logo -->
-      <div class="flex items-center gap-3 pointer-events-auto">
-        <img src="mascot-3d.png" alt="BeFAST Logo" class="w-10 h-10 object-contain drop-shadow-md">
+      <div class="flex items-center pointer-events-auto">
         <div>
-          <h1 class="text-xl font-black text-[#1e3a8a] leading-none drop-shadow-sm">BeFAST</h1>
-          <p class="text-[10px] text-gray-600 font-medium drop-shadow-sm">Catat Keuangan,<br>Semudah Bicara.</p>
+          <h1 class="text-2xl font-black theme-text leading-none tracking-tight drop-shadow-sm">BeFAST</h1>
+          <p class="text-[10px] theme-text-muted font-bold drop-shadow-sm mt-1">Catat Keuangan,<br>Semudah Bicara.</p>
         </div>
       </div>
       
-      <!-- Tengah: AI Status (Absolute Centered) -->
-      <div class="hidden md:flex absolute left-1/2 -translate-x-1/2 items-center gap-3 bg-white/70 backdrop-blur-md px-5 py-2.5 rounded-full border border-white/50 shadow-sm pointer-events-auto">
+      <div class="hidden md:flex absolute left-1/2 -translate-x-1/2 items-center gap-3 theme-glass px-5 py-2.5 rounded-full shadow-sm pointer-events-auto">
         <span class="flex items-center gap-1.5 text-xs font-bold text-green-600">
           <div class="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]"></div> AI BeFAST Online
         </span>
         <span class="text-gray-300">|</span>
-        <span class="text-xs font-medium text-gray-500">Siap membantumu kapan saja!</span>
+        <span class="text-xs font-medium theme-text-muted">Siap membantumu kapan saja!</span>
       </div>
 
-<!-- Kanan: Profil -> Logout -> Buku -> Tambah -->
-      <div class="flex items-center gap-2 md:gap-3 pointer-events-auto">
+      <div class="flex items-center gap-3 pointer-events-auto relative">
         
         <div id="authLoggedOut" class="flex gap-2">
-          <button onclick="openLoginModal()" class="px-4 py-2 bg-white hover:bg-gray-50 text-blue-600 rounded-full text-xs font-bold shadow-sm transition">Masuk</button>
-          <button onclick="openSignupModal()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-full text-xs font-bold shadow-sm transition">Daftar</button>
+          <button onclick="openLoginModal()" class="px-4 py-2 theme-card theme-primary rounded-full text-xs font-bold shadow-sm transition">Masuk</button>
+          <button onclick="openSignupModal()" class="px-4 py-2 theme-bg-primary rounded-full text-xs font-bold shadow-sm transition hover:opacity-80">Daftar</button>
         </div>
 
-        <div id="authLoggedIn" class="hidden items-center gap-2">
-          <!-- Profil -->
-          <div class="flex items-center gap-2.5 bg-white/70 backdrop-blur-md border border-white/50 px-4 py-1.5 rounded-full shadow-sm cursor-default">
-            <div class="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
-              <i class="fa-solid fa-user text-[10px]"></i>
+        <div id="authLoggedIn" class="hidden items-center gap-2.5">
+          
+          <div class="relative">
+            <button onclick="toggleThemeMenu(event)" class="w-10 h-10 rounded-full theme-glass shadow-sm flex items-center justify-center theme-text-muted hover:opacity-80 transition">
+              <i class="fa-solid fa-palette text-sm"></i>
+            </button>
+            <div id="themeDropdownMenu" class="absolute right-0 mt-3 w-40 theme-card rounded-2xl shadow-xl hidden flex-col overflow-hidden z-50">
+              <button onclick="setTheme('default'); toggleThemeMenu(event)" class="flex items-center gap-3 px-4 py-3 text-xs font-bold theme-text hover:opacity-70 transition text-left"><div class="w-3 h-3 rounded-full bg-[#496af1]"></div> Tech Blue</button>
+              <button onclick="setTheme('dark'); toggleThemeMenu(event)" class="flex items-center gap-3 px-4 py-3 text-xs font-bold theme-text hover:opacity-70 transition text-left border-t border-gray-500/10"><div class="w-3 h-3 rounded-full bg-[#1e293b]"></div> Midnight</button>
+              <button onclick="setTheme('pink'); toggleThemeMenu(event)" class="flex items-center gap-3 px-4 py-3 text-xs font-bold theme-text hover:opacity-70 transition text-left border-t border-gray-500/10"><div class="w-3 h-3 rounded-full bg-[#ec4899]"></div> Sakura</button>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-3 theme-glass px-4 py-1.5 rounded-full shadow-sm cursor-default">
+            <div class="w-7 h-7 rounded-full theme-bg-light flex items-center justify-center theme-primary">
+              <i class="fa-solid fa-user text-xs"></i>
             </div>
             <div class="hidden sm:block text-left">
-              <p id="userGreetingHeader" class="text-xs font-black text-[#1e3a8a] leading-none tracking-tight">Hai, User</p>
+              <p id="userGreetingHeader" class="text-sm font-black theme-text leading-none tracking-tight">User</p>
+              <p class="text-[9px] theme-text-muted font-bold mt-0.5">Tetap Semangat!</p>
             </div>
           </div>
           
-          <!-- Tombol Logout (Ikon Orang Keluar) -->
-          <button onclick="handleLogout()" class="w-9 h-9 rounded-full bg-red-50 border border-red-100 shadow-sm flex items-center justify-center text-red-500 hover:bg-red-500 hover:text-white transition group" title="Keluar">
-            <i class="fa-solid fa-arrow-right-from-bracket text-sm transition group-hover:-translate-x-0.5"></i>
-          </button>
+          <div class="relative">
+            <button onclick="toggleUserMenu(event)" class="w-10 h-10 rounded-full theme-glass shadow-sm flex items-center justify-center theme-text-muted hover:opacity-80 transition">
+              <i class="fa-solid fa-bars text-sm"></i>
+            </button>
+            
+            <div id="userDropdownMenu" class="absolute right-0 mt-3 w-48 theme-card rounded-2xl shadow-xl hidden flex-col overflow-hidden z-50">
+              <button onclick="toggleManualForm(); toggleUserMenu(event)" class="flex items-center gap-3 px-4 py-3 text-sm font-bold theme-text hover:opacity-70 transition text-left">
+                <i class="fa-solid fa-plus w-4 text-center"></i> Input Manual
+              </button>
+              <button onclick="openGuideModal(); toggleUserMenu(event)" class="flex items-center gap-3 px-4 py-3 text-sm font-bold theme-text hover:opacity-70 transition text-left border-t border-gray-500/10">
+                <i class="fa-solid fa-book w-4 text-center"></i> Panduan Suara
+              </button>
+              <button onclick="handleLogout(); toggleUserMenu(event)" class="flex items-center gap-3 px-4 py-3 text-sm font-bold text-red-500 hover:opacity-70 transition text-left border-t border-gray-500/10">
+                <i class="fa-solid fa-arrow-right-from-bracket w-4 text-center"></i> Keluar
+              </button>
+            </div>
+          </div>
         </div>
 
-        <!-- Tombol Panduan (Ikon Buku, Warna Soft Orange) -->
-        <button onclick="openGuideModal()" class="w-9 h-9 rounded-full bg-orange-50 border border-orange-100 shadow-sm flex items-center justify-center text-orange-400 hover:bg-orange-100 hover:text-orange-500 transition" title="Panduan Suara">
-          <i class="fa-solid fa-book text-sm"></i>
-        </button>
-
-        <!-- Tombol Tambah Manual -->
-        <button onclick="toggleManualForm()" class="w-9 h-9 rounded-full bg-slate-50 border border-slate-200 shadow-sm flex items-center justify-center text-slate-600 hover:bg-white hover:text-blue-600 transition" title="Input Manual">
-          <i class="fa-solid fa-plus text-sm"></i>
-        </button>
-        
       </div>
+    </div>
   </header>
 
-  <!-- MAIN CONTENT -->
-  <main class="max-w-[1400px] mx-auto pt-24 pb-8 px-4 md:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-4 gap-6 min-h-screen">
+  <main class="max-w-[1400px] mx-auto pt-24 pb-8 px-4 md:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-4 gap-6 h-screen">
     
-<!-- KOLOM KIRI: Riwayat Transaksi -->
     <aside class="glass-panel p-5 flex flex-col h-[500px]">
-      <div class="flex justify-between items-center mb-4 border-b border-gray-200/50 pb-3">
-        <h3 class="font-black text-lg text-[#1e3a8a]">Riwayat Transaksi</h3>
-        <a href="riwayat.html" class="text-[10px] bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white transition px-3 py-1.5 rounded-full font-bold shadow-sm flex items-center gap-1">
+      <div class="flex justify-between items-center mb-4 border-b border-gray-400/20 pb-3">
+        <h3 class="font-black text-lg theme-text">Riwayat Transaksi</h3>
+        <a href="riwayat.html" class="text-[10px] theme-bg-light theme-primary hover:opacity-80 transition px-3 py-1.5 rounded-full font-bold shadow-sm flex items-center gap-1">
           Lihat Semua <i class="fa-solid fa-arrow-right"></i>
         </a>
       </div>
       <div id="transactionList" class="flex flex-col gap-3 overflow-y-auto no-scrollbar pb-2">
-        <p class="text-sm text-center text-gray-400 mt-10">Memuat data...</p>
+        <p class="text-sm text-center theme-text-muted mt-10">Memuat data...</p>
       </div>
     </aside>
 
-<!-- KOLOM TENGAH: Hero & Voice Control -->
     <section class="lg:col-span-2 flex flex-col items-center justify-center relative">
-      
-      <!-- TEKS SAPAAN -->
       <div class="text-center mb-2 z-10">
-        <p class="text-base font-bold text-gray-600">Halo,</p>
-        <h2 id="userGreetingCenter" class="text-4xl font-black text-[#1e3a8a] leading-none">User 👋</h2>
+        <p class="text-base font-bold theme-text-muted">Halo,</p>
+        <h2 id="userGreetingCenter" class="text-4xl font-black theme-text leading-none">User 👋</h2>
       </div>
 
-      <!-- MASKOT ILUSI 3D & MIC PODIUM -->
       <div class="relative w-full max-w-[320px] h-[380px] flex flex-col items-center justify-end mb-8 z-10">
-        
-        <!-- Gambar Maskot Melayang -->
         <div class="absolute inset-x-0 top-0 h-[280px] z-20 flex items-center justify-center pointer-events-none">
           <img src="mascot-3d.png" alt="BeFAST Mascot" class="w-56 h-56 object-contain drop-shadow-2xl animate-float">
         </div>
 
-        <!-- Cahaya Panggung (Glow) di belakang Mic -->
-        <div class="absolute bottom-10 w-36 h-36 bg-[#496af1]/30 rounded-full blur-2xl animate-pulse z-10 pointer-events-none"></div>
+        <div class="absolute bottom-10 w-36 h-36 theme-bg-light rounded-full blur-2xl animate-pulse z-10 pointer-events-none opacity-50"></div>
         
-        <!-- MIC PODIUM -->
         <div class="relative z-30 flex flex-col items-center mt-auto">
-          <button id="btnMic" class="w-20 h-20 bg-gradient-to-b from-[#496af1] to-[#2546c7] text-white rounded-full text-3xl flex items-center justify-center mic-btn-shadow hover:scale-105 transition-transform border-[3px] border-white relative group">
+          <button id="btnMic" class="w-20 h-20 theme-bg-primary rounded-full text-3xl flex items-center justify-center hover:scale-105 transition-all duration-300 border border-white/30 relative group mic-idle">
             <i class="fa-solid fa-microphone relative z-10"></i>
-            
-            <!-- Efek Denyut Permanen (Sonar) untuk menarik mata User -->
-            <div class="absolute inset-0 rounded-full border-2 border-[#496af1] animate-[ping_2s_cubic-bezier(0,0,0.2,1)_infinite] opacity-75"></div>
+            <div id="micSonar" class="absolute inset-0 rounded-full border border-white/80 hidden opacity-0"></div>
           </button>
-          
-          <!-- Bayangan Podium -->
-          <div class="w-24 h-3 bg-gray-300/50 rounded-[100%] blur-sm mt-3 pointer-events-none"></div>
+          <div class="w-24 h-3 bg-gray-500/20 rounded-[100%] blur-sm mt-3 pointer-events-none"></div>
         </div>
       </div>
 
-      <!-- STATUS SUARA -->
       <div class="glass-panel px-6 py-4 text-center z-10 min-w-[280px]">
-        <p id="transcriptText" class="text-base font-bold text-gray-800">Belum ada ucapan...</p>
-        <p id="speechStatus" class="text-sm text-gray-500 mt-1">Klik mikrofon dan mulai berbicara</p>
+        <p id="transcriptText" class="text-base font-bold theme-text">Belum ada ucapan...</p>
+        <p id="speechStatus" class="text-sm theme-text-muted mt-1">Klik mikrofon dan mulai berbicara</p>
       </div>
-
     </section>
 
-    <!-- KOLOM KANAN: Ringkasan & Chart -->
     <aside class="flex flex-col gap-5 h-full">
-      
-      <!-- WIDGET RINGKASAN KEUANGAN -->
       <div class="glass-panel p-6 relative flex-grow flex flex-col">
-        <div class="flex justify-between items-center mb-4">
-          <h3 class="font-bold text-sm text-[#1e3a8a]">Ringkasan Keuangan</h3>
-          <div class="bg-gray-100/50 text-gray-600 px-3 py-1 rounded-full text-xs font-semibold border border-gray-200/50">Bulan Ini</div>
+        <div class="flex justify-between items-center mb-6">
+          <h3 class="font-bold text-sm theme-text">Ringkasan Keuangan</h3>
         </div>
         
-        <div class="mb-4">
-          <div class="flex items-center gap-2 mb-1">
-            <div class="w-6 h-6 bg-blue-100 text-blue-600 rounded flex items-center justify-center text-[10px]"><i class="fa-solid fa-wallet"></i></div>
-            <p class="text-xs font-bold text-gray-500">Saldo Bersih</p>
+        <div class="mb-6">
+          <div class="flex items-center gap-2 mb-2">
+            <div class="w-6 h-6 theme-bg-light theme-primary rounded flex items-center justify-center text-[10px]"><i class="fa-solid fa-wallet"></i></div>
+            <p class="text-xs font-bold theme-text-muted">Saldo Bersih</p>
           </div>
-          <h2 id="cardBalance" class="text-3xl font-black text-[#1e3a8a] truncate">Rp 0</h2>
+          <h2 id="cardBalance" class="text-4xl font-black theme-text truncate">Rp 0</h2>
         </div>
 
         <div class="grid grid-cols-2 gap-4 mb-4">
-          <div class="bg-green-50/80 p-3 rounded-2xl border border-green-100/50 relative overflow-hidden">
-            <div class="w-6 h-6 bg-green-200 text-green-700 rounded-full flex items-center justify-center text-[10px] mb-2"><i class="fa-solid fa-arrow-up"></i></div>
-            <p class="text-[10px] text-gray-500 font-medium">Pemasukan</p>
-            <p id="cardIncome" class="text-sm font-black text-gray-800 mt-0.5 truncate">Rp 0</p>
+          <div class="theme-card p-4 rounded-2xl relative overflow-hidden" style="border-color: rgba(16,185,129,0.3)">
+            <div class="w-6 h-6 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-[10px] mb-3"><i class="fa-solid fa-arrow-up"></i></div>
+            <p class="text-[10px] theme-text-muted font-bold">Pemasukan</p>
+            <p id="cardIncome" class="text-base font-black text-green-600 mt-2 truncate">Rp 0</p>
           </div>
-          <div class="bg-red-50/80 p-3 rounded-2xl border border-red-100/50 relative overflow-hidden">
-            <div class="w-6 h-6 bg-red-200 text-red-700 rounded-full flex items-center justify-center text-[10px] mb-2"><i class="fa-solid fa-arrow-down"></i></div>
-            <p class="text-[10px] text-gray-500 font-medium">Pengeluaran</p>
-            <p id="cardExpense" class="text-sm font-black text-gray-800 mt-0.5 truncate">Rp 0</p>
+          <div class="theme-card p-4 rounded-2xl relative overflow-hidden" style="border-color: rgba(239,68,68,0.3)">
+            <div class="w-6 h-6 bg-red-100 text-red-600 rounded-full flex items-center justify-center text-[10px] mb-3"><i class="fa-solid fa-arrow-down"></i></div>
+            <p class="text-[10px] theme-text-muted font-bold">Pengeluaran</p>
+            <p id="cardExpense" class="text-base font-black text-red-600 mt-2 truncate">Rp 0</p>
           </div>
         </div>
 
-        <!-- Area Grafik -->
-        <div id="chartContainer" class="relative h-20 w-full mt-auto hidden">
-          <canvas id="miniBarChart"></canvas>
-        </div>
-        <!-- Empty State -->
-        <div id="emptyStateSummary" class="h-20 flex flex-col items-center justify-center text-center bg-gray-50/50 rounded-xl border border-gray-200/50 border-dashed p-4 mt-auto">
-           <i class="fa-solid fa-chart-simple text-xl text-gray-300 mb-1"></i>
-           <p id="emptyStateText" class="text-[10px] text-gray-500 font-medium leading-tight">Silakan masuk untuk melihat grafik.</p>
+        <div id="chartContainer" class="relative h-20 w-full mt-auto hidden"><canvas id="miniBarChart"></canvas></div>
+        <div id="emptyStateSummary" class="h-20 flex flex-col items-center justify-center text-center bg-gray-500/5 rounded-xl border border-gray-400/20 border-dashed p-4 mt-auto">
+           <i class="fa-solid fa-chart-simple text-xl theme-text-muted opacity-50 mb-1"></i>
+           <p id="emptyStateText" class="text-[10px] theme-text-muted font-medium leading-tight">Masuk untuk melihat grafik.</p>
         </div>
       </div>
 
-      <!-- WIDGET AI INSIGHT (Ditambahkan shrink-0 & padding lebih luas) -->
-      <div class="glass-panel p-6 relative overflow-hidden group border border-white/60 shrink-0">
-        <div class="absolute -top-12 -right-12 w-28 h-28 bg-[#fef08a]/60 rounded-full -z-10 transition-transform group-hover:scale-110"></div>
+      <div class="glass-panel p-6 relative overflow-hidden group shrink-0">
+        <div class="absolute -top-12 -right-12 w-28 h-28 bg-[#fef08a]/30 rounded-full -z-10 transition-transform group-hover:scale-110"></div>
         <div class="flex items-start gap-3">
           <div id="insightIcon" class="text-2xl mt-1 drop-shadow-sm">💡</div>
           <div>
-            <h3 class="font-bold text-sm mb-1.5 flex items-center gap-2 text-[#1e3a8a]">
-              Insight BeFAST <span class="bg-blue-100 text-blue-600 text-[8px] px-1.5 py-0.5 rounded-full font-black tracking-wider">AI</span>
+            <h3 class="font-bold text-sm mb-1.5 flex items-center gap-2 theme-text">
+              Insight BeFAST <span class="theme-bg-light theme-primary text-[8px] px-1.5 py-0.5 rounded-full font-black tracking-wider">AI</span>
             </h3>
-            <p id="insightTitle" class="text-xs font-bold text-gray-800 mb-1.5 leading-snug pr-4">Pengeluaran kamu untuk makanan meningkat.</p>
-            <p id="insightDesc" class="text-[10px] text-gray-500 leading-snug">Kurangi jajan 2x seminggu, hemat Rp 150.000/bulan!</p>
+            <p id="insightTitle" class="text-xs font-bold theme-text mb-1.5 leading-snug pr-4">Pengeluaran makan mendominasi.</p>
+            <p id="insightDesc" class="text-[10px] theme-text-muted leading-snug">Kurangi jajan biar hemat bulan ini!</p>
           </div>
         </div>
       </div>
-      
     </aside>
-    </main>
+  </main>
 
-<!-- MODAL MANUAL INPUT -->
   <div id="manualInputModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-center justify-center hidden z-50 p-4 transition-all">
-    <div class="card-style w-full max-w-lg p-6 relative shadow-2xl bg-white">
-      <button onclick="toggleManualForm()" class="absolute top-4 right-4 text-gray-400 hover:text-red-500 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
-      <h3 class="font-black text-lg text-[#1e3a8a] mb-4"><i class="fa-solid fa-keyboard text-[#f59e0b]"></i> Input Manual</h3>
-      
+    <div class="theme-card w-full max-w-lg p-6 relative shadow-2xl">
+      <button onclick="toggleManualForm()" class="absolute top-4 right-4 theme-text-muted hover:text-red-500 bg-gray-500/10 rounded-full w-8 h-8 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+      <h3 class="font-black text-lg theme-text mb-4"><i class="fa-solid fa-keyboard text-[#f59e0b]"></i> Input Manual</h3>
       <form id="manualForm" onsubmit="addManualTransaction(event)" class="space-y-3">
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block text-xs font-bold text-gray-500 mb-1">Jenis</label>
+            <label class="block text-xs font-bold theme-text-muted mb-1">Jenis</label>
             <div class="relative custom-dropdown" data-id="manualType">
-              <div class="w-full p-2.5 rounded-xl border border-gray-200 bg-gray-50 text-xs font-bold text-gray-700 flex justify-between items-center cursor-pointer select-trigger transition">
-                <span class="selected-text">Pengeluaran</span><i class="fa-solid fa-chevron-down text-gray-400 text-[10px]"></i>
-              </div>
-              <ul class="absolute z-20 w-full mt-1 border border-gray-200 bg-white rounded-xl shadow-xl hidden options-list overflow-hidden py-1">
-                <li class="px-4 py-2.5 text-xs font-bold cursor-pointer hover:bg-blue-50" data-value="pengeluaran">Pengeluaran</li>
-                <li class="px-4 py-2.5 text-xs font-bold cursor-pointer hover:bg-blue-50" data-value="pemasukan">Pemasukan</li>
+              <div class="w-full p-2.5 rounded-xl border border-gray-400/20 bg-transparent text-xs font-bold theme-text flex justify-between items-center cursor-pointer select-trigger transition"><span class="selected-text">Pengeluaran</span><i class="fa-solid fa-chevron-down theme-text-muted text-[10px]"></i></div>
+              <ul class="absolute z-20 w-full mt-1 border border-gray-400/20 theme-card rounded-xl shadow-xl hidden options-list overflow-hidden py-1">
+                <li class="px-4 py-2.5 text-xs font-bold cursor-pointer theme-text hover:opacity-70" data-value="pengeluaran">Pengeluaran</li>
+                <li class="px-4 py-2.5 text-xs font-bold cursor-pointer theme-text hover:opacity-70" data-value="pemasukan">Pemasukan</li>
               </ul>
               <input type="hidden" id="manualType" value="pengeluaran">
             </div>
           </div>
-            <div>
-            <label class="block text-xs font-bold text-gray-500 mb-1">Tanggal</label>
-            <!-- Tipe diubah dari 'date' jadi 'text' agar kalender bawaan browser mati -->
-            <input type="text" id="manualDate" class="w-full p-2.5 rounded-xl border border-gray-200 bg-white text-xs font-bold outline-none focus:border-blue-500 text-gray-700 cursor-pointer" placeholder="Pilih Tanggal" required>
-          </div>
+          <div><label class="block text-xs font-bold theme-text-muted mb-1">Tanggal</label><input type="text" id="manualDate" class="w-full p-2.5 rounded-xl border border-gray-400/20 bg-transparent text-xs font-bold theme-text outline-none cursor-pointer" placeholder="Pilih Tanggal" required></div>
         </div>
-        
         <div>
-          <label class="block text-xs font-bold text-gray-500 mb-1">Kategori</label>
+          <label class="block text-xs font-bold theme-text-muted mb-1">Kategori</label>
           <div class="relative custom-dropdown" data-id="manualCategory">
-            <div class="w-full p-2.5 rounded-xl border border-gray-200 bg-gray-50 text-xs font-bold text-gray-700 flex justify-between items-center cursor-pointer select-trigger transition">
-              <span class="selected-text">✨ Otomatis (AI)</span><i class="fa-solid fa-chevron-down text-gray-400 text-[10px]"></i>
-            </div>
-            <ul class="absolute z-20 w-full mt-1 border border-gray-200 bg-white rounded-xl shadow-xl hidden options-list overflow-y-auto max-h-48 py-1">
-              <li class="px-4 py-2 text-xs font-bold cursor-pointer hover:bg-blue-50" data-value="Otomatis">✨ Otomatis (AI)</li>
-              <li class="px-4 py-2 text-xs font-bold cursor-pointer hover:bg-blue-50" data-value="Makanan & Minuman">🍔 Makanan & Minuman</li>
-              <li class="px-4 py-2 text-xs font-bold cursor-pointer hover:bg-blue-50" data-value="Transportasi">🚗 Transportasi</li>
-              <li class="px-4 py-2 text-xs font-bold cursor-pointer hover:bg-blue-50" data-value="Belanja">🛍️ Belanja</li>
-              <li class="px-4 py-2 text-xs font-bold cursor-pointer hover:bg-blue-50" data-value="Tagihan & Utilitas">💡 Tagihan & Utilitas</li>
-              <li class="px-4 py-2 text-xs font-bold cursor-pointer hover:bg-blue-50" data-value="Hiburan & Hobi">🎮 Hiburan & Hobi</li>
-              <li class="px-4 py-2 text-xs font-bold cursor-pointer hover:bg-blue-50" data-value="Kesehatan & Edukasi">💊 Kesehatan & Edukasi</li>
-              <li class="px-4 py-2 text-xs font-bold cursor-pointer hover:bg-blue-50" data-value="Gaji & Pendapatan">💼 Gaji & Pendapatan</li>
-              <li class="px-4 py-2 text-xs font-bold cursor-pointer hover:bg-blue-50" data-value="Lain-lain">📦 Lain-lain</li>
+            <div class="w-full p-2.5 rounded-xl border border-gray-400/20 bg-transparent text-xs font-bold theme-text flex justify-between items-center cursor-pointer select-trigger transition"><span class="selected-text">✨ Otomatis (AI)</span><i class="fa-solid fa-chevron-down theme-text-muted text-[10px]"></i></div>
+            <ul class="absolute z-20 w-full mt-1 border border-gray-400/20 theme-card rounded-xl shadow-xl hidden options-list overflow-y-auto max-h-48 py-1">
+              <li class="px-4 py-2 text-xs font-bold cursor-pointer theme-text hover:opacity-70" data-value="Otomatis">✨ Otomatis (AI)</li><li class="px-4 py-2 text-xs font-bold cursor-pointer theme-text hover:opacity-70" data-value="Makanan & Minuman">🍔 Makanan & Minuman</li><li class="px-4 py-2 text-xs font-bold cursor-pointer theme-text hover:opacity-70" data-value="Transportasi">🚗 Transportasi</li><li class="px-4 py-2 text-xs font-bold cursor-pointer theme-text hover:opacity-70" data-value="Belanja">🛍️ Belanja</li><li class="px-4 py-2 text-xs font-bold cursor-pointer theme-text hover:opacity-70" data-value="Tagihan & Utilitas">💡 Tagihan & Utilitas</li><li class="px-4 py-2 text-xs font-bold cursor-pointer theme-text hover:opacity-70" data-value="Hiburan & Hobi">🎮 Hiburan & Hobi</li>
             </ul>
             <input type="hidden" id="manualCategory" value="Otomatis">
           </div>
         </div>
-
-        <div>
-          <label class="block text-xs font-bold text-gray-500 mb-1">Keterangan</label>
-          <input type="text" id="manualDesc" placeholder="Contoh: Beli kopi" class="w-full p-2.5 rounded-xl border border-gray-200 bg-gray-50 text-xs font-bold outline-none focus:border-blue-500 text-gray-700" required>
-        </div>
-        
-        <div>
-          <label class="block text-xs font-bold text-gray-500 mb-1">Nominal (Rp)</label>
-          <!-- Tipe diubah ke text, pakai inputmode numeric, dan ada fungsi oninput -->
-          <input type="text" inputmode="numeric" id="manualAmount" placeholder="25.000" oninput="formatCurrencyInput(this)" class="w-full p-2.5 rounded-xl border border-gray-200 bg-gray-50 text-xs font-bold outline-none focus:border-blue-500 text-gray-700" required>
-        </div>
-        
-        <button type="submit" class="w-full py-3 mt-2 bg-[#496af1] text-white font-bold rounded-xl hover:bg-blue-700 transition shadow">
-          Simpan Transaksi
-        </button>
+        <div><label class="block text-xs font-bold theme-text-muted mb-1">Keterangan</label><input type="text" id="manualDesc" placeholder="Contoh: Beli kopi" class="w-full p-2.5 rounded-xl border border-gray-400/20 bg-transparent text-xs font-bold theme-text outline-none" required></div>
+        <div><label class="block text-xs font-bold theme-text-muted mb-1">Nominal (Rp)</label><input type="text" inputmode="numeric" id="manualAmount" placeholder="25.000" oninput="formatCurrencyInput(this)" class="w-full p-2.5 rounded-xl border border-gray-400/20 bg-transparent text-xs font-bold theme-text outline-none" required></div>
+        <button type="submit" class="w-full py-3 mt-2 theme-bg-primary rounded-xl transition shadow hover:opacity-80">Simpan Transaksi</button>
       </form>
     </div>
   </div>
 
-  <!-- MODAL LOGIN -->
+  <!-- MODAL LOGIN & SIGNUP SAMA -->
   <div id="loginModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-center justify-center hidden z-50 p-4 transition-all">
-    <div class="card-style w-full max-w-sm p-8 relative shadow-2xl overflow-hidden">
-      <button onclick="closeLoginModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center z-20"><i class="fa-solid fa-xmark"></i></button>
-      <div class="flex flex-col items-center mb-6 relative z-10">
-        <div class="w-16 h-16 mb-3 bg-gray-50 rounded-2xl border border-gray-200 flex items-center justify-center p-2"><img src="mascot-3d.png" class="w-full h-full object-contain"></div>
-        <h3 class="font-black text-2xl text-[#496af1]">Masuk BeFAST</h3>
-      </div>
+    <div class="theme-card w-full max-w-sm p-8 relative shadow-2xl overflow-hidden">
+      <button onclick="closeLoginModal()" class="absolute top-4 right-4 theme-text-muted hover:opacity-70 bg-gray-500/10 rounded-full w-8 h-8 flex items-center justify-center z-20"><i class="fa-solid fa-xmark"></i></button>
+      <div class="flex flex-col items-center mb-6 relative z-10"><div class="w-16 h-16 mb-3 theme-bg-light rounded-2xl border border-gray-400/20 flex items-center justify-center p-2"><img src="mascot-3d.png" class="w-full h-full object-contain"></div><h3 class="font-black text-2xl theme-primary">Masuk BeFAST</h3></div>
       <div id="loginAlert" class="hidden mb-4 p-3 rounded-full text-xs font-semibold z-10 relative"></div>
       <form onsubmit="handleLogin(event)" class="space-y-4 z-10 relative">
-        <input type="tel" id="loginPhone" required placeholder="Nomor HP (0812...)" class="w-full p-3.5 rounded-full border border-gray-200 bg-gray-50 text-sm focus:border-blue-500 outline-none font-bold text-gray-800">
-        <input type="password" id="loginPassword" required placeholder="Kata Sandi" class="w-full p-3.5 rounded-full border border-gray-200 bg-gray-50 text-sm focus:border-blue-500 outline-none font-bold text-gray-800">
-        <button type="submit" id="btnLoginSubmit" class="w-full py-3.5 bg-[#496af1] text-white text-sm font-black rounded-full hover:bg-blue-700 transition shadow-lg">Masuk Sekarang</button>
+        <input type="tel" id="loginPhone" required placeholder="Nomor HP" class="w-full p-3.5 rounded-full border border-gray-400/20 bg-transparent text-sm theme-text outline-none font-bold">
+        <input type="password" id="loginPassword" required placeholder="Kata Sandi" class="w-full p-3.5 rounded-full border border-gray-400/20 bg-transparent text-sm theme-text outline-none font-bold">
+        <button type="submit" id="btnLoginSubmit" class="w-full py-3.5 theme-bg-primary text-sm font-black rounded-full hover:opacity-80 transition shadow-lg">Masuk Sekarang</button>
       </form>
-      <div class="mt-6 pt-4 border-t border-gray-100 text-center text-sm font-semibold text-gray-500 z-10 relative">Belum punya akun? <button onclick="switchAuthModal('signup')" class="text-blue-600 font-black hover:underline">Daftar</button></div>
+      <div class="mt-6 pt-4 border-t border-gray-400/20 text-center text-sm font-semibold theme-text-muted relative z-10">Belum punya akun? <button onclick="switchAuthModal('signup')" class="theme-primary font-black hover:underline">Daftar</button></div>
     </div>
   </div>
 
-  <!-- MODAL SIGNUP -->
   <div id="signupModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-center justify-center hidden z-50 p-4 transition-all">
-    <div class="card-style w-full max-w-sm p-8 relative shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto no-scrollbar">
-      <button onclick="closeSignupModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center z-20"><i class="fa-solid fa-xmark"></i></button>
-      <div class="flex flex-col items-center mb-5 relative z-10 mt-2">
-        <div class="w-14 h-14 mb-2 bg-gray-50 rounded-2xl border border-gray-200 flex items-center justify-center p-1.5"><img src="mascot-3d.png" class="w-full h-full object-contain"></div>
-        <h3 class="font-black text-xl text-[#496af1]">Daftar Baru</h3>
-      </div>
+    <div class="theme-card w-full max-w-sm p-8 relative shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto no-scrollbar">
+      <button onclick="closeSignupModal()" class="absolute top-4 right-4 theme-text-muted bg-gray-500/10 rounded-full w-8 h-8 flex items-center justify-center z-20"><i class="fa-solid fa-xmark"></i></button>
+      <div class="flex flex-col items-center mb-5 relative z-10 mt-2"><div class="w-14 h-14 mb-2 theme-bg-light rounded-2xl flex items-center justify-center p-1.5"><img src="mascot-3d.png" class="w-full h-full object-contain"></div><h3 class="font-black text-xl theme-primary">Daftar Baru</h3></div>
       <div id="signupAlert" class="hidden mb-4 p-3 rounded-full text-xs font-semibold z-10 relative"></div>
       <form onsubmit="handleSignup(event)" class="space-y-3 z-10 relative">
-        <input type="text" id="signupName" required placeholder="Username unik (misal: izan_99)" class="w-full p-3 rounded-full border border-gray-200 bg-gray-50 text-sm focus:border-blue-500 outline-none font-bold">
-        <input type="email" id="signupEmail" required placeholder="Email Resmi (@gmail.com)" class="w-full p-3 rounded-full border border-gray-200 bg-gray-50 text-sm focus:border-blue-500 outline-none font-bold">
-        <input type="tel" id="signupPhone" required placeholder="Nomor HP" class="w-full p-3 rounded-full border border-gray-200 bg-gray-50 text-sm focus:border-blue-500 outline-none font-bold">
-        <input type="password" id="signupPassword" required minlength="6" placeholder="Kata Sandi (Min 6)" class="w-full p-3 rounded-full border border-gray-200 bg-gray-50 text-sm focus:border-blue-500 outline-none font-bold">
-        <button type="submit" id="btnSignupSubmit" class="w-full py-3.5 mt-2 bg-[#10b981] text-white text-sm font-black rounded-full hover:bg-green-600 transition shadow-lg">Buat Akun</button>
+        <input type="text" id="signupName" required placeholder="Username unik" class="w-full p-3 rounded-full border border-gray-400/20 bg-transparent theme-text text-sm font-bold">
+        <input type="email" id="signupEmail" required placeholder="Email Resmi" class="w-full p-3 rounded-full border border-gray-400/20 bg-transparent theme-text text-sm font-bold">
+        <input type="tel" id="signupPhone" required placeholder="Nomor HP" class="w-full p-3 rounded-full border border-gray-400/20 bg-transparent theme-text text-sm font-bold">
+        <input type="password" id="signupPassword" required minlength="6" placeholder="Kata Sandi (Min 6)" class="w-full p-3 rounded-full border border-gray-400/20 bg-transparent theme-text text-sm font-bold">
+        <button type="submit" id="btnSignupSubmit" class="w-full py-3.5 mt-2 bg-[#10b981] text-white text-sm font-black rounded-full hover:opacity-80 transition shadow-lg">Buat Akun</button>
       </form>
-      <div class="mt-5 pt-4 border-t border-gray-100 text-center text-sm font-semibold text-gray-500 z-10 relative">Sudah punya akun? <button onclick="switchAuthModal('login')" class="text-blue-600 font-black hover:underline">Masuk</button></div>
     </div>
   </div>
 
-  <!-- MODAL VERIFIKASI EMAIL (HITUNG MUNDUR) -->
-  <div id="verifyEmailModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-md flex items-center justify-center hidden z-[60] p-4 transition-all">
-    <div class="card-style w-full max-w-sm p-6 md:p-8 relative shadow-2xl overflow-hidden text-center bg-white">
-      <div class="w-16 h-16 mx-auto mb-4 bg-green-100 text-[#10b981] rounded-full flex items-center justify-center text-3xl shadow-inner"><i class="fa-solid fa-envelope-open-text"></i></div>
-      <h3 class="font-black text-xl text-[#1e3a8a] mb-2">Cek Email Kamu!</h3>
-      <p class="text-xs text-gray-500 mb-6 font-medium leading-relaxed">Pendaftaran berhasil! Tautan verifikasi telah dikirim. Silakan klik tautan di email tersebut sebelum masuk.</p>
-      <div class="w-full h-1.5 bg-gray-200 rounded-full overflow-hidden mb-2">
-        <div id="verifyProgressBar" class="h-full bg-[#10b981] w-full rounded-full"></div>
-      </div>
-      <p class="text-[10px] text-gray-400 font-bold">Menutup otomatis dalam <span id="verifyCountdown">6</span> detik...</p>
-    </div>
-  </div>
-
-  <!-- MODAL PANDUAN -->
   <div id="guideModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-center justify-center hidden z-50 p-4 transition-all">
-    <div class="card-style w-full max-w-3xl p-6 relative max-h-[85vh] overflow-y-auto no-scrollbar bg-white">
-      <div class="flex justify-between items-center mb-4 border-b pb-3"><h3 class="font-black text-lg text-[#1e3a8a]">Panduan Suara</h3><button onclick="closeGuideModal()" class="w-8 h-8 bg-gray-100 rounded-full hover:text-red-500"><i class="fa-solid fa-xmark"></i></button></div>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-        <div class="bg-gray-50 p-4 rounded-xl border"><b>Catat:</b> "Beli kopi 25 ribu" <br><button onclick="speak('Beli kopi 25 ribu')" class="mt-2 px-3 py-1 bg-blue-500 text-white rounded">Dengar</button></div>
-        <div class="bg-gray-50 p-4 rounded-xl border"><b>Cek:</b> "Spill pengeluaran hari ini" <br><button onclick="speak('Spill pengeluaran hari ini')" class="mt-2 px-3 py-1 bg-blue-500 text-white rounded">Dengar</button></div>
+    <div class="theme-card w-full max-w-3xl p-6 relative max-h-[85vh] overflow-y-auto no-scrollbar">
+      <div class="flex justify-between items-center mb-4 border-b border-gray-400/20 pb-3"><h3 class="font-black text-lg theme-text">Panduan Suara</h3><button onclick="closeGuideModal()" class="w-8 h-8 bg-gray-500/10 rounded-full theme-text-muted"><i class="fa-solid fa-xmark"></i></button></div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs theme-text">
+        <div class="theme-glass p-4 rounded-xl border"><b>Catat:</b> "Beli kopi 25 ribu" <br><button onclick="speak('Beli kopi 25 ribu')" class="mt-2 px-3 py-1 theme-bg-primary rounded">Dengar</button></div>
+        <div class="theme-glass p-4 rounded-xl border"><b>Cek:</b> "Spill pengeluaran hari ini" <br><button onclick="speak('Spill pengeluaran hari ini')" class="mt-2 px-3 py-1 theme-bg-primary rounded">Dengar</button></div>
       </div>
     </div>
   </div>
 
-  <!-- MODAL CHART -->
-  <div id="chartModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-center justify-center hidden z-50 p-4 transition-all">
-    <div class="card-style w-full max-w-md p-6 relative bg-white"><div class="flex justify-between mb-4"><h3 id="modalTitle" class="font-black text-lg">Grafik</h3><button onclick="closeChartModal()" class="w-8 h-8 bg-gray-100 rounded-full"><i class="fa-solid fa-xmark"></i></button></div><div class="h-64 mb-4"><canvas id="financeChart"></canvas></div><div id="aiAdvice" class="p-3 bg-blue-50 text-blue-900 text-xs font-bold text-center rounded-lg"></div></div>
-  </div>
-
-  <!-- MODAL EXPORT -->
-  <div id="exportModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-center justify-center hidden z-50 p-4 transition-all">
-    <div class="card-style w-full max-w-sm p-6 relative bg-white"><div class="flex justify-between mb-4"><h3 class="font-black text-lg">Export CSV</h3><button onclick="closeExportModal()" class="w-8 h-8 bg-gray-100 rounded-full"><i class="fa-solid fa-xmark"></i></button></div><input type="hidden" id="exportPeriod" value="semua"><button onclick="processExport()" id="btnProcessExport" class="w-full py-3 bg-blue-600 text-white font-bold rounded-lg mt-4">Download</button></div>
-  </div>
+  <div id="chartModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-center justify-center hidden z-50 p-4 transition-all"><div class="theme-card w-full max-w-md p-6 relative"><div class="flex justify-between mb-4"><h3 id="modalTitle" class="font-black text-lg theme-text">Grafik</h3><button onclick="closeChartModal()" class="w-8 h-8 bg-gray-500/10 rounded-full theme-text-muted"><i class="fa-solid fa-xmark"></i></button></div><div class="h-64 mb-4"><canvas id="financeChart"></canvas></div><div id="aiAdvice" class="p-3 theme-bg-light theme-primary text-xs font-bold text-center rounded-lg"></div></div></div>
+  <div id="exportModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-center justify-center hidden z-50 p-4 transition-all"><div class="theme-card w-full max-w-sm p-6 relative"><div class="flex justify-between mb-4"><h3 class="font-black text-lg theme-text">Export CSV</h3><button onclick="closeExportModal()" class="w-8 h-8 bg-gray-500/10 rounded-full theme-text-muted"><i class="fa-solid fa-xmark"></i></button></div><input type="hidden" id="exportPeriod" value="semua"><button onclick="processExport()" id="btnProcessExport" class="w-full py-3 theme-bg-primary font-bold rounded-lg mt-4">Download</button></div></div>
 
   <script src="js/config.js"></script>
   <script src="js/app.js"></script>

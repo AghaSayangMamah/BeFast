@@ -188,7 +188,6 @@ async function processVoiceCommand(cmd) {
   const nominal = parseNominal(cmd);
   if (nominal > 0) {
     let type = 'pengeluaran'; 
-    // REVISI: Tambahkan "uang bulanan" ke Pemasukan
     if (/(pemasukan|masuk|dapet|dapat|gaji|thr|transferan|honor|bonus|dikasih|nemu|uang bulanan)/i.test(cmd)) type = 'pemasukan';
     
     let { amount, desc, date } = extractTransactionDetails(cmd, type);
@@ -210,9 +209,30 @@ let recognition = null; let isListening = false; let transcript = '';
 
 if (SpeechRecognition) {
   recognition = new SpeechRecognition(); recognition.lang = 'id-ID';
-  recognition.onstart = () => { isListening = true; transcript = ''; document.getElementById('btnMic').classList.add('mic-active'); document.getElementById('speechStatus').innerText = "Mendengarkan..."; };
-  recognition.onresult = (e) => { transcript = Array.from(e.results).map(r => r[0].transcript).join(''); document.getElementById('transcriptText').innerText = `"${transcript}"`; };
-  recognition.onend = () => { isListening = false; document.getElementById('btnMic').classList.remove('mic-active'); document.getElementById('speechStatus').innerText = "Klik mikrofon"; if (transcript.length >= 3) processVoiceCommand(transcript.toLowerCase()); };
+  
+  // Animasi saat mulai mendengarkan (Mic aktif)
+  recognition.onstart = () => { 
+    isListening = true; transcript = ''; 
+    const mic = document.getElementById('btnMic');
+    if(mic) { mic.classList.remove('mic-idle'); mic.classList.add('mic-listening'); }
+    const status = document.getElementById('speechStatus');
+    if(status) status.innerText = "Mendengarkan..."; 
+  };
+  
+  recognition.onresult = (e) => { 
+    transcript = Array.from(e.results).map(r => r[0].transcript).join(''); 
+    document.getElementById('transcriptText').innerText = `"${transcript}"`; 
+  };
+  
+  // Animasi saat selesai (Mic bernapas lambat)
+  recognition.onend = () => { 
+    isListening = false; 
+    const mic = document.getElementById('btnMic');
+    if(mic) { mic.classList.add('mic-idle'); mic.classList.remove('mic-listening'); }
+    const status = document.getElementById('speechStatus');
+    if(status) status.innerText = "Klik mikrofon"; 
+    if (transcript.length >= 3) processVoiceCommand(transcript.toLowerCase()); 
+  };
 }
 
 document.getElementById('btnMic').addEventListener('click', () => {
