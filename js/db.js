@@ -34,13 +34,56 @@ async function fetchTransactionsFromSupabase() {
 }
 
 async function addManualTransaction(e) {
-  e.preventDefault(); const user = getCurrentUser(); if(!user){ openLoginModal(); return; }
-  const t = document.getElementById('manualType').value, d = document.getElementById('manualDate').value, desc = document.getElementById('manualDesc').value.trim(), a = parseInt(document.getElementById('manualAmount').value,10), c = document.getElementById('manualCategory').value;
-  if(!desc || isNaN(a) || a<=0 || !d) return alert("Isi benar!");
-  const cat = c==='Otomatis'?detectCategory(desc,t):c;
-  updateSyncStatusUI(false, 'Simpan...');
-  const { error } = await supabaseClient.from('transactions').insert([{id:Date.now().toString(),user_id:user.id,date:d,type:t,category:cat,amount:a,desc:desc}]);
-  if(error) { alert('Gagal'); updateSyncStatusUI(false,'Gagal'); } else { await fetchTransactionsFromSupabase(); document.getElementById('manualForm').reset(); document.getElementById('manualDate').value=getLocalDateStr(); toggleManualForm(); }
+  e.preventDefault(); 
+  const user = getCurrentUser(); 
+  if(!user){ openLoginModal(); return; }
+  
+  const t = document.getElementById('manualType').value;
+  const d = document.getElementById('manualDate').value;
+  const desc = document.getElementById('manualDesc').value.trim();
+  const c = document.getElementById('manualCategory').value;
+  
+  // REVISI: Hapus format titik (.) sebelum diubah ke angka (Integer)
+  const rawAmount = document.getElementById('manualAmount').value.replace(/\./g, '');
+  const a = parseInt(rawAmount, 10);
+  
+  if(!desc || isNaN(a) || a<=0 || !d) return alert("Mohon isi dengan benar!");
+  
+  const cat = c === 'Otomatis' ? detectCategory(desc, t) : c;
+  
+  updateSyncStatusUI(false, 'Menyimpan...');
+  const { error } = await supabaseClient.from('transactions').insert([{
+    id: Date.now().toString(),
+    user_id: user.id,
+    date: d,
+    type: t,
+    category: cat,
+    amount: a,
+    desc: desc
+  }]);
+  
+  if(error) { 
+    alert('Gagal disimpan ke database.'); 
+    updateSyncStatusUI(false, 'Gagal'); 
+  } else { 
+    await fetchTransactionsFromSupabase(); 
+    
+    // Reset Form Input
+    document.getElementById('manualForm').reset(); 
+    
+    // Reset tampilan custom dropdown kembali ke awal
+    document.querySelector('[data-id="manualType"] .selected-text').innerText = 'Pengeluaran';
+    document.getElementById('manualType').value = 'pengeluaran';
+    document.querySelector('[data-id="manualCategory"] .selected-text').innerText = '✨ Otomatis (AI)';
+    document.getElementById('manualCategory').value = 'Otomatis';
+    
+// Reset kalender Flatpickr ke hari ini
+    const dateInput = document.getElementById('manualDate');
+    if (dateInput && dateInput._flatpickr) {
+      dateInput._flatpickr.setDate(new Date());
+    }
+        toggleManualForm(); 
+  }
 }
 
 async function deleteSingleItem(id) {

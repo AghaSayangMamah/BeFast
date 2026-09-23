@@ -44,3 +44,225 @@ body {
 .animate-float {
   animation: float 3s ease-in-out infinite;
 }
+/* =========================================
+   CUSTOM FLATPICKR (MAKEOVER KALENDER ESTETIK)
+   ========================================= */
+
+/* 1. Box Kalender Membulat Halus (Rounded) & Shadow Lembut */
+.flatpickr-calendar {
+  border-radius: 24px !important;
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.15), 0 0 10px rgba(0,0,0,0.05) !important;
+  border: none !important;
+  padding: 15px 10px !important;
+  font-family: inherit !important;
+  width: 320px !important;
+}
+
+/* Membunuh Segitiga/Panah Nyasar di atas/bawah kalender */
+.flatpickr-calendar::before,
+.flatpickr-calendar::after {
+  display: none !important;
+}
+
+/* 2. Header (Bulan & Tahun) */
+.flatpickr-months {
+  margin-bottom: 15px !important;
+}
+.flatpickr-current-month {
+  font-size: 1.1rem !important;
+  font-weight: 800 !important;
+  color: #1e3a8a !important; 
+  padding-top: 5px !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+/* Dropdown bulan dan tahun custom */
+.flatpickr-current-month > .flatpickr-monthDropdown-months,
+.flatpickr-current-month > .numInputWrapper {
+  display: none !important;
+}
+
+.calendar-dropdown {
+  display: inline-block !important;
+  position: relative;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #1e3a8a;
+}
+
+.calendar-dropdown-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 5px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.calendar-dropdown-trigger:hover,
+.calendar-dropdown-list.open + .calendar-dropdown-trigger {
+  background: #eff6ff;
+}
+
+.calendar-dropdown-chevron {
+  color: #496af1;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.calendar-dropdown-list {
+  position: absolute;
+  z-index: 10;
+  top: calc(100% + 6px);
+  left: 50%;
+  display: none;
+  width: max-content;
+  min-width: 120px;
+  max-height: 220px;
+  overflow-y: auto;
+  margin: 0;
+  padding: 5px;
+  transform: translateX(-50%);
+  list-style: none;
+  border: 1px solid #dbeafe;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 14px 28px rgba(30, 58, 138, 0.18);
+}
+
+.calendar-dropdown-list.open { display: block; }
+
+.calendar-dropdown-option {
+  padding: 7px 11px;
+  border-radius: 8px;
+  color: #1e3a8a;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.calendar-dropdown-option:hover,
+.calendar-dropdown-option.selected {
+  background: #496af1;
+  color: #fff;
+}
+
+.flatpickr-custom-year-select {
+  font-size: 1.1rem !important;
+  font-weight: 800 !important;
+  color: #1e3a8a !important;
+  background: transparent;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  appearance: none;     /* Menghapus panah bawaan browser */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  padding-left: 5px;
+}
+/* Menambahkan ikon panah (chevron) buatan sendiri */
+.flatpickr-custom-year-select {
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231e3a8a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right center;
+  background-size: 12px;
+  padding-right: 18px; /* Memberi ruang agar teks tidak tertimpa panah */
+}
+
+.flatpickr-monthDropdown-months {
+  font-weight: 800 !important;
+  appearance: none;
+}
+.flatpickr-current-month input.cur-year {
+  font-weight: 800 !important;
+  cursor: pointer !important;
+}
+
+/* 3. Makeover Panah Tahun (Elegan & Cuma Muncul Saat Hover) */
+.numInputWrapper span.arrowUp,
+.numInputWrapper span.arrowDown {
+  border: none !important;
+  opacity: 0; /* Sembunyikan default */
+  transition: opacity 0.2s ease;
+}
+.numInputWrapper span.arrowUp:after,
+.numInputWrapper span.arrowDown:after {
+  border-color: #94a3b8 !important; /* Warna panah abu-abu halus */
+  border-width: 1px !important;
+}
+.numInputWrapper:hover span.arrowUp,
+.numInputWrapper:hover span.arrowDown {
+  opacity: 1 !important; /* Muncul saat disentuh mouse */
+  background: transparent !important;
+}
+.numInputWrapper:hover {
+  background: rgba(73, 106, 241, 0.05) !important; /* Highlight biru super tipis di angka tahun */
+  border-radius: 6px;
+}
+
+/* 4. Teks Hari (Sen, Sel, Rab, dll) */
+span.flatpickr-weekday {
+  color: #94a3b8 !important;
+  font-weight: 800 !important;
+  font-size: 12px !important;
+}
+
+/* 5. Kotak Angka Tanggal Diubah Jadi Lingkaran Penuh */
+.flatpickr-day {
+  border-radius: 50% !important; 
+  border: 2px solid transparent !important;
+  color: #334155 !important;
+  font-weight: 700 !important;
+  transition: all 0.2s ease !important;
+}
+
+/* 6. Efek Saat Tanggal Disentuh Mouse (Hover) */
+.flatpickr-day:hover {
+  background: #eff6ff !important;
+  color: #2563eb !important;
+  border-color: #dbeafe !important;
+}
+
+/* 7. Efek Saat Tanggal Diklik / Dipilih */
+.flatpickr-day.selected, 
+.flatpickr-day.startRange, 
+.flatpickr-day.endRange, 
+.flatpickr-day.selected.inRange, 
+.flatpickr-day.startRange.inRange, 
+.flatpickr-day.endRange.inRange, 
+.flatpickr-day.selected:focus, 
+.flatpickr-day.startRange:focus, 
+.flatpickr-day.endRange:focus, 
+.flatpickr-day.selected:hover, 
+.flatpickr-day.startRange:hover, 
+.flatpickr-day.endRange:hover, 
+.flatpickr-day.selected.prevMonthDay, 
+.flatpickr-day.startRange.prevMonthDay, 
+.flatpickr-day.endRange.prevMonthDay, 
+.flatpickr-day.selected.nextMonthDay, 
+.flatpickr-day.startRange.nextMonthDay, 
+.flatpickr-day.endRange.nextMonthDay {
+  background: #496af1 !important;
+  color: white !important;
+  border-color: #496af1 !important;
+  box-shadow: 0 4px 10px rgba(73, 106, 241, 0.4) !important;
+}
+
+/* 8. Penanda Hari Ini (Biar gampang tahu sekarang tanggal berapa) */
+.flatpickr-day.today {
+  border-color: #f59e0b !important;
+}
+.flatpickr-day.today:hover {
+  background: #f59e0b !important;
+  color: white !important;
+}

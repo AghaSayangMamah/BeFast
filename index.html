@@ -11,11 +11,14 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/id.js"></script>
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -46,11 +49,8 @@
         <span class="text-xs font-medium text-gray-500">Siap membantumu kapan saja!</span>
       </div>
 
-      <!-- Kanan: User Profile & Menu -->
-      <div class="flex items-center gap-3 pointer-events-auto">
-        <button onclick="openGuideModal()" class="w-10 h-10 rounded-full bg-white/70 backdrop-blur-md border border-white/50 shadow-sm flex items-center justify-center text-yellow-500 hover:bg-white transition" title="Panduan Suara">
-          <i class="fa-solid fa-book"></i>
-        </button>
+<!-- Kanan: Profil -> Logout -> Buku -> Tambah -->
+      <div class="flex items-center gap-2 md:gap-3 pointer-events-auto">
         
         <div id="authLoggedOut" class="flex gap-2">
           <button onclick="openLoginModal()" class="px-4 py-2 bg-white hover:bg-gray-50 text-blue-600 rounded-full text-xs font-bold shadow-sm transition">Masuk</button>
@@ -58,23 +58,33 @@
         </div>
 
         <div id="authLoggedIn" class="hidden items-center gap-2">
-          <div class="flex items-center gap-3 bg-white/70 backdrop-blur-md border border-white/50 px-4 py-1.5 rounded-full shadow-sm cursor-default">
-            <div class="w-7 h-7 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 overflow-hidden">
-              <i class="fa-solid fa-user text-xs"></i>
+          <!-- Profil -->
+          <div class="flex items-center gap-2.5 bg-white/70 backdrop-blur-md border border-white/50 px-4 py-1.5 rounded-full shadow-sm cursor-default">
+            <div class="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
+              <i class="fa-solid fa-user text-[10px]"></i>
             </div>
             <div class="hidden sm:block text-left">
-              <p id="userGreetingHeader" class="text-xs font-bold text-[#1e3a8a] leading-tight">Hai, User</p>
-              <p class="text-[9px] text-gray-500 leading-tight">Tetap Semangat!</p>
+              <p id="userGreetingHeader" class="text-xs font-black text-[#1e3a8a] leading-none tracking-tight">Hai, User</p>
             </div>
           </div>
-          <button onclick="handleLogout()" class="w-10 h-10 rounded-full bg-red-50 border border-red-100 shadow-sm flex items-center justify-center text-red-500 hover:bg-red-100 hover:text-red-600 transition" title="Keluar">
-            <i class="fa-solid fa-power-off"></i>
+          
+          <!-- Tombol Logout (Ikon Orang Keluar) -->
+          <button onclick="handleLogout()" class="w-9 h-9 rounded-full bg-red-50 border border-red-100 shadow-sm flex items-center justify-center text-red-500 hover:bg-red-500 hover:text-white transition group" title="Keluar">
+            <i class="fa-solid fa-arrow-right-from-bracket text-sm transition group-hover:-translate-x-0.5"></i>
           </button>
         </div>
-        <button onclick="toggleManualForm()" class="w-10 h-10 rounded-full bg-white/70 backdrop-blur-md border border-white/50 shadow-sm flex items-center justify-center text-gray-700 hover:bg-white transition" title="Input Manual"><i class="fa-solid fa-plus"></i></button>
-      </div>
 
-    </div>
+        <!-- Tombol Panduan (Ikon Buku, Warna Soft Orange) -->
+        <button onclick="openGuideModal()" class="w-9 h-9 rounded-full bg-orange-50 border border-orange-100 shadow-sm flex items-center justify-center text-orange-400 hover:bg-orange-100 hover:text-orange-500 transition" title="Panduan Suara">
+          <i class="fa-solid fa-book text-sm"></i>
+        </button>
+
+        <!-- Tombol Tambah Manual -->
+        <button onclick="toggleManualForm()" class="w-9 h-9 rounded-full bg-slate-50 border border-slate-200 shadow-sm flex items-center justify-center text-slate-600 hover:bg-white hover:text-blue-600 transition" title="Input Manual">
+          <i class="fa-solid fa-plus text-sm"></i>
+        </button>
+        
+      </div>
   </header>
 
   <!-- MAIN CONTENT -->
@@ -195,9 +205,9 @@
     </aside>
     </main>
 
-  <!-- MODAL MANUAL INPUT -->
+<!-- MODAL MANUAL INPUT -->
   <div id="manualInputModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-center justify-center hidden z-50 p-4 transition-all">
-    <div class="card-style w-full max-w-lg p-6 relative shadow-2xl">
+    <div class="card-style w-full max-w-lg p-6 relative shadow-2xl bg-white">
       <button onclick="toggleManualForm()" class="absolute top-4 right-4 text-gray-400 hover:text-red-500 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center">
         <i class="fa-solid fa-xmark"></i>
       </button>
@@ -207,36 +217,56 @@
         <div class="grid grid-cols-2 gap-3">
           <div>
             <label class="block text-xs font-bold text-gray-500 mb-1">Jenis</label>
-            <select id="manualType" class="w-full p-2.5 rounded-xl border border-gray-200 bg-gray-50 text-xs font-bold outline-none focus:border-blue-500">
-              <option value="pengeluaran">Pengeluaran</option>
-              <option value="pemasukan">Pemasukan</option>
-            </select>
+            <div class="relative custom-dropdown" data-id="manualType">
+              <div class="w-full p-2.5 rounded-xl border border-gray-200 bg-gray-50 text-xs font-bold text-gray-700 flex justify-between items-center cursor-pointer select-trigger transition">
+                <span class="selected-text">Pengeluaran</span><i class="fa-solid fa-chevron-down text-gray-400 text-[10px]"></i>
+              </div>
+              <ul class="absolute z-20 w-full mt-1 border border-gray-200 bg-white rounded-xl shadow-xl hidden options-list overflow-hidden py-1">
+                <li class="px-4 py-2.5 text-xs font-bold cursor-pointer hover:bg-blue-50" data-value="pengeluaran">Pengeluaran</li>
+                <li class="px-4 py-2.5 text-xs font-bold cursor-pointer hover:bg-blue-50" data-value="pemasukan">Pemasukan</li>
+              </ul>
+              <input type="hidden" id="manualType" value="pengeluaran">
+            </div>
           </div>
-          <div>
+            <div>
             <label class="block text-xs font-bold text-gray-500 mb-1">Tanggal</label>
-            <input type="date" id="manualDate" class="w-full p-2.5 rounded-xl border border-gray-200 bg-gray-50 text-xs font-bold outline-none focus:border-blue-500" required>
+            <!-- Tipe diubah dari 'date' jadi 'text' agar kalender bawaan browser mati -->
+            <input type="text" id="manualDate" class="w-full p-2.5 rounded-xl border border-gray-200 bg-white text-xs font-bold outline-none focus:border-blue-500 text-gray-700 cursor-pointer" placeholder="Pilih Tanggal" required>
           </div>
         </div>
+        
         <div>
           <label class="block text-xs font-bold text-gray-500 mb-1">Kategori</label>
-          <select id="manualCategory" class="w-full p-2.5 rounded-xl border border-gray-200 bg-gray-50 text-xs font-bold outline-none focus:border-blue-500">
-            <option value="Otomatis">✨ Otomatis (AI)</option>
-            <option value="Makanan & Minuman">🍔 Makanan & Minuman</option>
-            <option value="Transportasi">🚗 Transportasi</option>
-            <option value="Belanja">🛍️ Belanja</option>
-            <option value="Tagihan & Utilitas">💡 Tagihan & Utilitas</option>
-            <option value="Gaji & Pendapatan">💼 Gaji & Pendapatan</option>
-            <option value="Lain-lain">📦 Lain-lain</option>
-          </select>
+          <div class="relative custom-dropdown" data-id="manualCategory">
+            <div class="w-full p-2.5 rounded-xl border border-gray-200 bg-gray-50 text-xs font-bold text-gray-700 flex justify-between items-center cursor-pointer select-trigger transition">
+              <span class="selected-text">✨ Otomatis (AI)</span><i class="fa-solid fa-chevron-down text-gray-400 text-[10px]"></i>
+            </div>
+            <ul class="absolute z-20 w-full mt-1 border border-gray-200 bg-white rounded-xl shadow-xl hidden options-list overflow-y-auto max-h-48 py-1">
+              <li class="px-4 py-2 text-xs font-bold cursor-pointer hover:bg-blue-50" data-value="Otomatis">✨ Otomatis (AI)</li>
+              <li class="px-4 py-2 text-xs font-bold cursor-pointer hover:bg-blue-50" data-value="Makanan & Minuman">🍔 Makanan & Minuman</li>
+              <li class="px-4 py-2 text-xs font-bold cursor-pointer hover:bg-blue-50" data-value="Transportasi">🚗 Transportasi</li>
+              <li class="px-4 py-2 text-xs font-bold cursor-pointer hover:bg-blue-50" data-value="Belanja">🛍️ Belanja</li>
+              <li class="px-4 py-2 text-xs font-bold cursor-pointer hover:bg-blue-50" data-value="Tagihan & Utilitas">💡 Tagihan & Utilitas</li>
+              <li class="px-4 py-2 text-xs font-bold cursor-pointer hover:bg-blue-50" data-value="Hiburan & Hobi">🎮 Hiburan & Hobi</li>
+              <li class="px-4 py-2 text-xs font-bold cursor-pointer hover:bg-blue-50" data-value="Kesehatan & Edukasi">💊 Kesehatan & Edukasi</li>
+              <li class="px-4 py-2 text-xs font-bold cursor-pointer hover:bg-blue-50" data-value="Gaji & Pendapatan">💼 Gaji & Pendapatan</li>
+              <li class="px-4 py-2 text-xs font-bold cursor-pointer hover:bg-blue-50" data-value="Lain-lain">📦 Lain-lain</li>
+            </ul>
+            <input type="hidden" id="manualCategory" value="Otomatis">
+          </div>
         </div>
+
         <div>
           <label class="block text-xs font-bold text-gray-500 mb-1">Keterangan</label>
-          <input type="text" id="manualDesc" placeholder="Beli kopi" class="w-full p-2.5 rounded-xl border border-gray-200 bg-gray-50 text-xs font-bold outline-none focus:border-blue-500" required>
+          <input type="text" id="manualDesc" placeholder="Contoh: Beli kopi" class="w-full p-2.5 rounded-xl border border-gray-200 bg-gray-50 text-xs font-bold outline-none focus:border-blue-500 text-gray-700" required>
         </div>
+        
         <div>
           <label class="block text-xs font-bold text-gray-500 mb-1">Nominal (Rp)</label>
-          <input type="number" id="manualAmount" placeholder="25000" min="1" class="w-full p-2.5 rounded-xl border border-gray-200 bg-gray-50 text-xs font-bold outline-none focus:border-blue-500" required>
+          <!-- Tipe diubah ke text, pakai inputmode numeric, dan ada fungsi oninput -->
+          <input type="text" inputmode="numeric" id="manualAmount" placeholder="25.000" oninput="formatCurrencyInput(this)" class="w-full p-2.5 rounded-xl border border-gray-200 bg-gray-50 text-xs font-bold outline-none focus:border-blue-500 text-gray-700" required>
         </div>
+        
         <button type="submit" class="w-full py-3 mt-2 bg-[#496af1] text-white font-bold rounded-xl hover:bg-blue-700 transition shadow">
           Simpan Transaksi
         </button>

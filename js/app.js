@@ -132,3 +132,159 @@ function updateAIInsight() {
     if(insightIcon) insightIcon.innerText = "💡";
   }
 }
+
+// FORMATTER UANG REAL-TIME (Agar muncul titik pemisah ribuan)
+function formatCurrencyInput(input) {
+  // Hapus semua karakter selain angka
+  let value = input.value.replace(/\D/g, '');
+  // Format dengan titik ala Indonesia (id-ID)
+  if (value) {
+    value = parseInt(value, 10).toLocaleString('id-ID');
+  }
+  input.value = value;
+}
+
+// SETUP CUSTOM DROPDOWN (Agar UI Dropdown melayang bisa diklik)
+function setupCustomDropdowns() {
+  document.addEventListener('click', e => {
+    const isDropdown = e.target.closest('.custom-dropdown');
+    document.querySelectorAll('.options-list').forEach(list => { 
+      if (!isDropdown || list !== isDropdown.closest('.custom-dropdown').querySelector('.options-list')) {
+        list.classList.add('hidden'); 
+      }
+    });
+  });
+
+  document.querySelectorAll('.custom-dropdown').forEach(dropdown => {
+    const trigger = dropdown.querySelector('.select-trigger');
+    const list = dropdown.querySelector('.options-list');
+    if (!trigger || !list) return;
+
+    const textSpan = trigger.querySelector('.selected-text');
+    const hiddenInput = dropdown.dataset.id ? document.getElementById(dropdown.dataset.id) : null;
+
+    trigger.addEventListener('click', (event) => {
+      event.stopPropagation();
+      list.classList.toggle('hidden');
+    });
+
+    list.querySelectorAll('li').forEach(option => {
+      option.addEventListener('click', () => {
+        if (textSpan && hiddenInput) {
+          textSpan.innerHTML = option.innerHTML;
+          hiddenInput.value = option.dataset.value || option.innerText.trim();
+        }
+        list.classList.add('hidden');
+      });
+    });
+  });
+}
+
+function createCalendarDropdown(container, value, options, onChange) {
+  const dropdown = document.createElement('div');
+  dropdown.className = 'calendar-dropdown';
+
+  const trigger = document.createElement('button');
+  trigger.type = 'button';
+  trigger.className = 'calendar-dropdown-trigger';
+  trigger.innerHTML = `<span>${options[value]}</span><span class="calendar-dropdown-chevron">⌄</span>`;
+
+  const list = document.createElement('ul');
+  list.className = 'calendar-dropdown-list';
+
+  Object.entries(options).forEach(([optionValue, label]) => {
+    const option = document.createElement('li');
+    option.className = 'calendar-dropdown-option';
+    option.textContent = label;
+    option.dataset.value = optionValue;
+    if (String(optionValue) === String(value)) option.classList.add('selected');
+    option.addEventListener('click', () => {
+      onChange(optionValue);
+      trigger.firstElementChild.textContent = label;
+      list.querySelectorAll('.selected').forEach(item => item.classList.remove('selected'));
+      option.classList.add('selected');
+      list.classList.remove('open');
+    });
+    list.appendChild(option);
+  });
+
+  trigger.addEventListener('click', event => {
+    event.preventDefault();
+    event.stopPropagation();
+    document.querySelectorAll('.calendar-dropdown-list.open').forEach(openList => {
+      if (openList !== list) openList.classList.remove('open');
+    });
+    list.classList.toggle('open');
+  });
+
+  dropdown.append(trigger, list);
+  container.appendChild(dropdown);
+  return { dropdown, trigger, list };
+}
+
+// SETUP FLATPICKR (Custom Date Picker)
+function setupDatePicker() {
+  const dateInput = document.getElementById('manualDate');
+  if (!dateInput || typeof flatpickr !== 'function') return;
+
+  flatpickr(dateInput, {
+      dateFormat: "Y-m-d",      
+      defaultDate: "today",     
+      locale: "id",             
+      disableMobile: true,    
+      animate: true,
+      
+      // Hook untuk merombak UI Tahun menjadi Dropdown
+      onReady: function(selectedDates, dateStr, instance) {
+        // 1. Sembunyikan pembungkus input tahun bawaan
+        const yearWrapper = instance.currentYearElement.parentNode;
+        yearWrapper.style.display = 'none';
+
+        // Buat menu tahun custom agar konsisten dengan dropdown aplikasi.
+        const currentYear = new Date().getFullYear();
+        const years = {};
+        for (let i = currentYear; i >= 2000; i--) {
+          years[i] = i;
+        }
+        const monthContainer = instance.monthsDropdownContainer.parentNode;
+        const yearDropdown = createCalendarDropdown(monthContainer, instance.currentYear, years, year => {
+          instance.changeYear(parseInt(year, 10));
+        });
+        instance.customYearDropdown = yearDropdown;
+
+        const monthNames = flatpickr.l10ns.id.months.longhand;
+        const months = Object.fromEntries(monthNames.map((name, index) => [index, name]));
+        const monthDropdown = createCalendarDropdown(monthContainer, instance.currentMonth, months, month => {
+          instance.jumpToDate(new Date(instance.currentYear, parseInt(month, 10), 1), false);
+        });
+        instance.customMonthDropdown = monthDropdown;
+      },
+      
+      // Update otomatis nilai dropdown jika bulan berpindah
+      onMonthChange: function(selectedDates, dateStr, instance) {
+        syncCalendarDropdowns(instance);
+      },
+      onYearChange: function(selectedDates, dateStr, instance) {
+        syncCalendarDropdowns(instance);
+      }
+    });
+}
+
+function syncCalendarDropdowns(instance) {
+  const yearDropdown = instance.customYearDropdown;
+  const monthDropdown = instance.customMonthDropdown;
+  if (yearDropdown) yearDropdown.trigger.firstElementChild.textContent = instance.currentYear;
+  if (monthDropdown) monthDropdown.trigger.firstElementChild.textContent = flatpickr.l10ns.id.months.longhand[instance.currentMonth];
+}
+
+document.addEventListener('click', (event) => {
+  if (event.target && event.target.closest && event.target.closest('.calendar-dropdown')) {
+    return;
+  }
+  document.querySelectorAll('.calendar-dropdown-list.open').forEach(list => list.classList.remove('open'));
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  setupCustomDropdowns();
+  setupDatePicker();
+});
