@@ -30,14 +30,28 @@ function updateAuthUI() {
     let fname = user.user_metadata?.full_name || 'User';
     if(greetHead) greetHead.innerText = fname;
     if(greetCent) greetCent.innerText = `${fname} 👋`;
+
+    // --- KUNCI 1: PANGGIL TEMA SPESIFIK SAAT LOGIN / REFRESH ---
+    const userTheme = localStorage.getItem('bf_theme_' + user.id);
+    if (userTheme && typeof window.originalSetTheme === 'function') {
+        window.originalSetTheme(userTheme);
+    } else if (userTheme && typeof setTheme === 'function') {
+        setTheme(userTheme);
+    }
+    // -----------------------------------------------------------
+
   } else {
     if (loggedOutDiv) loggedOutDiv.classList.remove('hidden'); 
     if (loggedInDiv) { loggedInDiv.classList.add('hidden'); loggedInDiv.classList.remove('flex'); }
     if(greetHead) greetHead.innerText = `User`;
     if(greetCent) greetCent.innerText = `User 👋`;
     
-    // KUNCI PERBAIKAN: Paksa tema kembali ke default (Tech Blue) jika belum login
-    if(typeof setTheme === 'function') setTheme('default');
+    // --- KUNCI 2: KEMBALIKAN KE DEFAULT SAAT BELUM LOGIN ---
+    if(typeof window.originalSetTheme === 'function') {
+        window.originalSetTheme('default');
+    } else if (typeof setTheme === 'function') {
+        setTheme('default');
+    }
   }
   if(typeof updateSummaryUI === 'function') updateSummaryUI();
 }
@@ -175,6 +189,20 @@ async function handleLogout() {
 
   // 4. Refresh halaman otomatis untuk mereset seluruh sistem ke Tech Blue
   window.location.reload();
+}
+
+// --- KUNCI 3: REKAM TEMA SAAT USER MENGGANTI TEMA ---
+if (typeof setTheme === 'function' && !window.setThemeProxied) {
+  window.originalSetTheme = setTheme; 
+  window.setTheme = function(themeName) {
+    window.originalSetTheme(themeName);
+    const user = getCurrentUser();
+    if (user) {
+      // Simpan tema spesifik dengan nama ID user tersebut
+      localStorage.setItem('bf_theme_' + user.id, themeName);
+    }
+  };
+  window.setThemeProxied = true;
 }
 
 updateAuthUI();
