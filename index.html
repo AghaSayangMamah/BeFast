@@ -100,16 +100,15 @@
     </div>
   </header>
 
-<main class="max-w-[1400px] mx-auto pt-24 pb-8 px-4 md:px-6 lg:px-8 flex flex-col md:grid md:grid-cols-3 gap-6 min-h-screen md:h-screen">
-  <aside class="glass-panel p-5 flex flex-col h-[500px] md:h-full md:min-w-[320px] order-3 md:order-1 mt-4 md:mt-0">
-        <div class="flex justify-between items-center mb-4 border-b border-gray-400/20 pb-3">
+<main class="max-w-[1400px] mx-auto pt-24 pb-8 px-4 md:px-6 lg:px-8 flex flex-col md:grid md:grid-cols-3 gap-6 min-h-screen md:h-screen md:overflow-hidden">
+<aside class="glass-panel p-5 flex flex-col h-[500px] md:h-full md:min-w-[320px] order-3 md:order-1 mt-4 md:mt-0 min-h-0">         <div class="flex justify-between items-center mb-4 border-b border-gray-400/20 pb-3">
         <h3 class="font-black text-lg theme-text">Riwayat Transaksi</h3>
         <a href="riwayat.html" class="text-[10px] theme-bg-light theme-primary hover:opacity-80 transition px-3 py-1.5 rounded-full font-bold shadow-sm flex items-center gap-1">
           Lihat Semua <i class="fa-solid fa-arrow-right"></i>
         </a>
       </div>
-      <div id="transactionList" class="flex flex-col gap-3 overflow-y-auto no-scrollbar pb-2">
-        <p class="text-sm text-center theme-text-muted mt-10">Memuat data...</p>
+      <div id="transactionList" class="flex-1 overflow-y-auto min-h-0 flex flex-col gap-3 pr-2 scrollbar-hide">    
+            <p class="text-sm text-center theme-text-muted mt-10">Memuat data...</p>
       </div>
     </aside>
 

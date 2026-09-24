@@ -106,15 +106,44 @@ let miniChartInstance = null;
 function renderMiniBarChart() {
   const ctx = document.getElementById('miniBarChart'); if(!ctx) return; if (miniChartInstance) miniChartInstance.destroy();
   const labels = []; const expenseData = []; const incomeData = [];
+  
   for(let i=6; i>=0; i--) {
-    let d = new Date(); d.setDate(d.getDate() - i); let dateStr = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-    labels.push(`${d.getDate()}/${d.getMonth()+1}`);
+    let d = new Date(); 
+    d.setDate(d.getDate() - i); 
+    let dateStr = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    
+    // Perbaikan format label: menggunakan padStart agar menjadi DD/MM
+    labels.push(`${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}`);
+    
     expenseData.push(transactions.filter(t => t.type === 'pengeluaran' && t.date === dateStr).reduce((s, t) => s + t.amount, 0));
     incomeData.push(transactions.filter(t => t.type === 'pemasukan' && t.date === dateStr).reduce((s, t) => s + t.amount, 0));
   }
-  miniChartInstance = new Chart(ctx, { type: 'bar', data: { labels: labels, datasets: [ { label: 'Pemasukan', data: incomeData, backgroundColor: '#10b981', borderRadius: 4 }, { label: 'Pengeluaran', data: expenseData, backgroundColor: '#ef4444', borderRadius: 4 } ] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: false } }, scales: { x: { grid: { display: false }, ticks: { font: { size: 9 }, color: '#94a3b8' }, border: {display: false} }, y: { display: false } } } });
+  
+  miniChartInstance = new Chart(ctx, { 
+    type: 'bar', 
+    data: { 
+      labels: labels, 
+      datasets: [ 
+        { label: 'Pemasukan', data: incomeData, backgroundColor: '#10b981', borderRadius: 4 }, 
+        { label: 'Pengeluaran', data: expenseData, backgroundColor: '#ef4444', borderRadius: 4 } 
+      ] 
+    }, 
+    options: { 
+      responsive: true, 
+      maintainAspectRatio: false, 
+      plugins: { legend: { display: false }, datalabels: { display: false } }, 
+      scales: { 
+        x: { grid: { display: false }, ticks: { font: { size: 9 }, color: '#94a3b8' }, border: {display: false} }, 
+        // MEMPERBAIKI MASALAH TERTINDIH (Logarithmic Scale)
+        y: { 
+          display: false, 
+          type: 'logarithmic', 
+          min: 1 // Angka minimal tidak boleh 0 jika logaritmik, kita set 1
+        } 
+      } 
+    } 
+  });
 }
-
 function updateAIInsight() {
   const it = document.getElementById('insightTitle'); const id = document.getElementById('insightDesc'); const ic = document.getElementById('insightIcon'); if(!it || !id) return;
   const currentMonth = new Date().toISOString().slice(0, 7); const monthlyExp = transactions.filter(t => t.type === 'pengeluaran' && t.date.startsWith(currentMonth));
