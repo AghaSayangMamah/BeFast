@@ -90,8 +90,8 @@ async function handleSignup(e) {
   const pw = document.getElementById('signupPassword').value; 
   const btn = document.getElementById('btnSignupSubmit');
 
-  const usernameRegex = /^[a-z0-9_]{3,15}$/;
-  if(!usernameRegex.test(n)) return showAlert('signupAlert', 'Username hanya boleh huruf kecil, angka, dan garis bawah (_). Tanpa spasi. 3-15 Karakter.');
+  const usernameRegex = /^\S+$/;
+  if(!usernameRegex.test(n)) return showAlert('signupAlert', 'Username tidak boleh mengandung spasi.');
 
   const emailRegex = /^[a-zA-Z0-9._%+-]+@(gmail\.com|yahoo\.com)$/;
   if(!emailRegex.test(m)) return showAlert('signupAlert', 'Gunakan email format resmi (@gmail.com atau @yahoo.com).');
