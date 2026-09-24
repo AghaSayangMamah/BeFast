@@ -128,27 +128,28 @@ async function handleSignup(e) {
 }
 
 async function handleLogout() { 
-  if(window.supabaseClient) await window.supabaseClient.auth.signOut(); 
+  // 1. Perintahkan database untuk logout
+  try {
+    if (typeof supabaseClient !== 'undefined' && supabaseClient) {
+      await supabaseClient.auth.signOut(); 
+    } else if (window.supabaseClient) {
+      await window.supabaseClient.auth.signOut();
+    }
+  } catch (e) { console.error("Logout error:", e); }
+
+  // 2. Hapus memori user dan tema buatan kita
   localStorage.removeItem('bf_user'); 
-  
-  // KUNCI PERBAIKAN: Hapus memori tema saat logout dan reset ke default
   localStorage.removeItem('bf_theme'); 
-  if(typeof setTheme === 'function') setTheme('default');
+  
+  // 3. SAPU BERSIH kunci sesi Supabase yang nyangkut (Ini akar masalahnya)
+  Object.keys(localStorage).forEach(key => {
+    if (key.startsWith('sb-') && key.endsWith('-auth-token')) {
+      localStorage.removeItem(key);
+    }
+  });
 
-  window.transactions=[]; 
-  if(typeof window.renderData==='function') window.renderData(); 
-  updateAuthUI(); 
-  if(typeof speak==='function') speak("Keluar."); 
-}
-
-if (typeof setTheme === 'function' && !window.setThemeProxied) {
-  const originalSetTheme = setTheme;
-  window.setTheme = function(themeName) {
-    originalSetTheme(themeName);
-    const user = getCurrentUser();
-    if (user) localStorage.setItem('bf_theme_' + user.id, themeName);
-  };
-  window.setThemeProxied = true;
+  // 4. Refresh halaman otomatis untuk mereset seluruh sistem ke Tech Blue
+  window.location.reload();
 }
 
 updateAuthUI();
