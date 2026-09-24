@@ -28,9 +28,9 @@
   <header class="fixed top-0 left-0 w-full z-50 px-4 md:px-6 lg:px-8 py-4 pointer-events-none flex justify-center">
     <div class="w-full max-w-[1400px] flex justify-between items-center relative">
       
-<div class="flex items-center gap-3 pointer-events-auto">
-        <h1 class="text-2xl font-black theme-text leading-none tracking-tight drop-shadow-sm border-r-2 border-[var(--border-color)] pr-3 py-1">BeFAST</h1>
-        <p class="text-[10px] md:text-[11px] theme-text-muted font-bold drop-shadow-sm leading-tight">Catat Keuangan,<br>Semudah Bicara.</p>
+      <div class="flex items-center gap-1.5 md:gap-3 pointer-events-auto">
+        <h1 class="text-xl md:text-2xl font-black theme-text leading-none tracking-tight drop-shadow-sm border-r-2 border-gray-400/20 pr-2 md:pr-3 py-1">BeFAST</h1>
+        <p class="text-[9px] md:text-[11px] theme-text-muted font-bold drop-shadow-sm leading-tight">Catat Keuangan,<br>Semudah Bicara.</p>
       </div>
       
       <div class="hidden md:flex absolute left-1/2 -translate-x-1/2 items-center gap-3 theme-glass px-5 py-2.5 rounded-full shadow-sm pointer-events-auto">
@@ -61,15 +61,21 @@
             </div>
           </div>
 
-          <div class="flex items-center gap-3 theme-glass px-4 py-1.5 rounded-full shadow-sm cursor-default">
-            <div class="w-7 h-7 rounded-full theme-bg-light flex items-center justify-center theme-primary">
-              <i class="fa-solid fa-user text-xs"></i>
+         <div onclick="document.getElementById('profileUpload').click()" class="flex items-center gap-2 md:gap-3 theme-glass px-3 md:px-4 py-1.5 rounded-full shadow-sm cursor-pointer hover:opacity-80 transition relative group" title="Ganti Foto Profil">
+            <div class="w-7 h-7 rounded-full theme-bg-light flex items-center justify-center theme-primary overflow-hidden relative">
+              <img id="userProfilePic" src="" class="w-full h-full object-cover hidden">
+              <i id="userProfileIcon" class="fa-solid fa-user text-xs"></i>
+              <div class="absolute inset-0 bg-black/40 hidden group-hover:flex items-center justify-center text-white">
+                <i class="fa-solid fa-camera text-[10px]"></i>
+              </div>
             </div>
             <div class="hidden sm:block text-left">
               <p id="userGreetingHeader" class="text-sm font-black theme-text leading-none tracking-tight">User</p>
               <p class="text-[9px] theme-text-muted font-bold mt-0.5">Tetap Semangat!</p>
             </div>
           </div>
+          <!-- INPUT FILE TERSEMBUNYI -->
+          <input type="file" id="profileUpload" accept="image/*" class="hidden" onchange="handleProfileUpload(event)">
           
           <div class="relative">
             <button onclick="toggleUserMenu(event)" class="w-10 h-10 rounded-full theme-glass shadow-sm flex items-center justify-center theme-text-muted hover:opacity-80 transition">
@@ -94,9 +100,9 @@
     </div>
   </header>
 
-<main class="max-w-[1400px] mx-auto pt-24 pb-8 px-4 md:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-3 gap-6 h-screen"><!-- KOLOM KIRI: Riwayat Transaksi -->
-    <aside class="glass-panel p-5 flex flex-col h-[500px] min-w-[320px]">      
-      <div class="flex justify-between items-center mb-4 border-b border-gray-400/20 pb-3">
+<main class="max-w-[1400px] mx-auto pt-24 pb-8 px-4 md:px-6 lg:px-8 flex flex-col md:grid md:grid-cols-3 gap-6 min-h-screen md:h-screen">
+  <aside class="glass-panel p-5 flex flex-col h-[500px] md:h-full md:min-w-[320px] order-3 md:order-1 mt-4 md:mt-0">
+        <div class="flex justify-between items-center mb-4 border-b border-gray-400/20 pb-3">
         <h3 class="font-black text-lg theme-text">Riwayat Transaksi</h3>
         <a href="riwayat.html" class="text-[10px] theme-bg-light theme-primary hover:opacity-80 transition px-3 py-1.5 rounded-full font-bold shadow-sm flex items-center gap-1">
           Lihat Semua <i class="fa-solid fa-arrow-right"></i>
@@ -108,7 +114,8 @@
     </aside>
 
 <!-- KOLOM TENGAH: Hero & Voice Control -->
-<section class="flex flex-col items-center justify-center relative">        <div class="text-center mb-2 z-10">
+<section class="flex flex-col items-center justify-center relative order-1 md:order-2 md:mt-0 mt-4">
+      <div class="text-center mb-2 z-10">
         <p class="text-base font-bold theme-text-muted">Halo,</p>
         <h2 id="userGreetingCenter" class="text-4xl font-black theme-text leading-none">User 👋</h2>
       </div>
@@ -135,8 +142,8 @@
       </div>
     </section>
 
-    <aside class="flex flex-col gap-5 h-full">
-      <div class="glass-panel p-6 relative flex-grow flex flex-col">
+<aside class="flex flex-col gap-5 md:h-full order-2 md:order-3">
+        <div class="glass-panel p-6 relative flex-grow flex flex-col">
         <div class="flex justify-between items-center mb-6">
           <h3 class="font-bold text-sm theme-text">Ringkasan Keuangan</h3>
         </div>
@@ -242,7 +249,7 @@
       <div class="flex flex-col items-center mb-5 relative z-10 mt-2"><div class="w-14 h-14 mb-2 theme-bg-light rounded-2xl flex items-center justify-center p-1.5"><img src="mascot-3d.png" class="w-full h-full object-contain"></div><h3 class="font-black text-xl theme-primary">Daftar Baru</h3></div>
       <div id="signupAlert" class="hidden mb-4 p-3 rounded-full text-xs font-semibold z-10 relative"></div>
       <form onsubmit="handleSignup(event)" class="space-y-3 z-10 relative">
-        <input type="text" id="signupName" name="nickname" required autocomplete="off" placeholder="Username bebas (tanpa spasi)" oninput="this.value = this.value.toLowerCase().replace(/\s/g, '')" class="w-full p-3 rounded-full border border-gray-400/20 bg-transparent theme-text text-sm font-semibold">        <input type="email" id="signupEmail" required placeholder="Email Resmi" class="w-full p-3 rounded-full border border-gray-400/20 bg-transparent theme-text text-sm font-bold">
+        <input type="text" id="signupName" name="nickname" required autocomplete="off" placeholder="Username bebas (tanpa spasi)" oninput="this.value = this.value.toLowerCase().replace(/\s/g, '')" class="w-full p-3 rounded-full border border-gray-400/20 bg-transparent theme-text text-sm font-semibold">        <input type="email" id="signupEmail" required placeholder="Email" class="w-full p-3 rounded-full border border-gray-400/20 bg-transparent theme-text text-sm font-bold">
         <input type="tel" id="signupPhone" required placeholder="Nomor HP" class="w-full p-3 rounded-full border border-gray-400/20 bg-transparent theme-text text-sm font-bold">
         <input type="password" id="signupPassword" required minlength="6" placeholder="Kata Sandi (Min 6)" class="w-full p-3 rounded-full border border-gray-400/20 bg-transparent theme-text text-sm font-bold">
         <button type="submit" id="btnSignupSubmit" class="w-full py-3.5 mt-4 theme-bg-primary text-sm font-bold rounded-full hover:opacity-80 transition shadow-lg">Buat Akun</button>

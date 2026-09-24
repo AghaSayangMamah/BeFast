@@ -30,6 +30,8 @@ function updateAuthUI() {
     let fname = user.user_metadata?.full_name || 'User';
     if(greetHead) greetHead.innerText = fname;
     if(greetCent) greetCent.innerText = `${fname} 👋`;
+    const savedPic = localStorage.getItem('bf_profile_' + user.id);
+    if (typeof updateProfilePicUI === 'function') updateProfilePicUI(savedPic || null);
 
     // --- KUNCI 1: PANGGIL TEMA SPESIFIK SAAT LOGIN / REFRESH ---
     const userTheme = localStorage.getItem('bf_theme_' + user.id);
@@ -203,6 +205,43 @@ if (typeof setTheme === 'function' && !window.setThemeProxied) {
     }
   };
   window.setThemeProxied = true;
+}
+
+// --- FITUR GANTI FOTO PROFIL ---
+function handleProfileUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  
+  if (file.size > 2 * 1024 * 1024) {
+    return alert('Ukuran foto terlalu besar. Maksimal 2MB ya!');
+  }
+  
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const base64Image = e.target.result;
+    const user = getCurrentUser();
+    if (user) {
+      localStorage.setItem('bf_profile_' + user.id, base64Image);
+      updateProfilePicUI(base64Image);
+    }
+  };
+  reader.readAsDataURL(file);
+}
+
+function updateProfilePicUI(base64Image) {
+  const imgEl = document.getElementById('userProfilePic');
+  const iconEl = document.getElementById('userProfileIcon');
+  if (imgEl && iconEl) {
+    if (base64Image) {
+      imgEl.src = base64Image;
+      imgEl.classList.remove('hidden');
+      iconEl.classList.add('hidden');
+    } else {
+      imgEl.src = '';
+      imgEl.classList.add('hidden');
+      iconEl.classList.remove('hidden');
+    }
+  }
 }
 
 updateAuthUI();
