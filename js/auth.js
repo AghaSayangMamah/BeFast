@@ -54,13 +54,38 @@ function closeSignupModal() { document.getElementById('signupModal').classList.a
 function switchAuthModal(to) { if (to === 'signup') openSignupModal(); else openLoginModal(); }
 
 function showVerifyEmailModal() {
-  const m = document.getElementById('verifyEmailModal'); const p = document.getElementById('verifyProgressBar'); const c = document.getElementById('verifyCountdown');
-  m.classList.remove('hidden'); p.classList.remove('animate-shrink'); void p.offsetWidth; p.classList.add('animate-shrink');
+  const m = document.getElementById('verifyEmailModal'); 
+  const p = document.getElementById('verifyProgressBar'); 
+  const c = document.getElementById('verifyCountdown');
+  
+  if (!m) return; 
+  
+  // Munculkan popup
+  m.classList.remove('hidden'); 
+  
+  // Bikin animasi bar berjalan mulus selama 3 detik mundur
+  if (p) { 
+    p.style.transition = 'none'; 
+    p.style.width = '100%'; 
+    setTimeout(() => { 
+      p.style.transition = 'width 3s linear'; 
+      p.style.width = '0%'; 
+    }, 50); 
+  }
+  
   if(typeof speak === 'function') speak("Pendaftaran berhasil. Silakan cek email kamu untuk verifikasi.");
-  let t = 6; c.innerText = t;
+  
+  let t = 3; // Diubah jadi 3 detik
+  if(c) c.innerText = t;
+  
   const iv = setInterval(() => {
-    t--; c.innerText = t;
-    if(t <= 0) { clearInterval(iv); m.classList.add('hidden'); openLoginModal(); }
+    t--; 
+    if(c) c.innerText = t;
+    if(t <= 0) { 
+        clearInterval(iv); 
+        m.classList.add('hidden'); // Popup otomatis hilang
+        // openLoginModal() sengaja dihapus agar tidak langsung masuk ke form login
+    }
   }, 1000);
 }
 
