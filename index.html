@@ -109,9 +109,20 @@
           Lihat Semua <i class="fa-solid fa-arrow-right"></i>
         </a>
       </div>
-      <div id="transactionList" class="flex-1 overflow-y-auto min-h-0 flex flex-col gap-3 pr-2 scrollbar-hide">    
+<div id="transactionList" class="flex-1 overflow-y-auto min-h-0 flex flex-col gap-3 pr-2 scrollbar-hide">    
             <p class="text-sm text-center theme-text-muted mt-10">Memuat data...</p>
       </div>
+
+      <!-- TOMBOL GRAFIK & DOWNLOAD -->
+      <div class="grid grid-cols-2 gap-3 mt-4 pt-4 border-t border-gray-400/20 shrink-0">
+        <button onclick="showChartModal()" class="flex items-center justify-center gap-2 py-2.5 theme-glass rounded-xl text-xs font-bold theme-text hover:opacity-80 transition shadow-sm border border-gray-400/20">
+          <i class="fa-solid fa-chart-pie text-purple-500"></i> Lihat Grafik
+        </button>
+        <button onclick="openExportModal()" class="flex items-center justify-center gap-2 py-2.5 theme-bg-primary rounded-xl text-xs font-bold shadow-sm hover:opacity-80 transition">
+          <i class="fa-solid fa-download"></i> Download
+        </button>
+      </div>
+
     </aside>
 
 <!-- KOLOM TENGAH: Hero & Voice Control -->
