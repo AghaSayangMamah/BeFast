@@ -30,6 +30,13 @@
 
   <!-- Konten Tabel -->
   <main class="max-w-[1200px] mx-auto px-4 pt-8">
+    <!-- KOTAK PENCARIAN REAL-TIME -->
+    <div class="w-full flex justify-end mb-4">
+      <div class="relative group">
+        <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 group-focus-within:text-[#1e3a8a] transition-colors"></i>
+        <input type="text" id="searchHistory" placeholder="Cari transaksi..." class="pl-11 pr-4 py-2.5 w-64 rounded-full bg-white border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#1e3a8a]/50 text-sm font-semibold transition-all shadow-sm text-gray-700">
+      </div>
+    </div>
     <div class="glass-panel p-6 overflow-hidden">
       <div class="overflow-x-auto no-scrollbar">
         <table class="w-full text-left border-collapse">
@@ -124,6 +131,30 @@
         }
       }
     }
+
+    // Fitur Pencarian Real-Time
+    document.addEventListener('DOMContentLoaded', () => {
+      const searchInput = document.getElementById('searchHistory');
+      
+      searchInput.addEventListener('input', function() {
+        const keyword = this.value.toLowerCase();
+        // Ambil semua baris transaksi (kecuali baris loading/kosong)
+        const rows = document.querySelectorAll('#tableBody tr');
+
+        rows.forEach(row => {
+          // Abaikan baris pesan "Memuat data..." atau "Belum ada riwayat" yang cuma punya 1 kolom
+          if (row.cells.length === 1) return; 
+
+          const rowText = row.innerText.toLowerCase();
+          if (rowText.includes(keyword)) {
+            row.style.display = '';
+          } else {
+            row.style.display = 'none';
+          }
+        });
+      });
+    });
+    
   </script>
 </body>
 </html>
