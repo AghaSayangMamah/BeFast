@@ -1,3 +1,88 @@
+// --- MESIN MEMORI AMBIGUITAS ---
+window.pendingVoiceAction = null;
+
+window.showAmbiguitySelection = function(items) {
+  try {
+    let htmlMobile = '';
+    let htmlDesktop = `<button onclick="cancelAmbiguity()" class="mb-3 w-full py-2.5 bg-red-500/10 text-red-500 rounded-xl text-xs font-bold hover:bg-red-500/20 border border-red-500/20 transition cursor-pointer"><i class="fa-solid fa-ban"></i> Batal Edit/Hapus</button>`;
+    
+    // Cetak semua elemen HTML-nya ke dalam variabel dulu biar nggak ngeberatin layar
+    items.forEach(t => { 
+      htmlMobile += createAmbiguityCard(t, false); 
+      htmlDesktop += createAmbiguityCard(t, true);
+    });
+
+    if (window.innerWidth < 768) {
+      const list = document.getElementById('ambiguityList');
+      if (list) list.innerHTML = htmlMobile;
+      const modal = document.getElementById('ambiguityModal');
+      if (modal) modal.classList.remove('hidden');
+    } else {
+      const list = document.getElementById('transactionList');
+      if (list) list.innerHTML = htmlDesktop;
+    }
+  } catch (err) {
+    console.error("Crash di UI Ambiguitas:", err);
+    speak("Aduh, ada data yang formatnya rusak waktu mau ditampilin.");
+  }
+};
+
+function createAmbiguityCard(t, isDesktop) {
+  let color = t.type === 'pemasukan' ? 'text-green-500' : 'text-red-500';
+  let sign = t.type === 'pemasukan' ? '+' : '-';
+  
+  // PERISAI ANTI-CRASH: Paksa jadi angka, kalau null/rusak otomatis jadi 0
+  let safeAmount = Number(t.amount) || 0; 
+  
+  // LOGIKA TEKS DINAMIS: Cek apakah user niatnya hapus atau edit
+  let isDelete = window.pendingVoiceAction && window.pendingVoiceAction.type === 'delete';
+  let actionText = isDelete ? 'Tap untuk hapus <i class="fa-solid fa-trash-can"></i>' : 'Tap untuk ubah <i class="fa-solid fa-hand-pointer"></i>';
+  let actionColor = isDelete ? 'bg-red-500/10 text-red-500' : 'bg-blue-500/10 text-blue-500';
+  
+  let cls = isDesktop 
+    ? 'ambiguous-item shrink-0 w-full theme-glass p-4 rounded-2xl flex justify-between items-center cursor-pointer' 
+    : 'theme-glass shrink-0 w-full p-4 rounded-xl flex justify-between items-center border border-gray-400/20 active:scale-95 transition cursor-pointer';
+    
+  return `
+    <div onclick="resolveAmbiguity('${t.id}')" class="${cls} relative overflow-hidden group">
+      <div class="relative z-10 min-w-0 flex-1 pr-2 pointer-events-none">
+        <p class="font-bold text-sm theme-text truncate">${t.desc || 'Tanpa Keterangan'}</p>
+        <p class="text-[10px] theme-text-muted mt-1 truncate"><i class="fa-regular fa-calendar"></i> ${t.date || '-'} • ${t.category || '-'}</p>
+      </div>
+      <div class="relative z-10 text-right shrink-0 pointer-events-none">
+        <p class="font-black text-sm ${color}">${sign} Rp ${safeAmount.toLocaleString('id-ID')}</p>
+        <!-- Tombol mini yang warnanya dan tulisannya berubah otomatis -->
+        <div class="mt-1.5 inline-block ${actionColor} text-[9px] px-2 py-0.5 rounded-full font-bold">${actionText}</div>
+      </div>
+    </div>
+  `;
+}
+window.resolveAmbiguity = async function(id) {
+  const action = window.pendingVoiceAction;
+  if(!action) return;
+  if(typeof updateSyncStatusUI === 'function') updateSyncStatusUI(false, 'Memproses...');
+  
+  if (action.type === 'delete') {
+    const { error } = await supabaseClient.from('transactions').delete().eq('id', id);
+    if (!error) speak("Sip! Berhasil dihapus.");
+  } else if (action.type === 'edit') {
+    const { error } = await supabaseClient.from('transactions').update(action.payload).eq('id', id);
+    if (!error) speak(action.successText);
+  }
+  
+  cancelAmbiguity();
+  if (typeof fetchTransactionsFromSupabase === 'function') await fetchTransactionsFromSupabase();
+};
+
+window.cancelAmbiguity = function() {
+  window.pendingVoiceAction = null;
+  const modal = document.getElementById('ambiguityModal');
+  if (modal) modal.classList.add('hidden');
+  
+  // Ini yang ngereset tampilan layar sebelah kiri balik ke semula
+  if (typeof fetchTransactionsFromSupabase === 'function') fetchTransactionsFromSupabase(); 
+};
+
 function getLocalDateStr(dateObj = new Date()) { const year = dateObj.getFullYear(); const month = String(dateObj.getMonth() + 1).padStart(2, '0'); const day = String(dateObj.getDate()).padStart(2, '0'); return `${year}-${month}-${day}`; }
 function getRelativeDateStr(modifier) {
   let d = new Date(); if (modifier === 'kemarin') d.setDate(d.getDate() - 1); else if (modifier === 'bulan_lalu') d.setMonth(d.getMonth() - 1); else if (modifier === 'tahun_lalu') d.setFullYear(d.getFullYear() - 1);
@@ -119,46 +204,59 @@ function parseDateScopeFromCommand(cmd) {
 }
 
 async function executeVoiceDelete(cmd) {
-  let isIncome = cmd.includes('pemasukan') || cmd.includes('masuk'); let isExpense = cmd.includes('pengeluaran') || cmd.includes('keluar') || cmd.includes('beli') || cmd.includes('bayar');
-  let scope = parseDateScopeFromCommand(cmd);
+  let isIncome = cmd.includes('pemasukan') || cmd.includes('masuk'); 
+  let isExpense = cmd.includes('pengeluaran') || cmd.includes('keluar') || cmd.includes('beli') || cmd.includes('bayar');
   
+  // SENSOR KATA "SEMUA": Kalau ada kata ini, anggap user mau hapus massal
+  let isBulkDelete = cmd.includes('semua') || cmd.includes('semuanya'); 
+  
+  let scope = parseDateScopeFromCommand(cmd);
   let keyword = cmd.replace(/(hapus|delete|hilangin|bersihin|buang|pemasukan|pengeluaran|masuk|keluar|dapet|dapat|beli|bayar|semua|semuanya)/gi, '').replace(/(kemarin|kemaren|hari ini|bulan ini|bulan lalu|bulan kemarin|tahun ini|tahun lalu|tahun kemarin|tanggal\s*\d{1,2}|tahun\s*\d{4}| 20\d{2} )/gi, '').trim();
 
   let itemsToDelete = transactions.filter(t => {
-    if (isIncome && t.type !== 'pemasukan') return false; if (isExpense && t.type !== 'pengeluaran') return false;
+    if (isIncome && t.type !== 'pemasukan') return false; 
+    if (isExpense && t.type !== 'pengeluaran') return false;
     if (scope.label !== 'keseluruhan' && !scope.func(t)) return false; 
     if (keyword && !t.desc.toLowerCase().includes(keyword.toLowerCase())) return false; 
     return true;
   });
 
   if (itemsToDelete.length === 0) return speak(`Aduh, tidak ditemukan transaksi yang cocok untuk dihapus.`);
-  const user = getCurrentUser();
-  if (user && supabaseClient) {
-    updateSyncStatusUI(false, 'Menghapus Cloud...');
-    const { error } = await supabaseClient.from('transactions').delete().in('id', itemsToDelete.map(i => i.id));
-    if (error) return alert(`Gagal hapus Cloud: ${error.message}`);
+  
+  // LOGIKA BARU: Eksekusi langsung JIKA datanya cuma 1, ATAU user sengaja bilang "semua"
+  if (itemsToDelete.length === 1 || isBulkDelete) {
+    if(typeof updateSyncStatusUI === 'function') updateSyncStatusUI(false, 'Menghapus data...');
+    
+    const idsToDelete = itemsToDelete.map(t => t.id);
+    const { error } = await supabaseClient.from('transactions').delete().in('id', idsToDelete);
+    
+    if (!error) { 
+      if (typeof fetchTransactionsFromSupabase === 'function') await fetchTransactionsFromSupabase(); 
+      speak(itemsToDelete.length > 1 ? `Sip! Berhasil menghapus ${itemsToDelete.length} data sekaligus.` : `Sip! Berhasil dihapus.`); 
+    } else {
+      speak("Gagal menghapus data dari server.");
+    }
+  } else {
+    // TERDETEKSI GANDA & TIDAK ADA KATA "SEMUA" -> Minta user milih
+    window.pendingVoiceAction = { type: 'delete' };
+    showAmbiguitySelection(itemsToDelete);
+    speak(`Ada ${itemsToDelete.length} data yang cocok. Tolong tap mana yang mau dihapus di layar.`);
   }
-  await fetchTransactionsFromSupabase(); speak(`Sip! Berhasil menghapus ${itemsToDelete.length} data transaksi.`);
 }
 
 async function executeVoiceEdit(cmd) {
   let newAmount = parseNominal(cmd);
-  
   let targetType = null; 
   if (/(pemasukan|masuk|dapat|dapet)/i.test(cmd)) targetType = 'pemasukan'; 
   if (/(pengeluaran|keluar|beli|bayar)/i.test(cmd)) targetType = 'pengeluaran';
-  
   let scope = parseDateScopeFromCommand(cmd);
-  
   let keyword = cmd.replace(/(ubah|edit|ganti|jadi|menjadi|pemasukan|pengeluaran|masuk|keluar|beli|bayar|dapet|dapat)/gi, '')
-                   .replace(/(kemarin|kemaren|hari ini|bulan ini|bulan lalu|bulan kemarin|tahun ini|tahun lalu|tahun kemarin|tanggal\s*\d{1,2}|tahun\s*\d{4}| 20\d{2} )/gi, '')
-                   .replace(/rp\s*\d+([.,]\d+)?/gi, '')
-                   .replace(/\b\d{1,3}(\.\d{3})+(,\d+)?\b|\b\d{1,3}(,\d{3})+(\.\d+)?\b/g, '')
-                   .replace(/\b(nol|satu|dua|tiga|empat|lima|enam|tujuh|delapan|sembilan|sepuluh|sebelas|belas|puluh|ratus|ribu|rb|k|juta|jt|miliar|milyar|setengah|se|sejuta|seribu|seratus)\b/gi, '')
-                   .replace(/\b\d+\b/g, '')
-                   .replace(/[.,]/g, '')
-                   .replace(/\s+/g, ' ')
-                   .trim();
+                     .replace(/(kemarin|kemaren|hari ini|bulan ini|bulan lalu|bulan kemarin|tahun ini|tahun lalu|tahun kemarin|tanggal\s*\d{1,2}|tahun\s*\d{4}| 20\d{2} )/gi, '')
+                     .replace(/rp\s*\d+([.,]\d+)?/gi, '')
+                     .replace(/\b\d{1,3}(\.\d{3})+(,\d+)?\b|\b\d{1,3}(,\d{3})+(\.\d+)?\b/g, '')
+                     .replace(/\b(nol|satu|dua|tiga|empat|lima|enam|tujuh|delapan|sembilan|sepuluh|sebelas|belas|puluh|ratus|ribu|rb|k|juta|jt|miliar|milyar|setengah|se|sejuta|seribu|seratus)\b/gi, '')
+                     .replace(/\b\d+\b/g, '')
+                     .replace(/[.,]/g, '').replace(/\s+/g, ' ').trim();
 
   let matches = transactions.filter(t => {
     if (targetType && t.type !== targetType) return false; 
@@ -168,27 +266,35 @@ async function executeVoiceEdit(cmd) {
   });
 
   if (matches.length === 0) return speak("Aduh, data transaksi yang mau diedit gak ditemukan nih.");
-  let itemToEdit = matches[0]; 
-  let user = getCurrentUser(); if (!user) return openLoginModal();
-
+  
+  let payload = null;
+  let speakText = "";
   if (newAmount > 0) {
-    updateSyncStatusUI(false, 'Menyimpan Cloud...');
-    const { error } = await supabaseClient.from('transactions').update({ amount: newAmount }).eq('id', itemToEdit.id);
-    if (!error) { await fetchTransactionsFromSupabase(); speak(`Sip! Nominal diubah jadi ${newAmount.toLocaleString('id-ID')} rupiah.`); }
+    payload = { amount: newAmount };
+    speakText = `Sip! Nominal diubah jadi ${newAmount.toLocaleString('id-ID')} rupiah.`;
   } else {
     let parts = cmd.split(/ (jadi|menjadi) /i);
     if (parts.length >= 3) {
       let newDesc = parts.slice(2).join(' ').trim();
       newDesc = newDesc.charAt(0).toUpperCase() + newDesc.slice(1);
-      updateSyncStatusUI(false, 'Menyimpan Cloud...');
-      const { error } = await supabaseClient.from('transactions').update({ desc: newDesc, category: detectCategory(newDesc, itemToEdit.type) }).eq('id', itemToEdit.id);
-      if (!error) { await fetchTransactionsFromSupabase(); speak(`Sip! Keterangan diubah menjadi ${newDesc}.`); }
+      payload = { desc: newDesc, category: typeof detectCategory === 'function' ? detectCategory(newDesc, matches[0].type) : 'Lain-lain' };
+      speakText = `Sip! Keterangan diubah menjadi ${newDesc}.`;
     } else {
-      return speak("Sebutkan nominal baru untuk diedit. Contoh: Edit pengeluaran kopi dua puluh ribu.");
+      return speak("Sebutkan nominal baru atau nama baru. Contoh: Edit kopi jadi tiga puluh ribu.");
     }
   }
-}
 
+  if (matches.length === 1) {
+    if(typeof updateSyncStatusUI === 'function') updateSyncStatusUI(false, 'Menyimpan Cloud...');
+    const { error } = await supabaseClient.from('transactions').update(payload).eq('id', matches[0].id);
+    if (!error) { await fetchTransactionsFromSupabase(); speak(speakText); }
+  } else {
+    // TERDETEKSI GANDA -> LEMPAR KE MODE AMBIGUITAS MEMBAWA MEMORI BARU
+    window.pendingVoiceAction = { type: 'edit', payload: payload, successText: speakText };
+    showAmbiguitySelection(matches);
+    speak(`Ada ${matches.length} data yang cocok. Tolong tap mana yang mau diedit di layar.`);
+  }
+}
 function executeVoiceDownload(cmd) { openExportModal(); speak("Silakan download laporannya."); }
 function executeVoiceReadout(cmd) { speak("Ini fitur baca laporan. Cek visualnya ya."); }
 

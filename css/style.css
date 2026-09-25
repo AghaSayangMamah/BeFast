@@ -74,6 +74,24 @@ body {
   transition: background-color 0.8s ease, color 0.8s ease;
 }
 
+/* --- EFEK SOROT AMBIGUITAS DESKTOP --- */
+.ambiguous-item {
+  cursor: pointer;
+  border: 2px dashed var(--primary) !important;
+  animation: pulseGlow 2s infinite;
+  transform: scale(1.02);
+  transition: all 0.2s ease;
+}
+.ambiguous-item:hover {
+  transform: scale(1.05);
+  background: var(--primary-light) !important;
+}
+@keyframes pulseGlow {
+  0% { box-shadow: 0 0 0 0 var(--primary-light); }
+  70% { box-shadow: 0 0 0 12px transparent; }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+
 /* Transisi halus untuk semua elemen */
 body * { transition: background-color 0.4s ease, border-color 0.4s ease, color 0.4s ease; }
 

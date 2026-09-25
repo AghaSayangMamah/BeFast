@@ -376,7 +376,19 @@
     </div>
   </div>
 
-  
+  <!-- MODAL AMBIGUITAS (Khusus Mobile) -->
+  <div id="ambiguityModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-md flex items-center justify-center hidden z-[70] p-4 transition-all">
+    <div class="theme-card w-full max-w-sm p-6 relative rounded-3xl shadow-2xl flex flex-col max-h-[80vh]">
+      <div class="flex justify-between items-center mb-4 border-b border-gray-400/20 pb-3">
+        <h3 class="font-black text-lg theme-text"><i class="fa-solid fa-list-check text-[#f59e0b]"></i> Pilih Transaksi</h3>
+        <button onclick="cancelAmbiguity()" class="w-8 h-8 bg-gray-500/10 rounded-full theme-text-muted hover:opacity-70 transition flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <p class="text-xs theme-text-muted mb-4 font-bold">Ada beberapa data yang mirip. Tekan salah satu yang ingin kamu proses:</p>
+      <div id="ambiguityList" class="flex-1 overflow-y-auto space-y-3 pr-1 scrollbar-hide">
+        <!-- List kembaran akan otomatis masuk ke sini via Javascript -->
+      </div>
+    </div>
+  </div>
 
 <!-- MODAL VERIFIKASI EMAIL (Ditambahkan agar animasi 3 detik berjalan) -->
   <div id="verifyEmailModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-md flex items-center justify-center hidden z-[60] p-4 transition-all">
