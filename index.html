@@ -256,13 +256,110 @@
     </div>
   </div>
 
-  <div id="guideModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-center justify-center hidden z-50 p-4 transition-all">
-    <div class="theme-card w-full max-w-3xl p-6 relative max-h-[85vh] overflow-y-auto no-scrollbar rounded-3xl shadow-2xl">
-      <div class="flex justify-between items-center mb-4 border-b border-gray-400/20 pb-3"><h3 class="font-black text-lg theme-text">Panduan Suara</h3><button onclick="closeGuideModal()" class="w-8 h-8 bg-gray-500/10 rounded-full theme-text-muted"><i class="fa-solid fa-xmark"></i></button></div>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs theme-text">
-        <div class="theme-glass p-4 rounded-xl border"><b>Catat:</b> "Beli kopi 25 ribu" <br><button onclick="speak('Beli kopi 25 ribu')" class="mt-2 px-3 py-1 theme-bg-primary rounded">Dengar</button></div>
-        <div class="theme-glass p-4 rounded-xl border"><b>Cek:</b> "Spill pengeluaran hari ini" <br><button onclick="speak('Spill pengeluaran hari ini')" class="mt-2 px-3 py-1 theme-bg-primary rounded">Dengar</button></div>
+<div id="guideModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-center justify-center hidden z-50 p-4 transition-all">
+    <div class="theme-card w-full max-w-4xl p-6 md:p-8 relative max-h-[85vh] overflow-y-auto no-scrollbar rounded-3xl shadow-2xl">
+      <div class="flex justify-between items-center mb-6 border-b border-gray-400/20 pb-4">
+        <h3 class="font-black text-xl theme-text"><i class="fa-solid fa-microphone-lines text-blue-500 mr-2"></i> Panduan Suara Lengkap</h3>
+        <button onclick="closeGuideModal()" class="w-8 h-8 bg-gray-500/10 hover:bg-red-500/20 hover:text-red-500 rounded-full theme-text-muted transition flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
       </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5 text-sm theme-text">
+        
+        <!-- 1. Catat (Input) -->
+        <div class="theme-glass p-5 rounded-2xl border border-gray-400/20">
+          <h4 class="font-bold text-green-500 mb-3 flex items-center gap-2"><i class="fa-solid fa-plus-circle"></i> Catat Transaksi</h4>
+          <ul class="space-y-3">
+            <li class="flex flex-col gap-1.5">
+              <span class="font-semibold text-xs">Pengeluaran:</span>
+              <div class="flex items-center justify-between bg-gray-500/5 p-2.5 rounded-lg border border-gray-400/10">
+                <span class="italic text-xs">"Catat beli kopi 25 ribu"</span>
+                <button onclick="speak('Catat beli kopi 25 ribu')" class="px-3 py-1.5 text-[10px] theme-bg-primary rounded-md font-bold shadow-sm hover:opacity-80 transition">Dengar</button>
+              </div>
+            </li>
+            <li class="flex flex-col gap-1.5">
+              <span class="font-semibold text-xs">Pemasukan:</span>
+              <div class="flex items-center justify-between bg-gray-500/5 p-2.5 rounded-lg border border-gray-400/10">
+                <span class="italic text-xs">"Tambah gaji bulan ini 5 juta"</span>
+                <button onclick="speak('Tambah gaji bulan ini 5 juta')" class="px-3 py-1.5 text-[10px] theme-bg-primary rounded-md font-bold shadow-sm hover:opacity-80 transition">Dengar</button>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <!-- 2. Ubah (Edit) -->
+        <div class="theme-glass p-5 rounded-2xl border border-gray-400/20">
+          <h4 class="font-bold text-blue-500 mb-3 flex items-center gap-2"><i class="fa-solid fa-pen-to-square"></i> Ubah Transaksi</h4>
+          <ul class="space-y-3">
+            <li class="flex flex-col gap-1.5">
+              <span class="font-semibold text-xs">Ubah Nominal:</span>
+              <div class="flex items-center justify-between bg-gray-500/5 p-2.5 rounded-lg border border-gray-400/10">
+                <span class="italic text-xs">"Edit kopi tadi jadi 30 ribu"</span>
+                <button onclick="speak('Edit kopi tadi jadi 30 ribu')" class="px-3 py-1.5 text-[10px] theme-bg-primary rounded-md font-bold shadow-sm hover:opacity-80 transition">Dengar</button>
+              </div>
+            </li>
+            <li class="flex flex-col gap-1.5">
+              <span class="font-semibold text-xs">Ubah Keterangan:</span>
+              <div class="flex items-center justify-between bg-gray-500/5 p-2.5 rounded-lg border border-gray-400/10">
+                <span class="italic text-xs">"Ganti beli kopi menjadi boba"</span>
+                <button onclick="speak('Ganti beli kopi menjadi boba')" class="px-3 py-1.5 text-[10px] theme-bg-primary rounded-md font-bold shadow-sm hover:opacity-80 transition">Dengar</button>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <!-- 3. Hapus (Delete) -->
+        <div class="theme-glass p-5 rounded-2xl border border-gray-400/20">
+          <h4 class="font-bold text-red-500 mb-3 flex items-center gap-2"><i class="fa-solid fa-trash-can"></i> Hapus Transaksi</h4>
+          <ul class="space-y-3">
+            <li class="flex flex-col gap-1.5">
+              <span class="font-semibold text-xs">Hapus Spesifik:</span>
+              <div class="flex items-center justify-between bg-gray-500/5 p-2.5 rounded-lg border border-gray-400/10">
+                <span class="italic text-xs">"Hapus pengeluaran beli kopi"</span>
+                <button onclick="speak('Hapus pengeluaran beli kopi')" class="px-3 py-1.5 text-[10px] theme-bg-primary rounded-md font-bold shadow-sm hover:opacity-80 transition">Dengar</button>
+              </div>
+            </li>
+            <li class="flex flex-col gap-1.5">
+              <span class="font-semibold text-xs">Hapus Per Hari/Bulan:</span>
+              <div class="flex items-center justify-between bg-gray-500/5 p-2.5 rounded-lg border border-gray-400/10">
+                <span class="italic text-xs">"Hapus pengeluaran hari ini"</span>
+                <button onclick="speak('Hapus pengeluaran hari ini')" class="px-3 py-1.5 text-[10px] theme-bg-primary rounded-md font-bold shadow-sm hover:opacity-80 transition">Dengar</button>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <!-- 4. Cek (Laporan/Grafik) -->
+        <div class="theme-glass p-5 rounded-2xl border border-gray-400/20">
+          <h4 class="font-bold text-purple-500 mb-3 flex items-center gap-2"><i class="fa-solid fa-chart-pie"></i> Cek & Laporan</h4>
+          <ul class="space-y-3">
+            <li class="flex flex-col gap-1.5">
+              <span class="font-semibold text-xs">Tampilkan Grafik:</span>
+              <div class="flex items-center justify-between bg-gray-500/5 p-2.5 rounded-lg border border-gray-400/10">
+                <span class="italic text-xs">"Spill pengeluaran hari ini"</span>
+                <button onclick="speak('Spill pengeluaran hari ini')" class="px-3 py-1.5 text-[10px] theme-bg-primary rounded-md font-bold shadow-sm hover:opacity-80 transition">Dengar</button>
+              </div>
+            </li>
+            <li class="flex flex-col gap-1.5">
+              <span class="font-semibold text-xs">Export Laporan:</span>
+              <div class="flex items-center justify-between bg-gray-500/5 p-2.5 rounded-lg border border-gray-400/10">
+                <span class="italic text-xs">"Download laporan bulan ini"</span>
+                <button onclick="speak('Download laporan bulan ini')" class="px-3 py-1.5 text-[10px] theme-bg-primary rounded-md font-bold shadow-sm hover:opacity-80 transition">Dengar</button>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+      
+      <!-- Info Tambahan Slang -->
+      <div class="mt-5 p-4 bg-[#f59e0b]/10 border border-[#f59e0b]/30 rounded-xl flex items-start gap-3">
+        <i class="fa-solid fa-lightbulb text-[#f59e0b] mt-0.5"></i>
+        <div>
+          <p class="text-xs font-bold theme-text mb-1">Tips: Bahasa Gaul (Slang) Didukung!</p>
+          <p class="text-[11px] theme-text-muted">Kamu bebas pakai slang tongkrongan seperti: <span class="font-bold">gocap (50rb)</span>, <span class="font-bold">cepek (100rb)</span>, <span class="font-bold">gopek (500rb)</span>, <span class="font-bold">ceban (10rb)</span>. AI kita otomatis paham nominalnya!</p>
+        </div>
+      </div>
+
     </div>
   </div>
 
