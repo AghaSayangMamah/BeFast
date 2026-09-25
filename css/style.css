@@ -37,6 +37,30 @@ html[data-theme="pink"] {
   --primary-light: rgba(236, 72, 153, 0.15);
 }
 
+html[data-theme="yellow"] {
+  --bg-color: #fefce8;
+  --bg-img: none;
+  --card-bg: #fefce8;
+  --card-glass: rgba(254, 252, 232, 0.85);
+  --text-main: #713f12;
+  --text-muted: #a16207;
+  --border-color: rgba(234, 179, 8, 0.3);
+  --primary: #eab308;
+  --primary-light: rgba(234, 179, 8, 0.15);
+}
+
+html[data-theme="green"] {
+  --bg-color: #f0fdf4;
+  --bg-img: none;
+  --card-bg: #f0fdf4;
+  --card-glass: rgba(240, 253, 244, 0.85);
+  --text-main: #14532d;
+  --text-muted: #15803d;
+  --border-color: rgba(34, 197, 94, 0.3);
+  --primary: #22c55e;
+  --primary-light: rgba(34, 197, 94, 0.15);
+}
+
 body {
   font-family: 'Nunito', sans-serif;
   background-color: var(--bg-color);

@@ -31,6 +31,17 @@ class HybridParticle {
       this.speedY = this.isMeteor ? (Math.random() * 2 + 2) : (Math.random() * 0.2 - 0.1); 
       this.speedX = this.isMeteor ? -(Math.random() * 2 + 2) : -(Math.random() * 0.2 - 0.1); 
       this.size = this.isMeteor ? (Math.random() * 30 + 20) : (Math.random() * 2 + 1); 
+    } else if (theme === 'yellow') {
+      // Efek Kunang-kunang (bergerak acak memantul)
+      this.speedY = (Math.random() * 1) - 0.5;
+      this.speedX = (Math.random() * 1) - 0.5;
+      this.size = Math.random() * 3 + 1.5;
+    } else if (theme === 'green') {
+      // Efek Daun Jatuh (melayang lambat)
+      this.y = (Math.random() * canvas.height) - canvas.height;
+      this.speedY = Math.random() * 1 + 0.5;
+      this.speedX = (Math.random() * 2) - 1;
+      this.size = Math.random() * 8 + 4;
     }
   }
 
@@ -38,6 +49,13 @@ class HybridParticle {
     this.x += this.speedX; this.y += this.speedY; this.angle += this.spin;
     if (this.theme === 'pink' && this.y > canvas.height + 50) { this.y = -50; this.x = Math.random() * canvas.width; } 
     else if (this.theme === 'dark' && (this.y > canvas.height + 50 || this.x < -50)) { this.y = -50; this.x = Math.random() * canvas.width + canvas.width/2; }
+    else if (this.theme === 'yellow') {
+      if(this.y > canvas.height || this.y < 0) this.speedY *= -1;
+      if(this.x > canvas.width || this.x < 0) this.speedX *= -1;
+    }
+    else if (this.theme === 'green' && this.y > canvas.height + 50) {
+      this.y = -50; this.x = Math.random() * canvas.width;
+    }
   }
 
   draw() {
@@ -48,6 +66,15 @@ class HybridParticle {
       ctx.globalAlpha = this.opacity; ctx.fillStyle = '#ffffff';
       if (this.isMeteor) { ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(this.size, -this.size); ctx.strokeStyle = `rgba(255, 255, 255, ${this.opacity})`; ctx.lineWidth = 1.5; ctx.stroke(); }
       ctx.beginPath(); ctx.arc(0, 0, this.isMeteor ? 1.5 : this.size, 0, Math.PI * 2); ctx.fill();
+    } else if (this.theme === 'yellow') {
+      ctx.globalAlpha = this.opacity;
+      ctx.fillStyle = '#fbbf24';
+      ctx.shadowBlur = 10; ctx.shadowColor = '#fbbf24'; // Ngasih efek cahaya kunang-kunang
+      ctx.beginPath(); ctx.arc(0, 0, this.size, 0, Math.PI * 2); ctx.fill();
+    } else if (this.theme === 'green') {
+      ctx.globalAlpha = this.opacity;
+      ctx.fillStyle = '#34d399';
+      ctx.beginPath(); ctx.ellipse(0, 0, this.size, this.size/2, 0, 0, Math.PI*2); ctx.fill(); // Bentuk oval/daun
     }
     ctx.restore();
   }
@@ -56,7 +83,7 @@ class HybridParticle {
 function initParticles(theme) {
   currentThemeFX = theme; particlesArray = [];
   if (theme === 'default') return; 
-  let particleCount = theme === 'dark' ? 15 : 20; 
+  let particleCount = theme === 'dark' ? 15 : (theme === 'yellow' ? 25 : 20); 
   for (let i = 0; i < particleCount; i++) particlesArray.push(new HybridParticle(theme));
 }
 
