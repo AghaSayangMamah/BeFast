@@ -296,8 +296,59 @@ async function executeVoiceEdit(cmd) {
   }
 }
 function executeVoiceDownload(cmd) { openExportModal(); speak("Silakan download laporannya."); }
-function executeVoiceReadout(cmd) { speak("Ini fitur baca laporan. Cek visualnya ya."); }
+function executeVoiceReadout(cmd) {
+  // 1. Deteksi niat pengguna
+  let isIncome = /(pemasukan|masuk|pendapatan|gaji)/i.test(cmd);
+  let isExpense = /(pengeluaran|keluar|belanja)/i.test(cmd);
+  let scope = parseDateScopeFromCommand(cmd);
 
+  // 2. Filter data sesuai tanggal dan jenis
+  let filtered = transactions.filter(t => {
+    if (scope.label !== 'keseluruhan' && !scope.func(t)) return false;
+    if (isIncome && !isExpense && t.type !== 'pemasukan') return false;
+    if (isExpense && !isIncome && t.type !== 'pengeluaran') return false;
+    return true;
+  });
+
+  if (filtered.length === 0) {
+    return speak(`Tidak ada catatan transaksi untuk ${scope.label === 'keseluruhan' ? 'saat ini' : scope.label}.`);
+  }
+
+  // 3. Pisahkan pemasukan dan pengeluaran agar gampang dibacakan
+  let incomes = filtered.filter(t => t.type === 'pemasukan');
+  let expenses = filtered.filter(t => t.type === 'pengeluaran');
+
+  let inTotal = incomes.reduce((sum, t) => sum + t.amount, 0);
+  let exTotal = expenses.reduce((sum, t) => sum + t.amount, 0);
+  let netBalance = inTotal - exTotal;
+
+  // 4. Rakit kalimat laporan mendetail
+  let speech = `Laporan ${scope.label === 'keseluruhan' ? 'keseluruhan' : scope.label}. `;
+
+  if (incomes.length > 0) {
+    speech += "Rincian pemasukan: ";
+    let inDetails = incomes.map(t => `${t.desc} ${t.amount.toLocaleString('id-ID')} rupiah`).join(', ');
+    speech += inDetails + ". ";
+  }
+
+  if (expenses.length > 0) {
+    speech += "Rincian pengeluaran: ";
+    let exDetails = expenses.map(t => `${t.desc} ${t.amount.toLocaleString('id-ID')} rupiah`).join(', ');
+    speech += exDetails + ". ";
+  }
+
+  // 5. Kesimpulan (Total dan Saldo Bersih)
+  if (isIncome && !isExpense) {
+    speech += `Total pemasukan kamu adalah ${inTotal.toLocaleString('id-ID')} rupiah.`;
+  } else if (isExpense && !isIncome) {
+    speech += `Total pengeluaran kamu adalah ${exTotal.toLocaleString('id-ID')} rupiah.`;
+  } else {
+    speech += `Jadi, total pemasukan ${inTotal.toLocaleString('id-ID')} rupiah, total pengeluaran ${exTotal.toLocaleString('id-ID')} rupiah. Sisa saldo bersih kamu adalah ${netBalance.toLocaleString('id-ID')} rupiah.`;
+  }
+
+  // Eksekusi pembacaan
+  speak(speech.trim());
+}
 async function processVoiceCommand(cmd) {
   const user = getCurrentUser(); if (!user) { openLoginModal(); return; }
   
