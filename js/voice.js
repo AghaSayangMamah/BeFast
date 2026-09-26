@@ -377,6 +377,30 @@ async function processVoiceCommand(cmd) {
   speak("Nominal angkanya belum ketangkap nih. Coba sebutkan nominalnya.");
 }
 
+// --- KAMUS KOREKSI SUARA (AUTO-CORRECT) ---
+function applyVoiceCorrections(text) {
+  let corrected = text.toLowerCase();
+  
+  // DAFTAR KATA YANG SERING SALAH DENGER SAMA BROWSER
+  // Tambahkan kata baru di sini kalau ada feedback dari user lagi
+  const corrections = {
+    'copy': 'kopi',
+    'the': 'teh',
+    'project': 'gojek',
+    'st': 'es teh',
+    'grab foot': 'grabfood',
+    'go foot': 'gofood',
+    'sopee': 'shopee'
+  };
+  
+  for (const [wrong, right] of Object.entries(corrections)) {
+    // Regex \b memastikan hanya mengganti kata yang berdiri sendiri
+    const regex = new RegExp(`\\b${wrong}\\b`, 'gi');
+    corrected = corrected.replace(regex, right);
+  }
+  return corrected;
+}
+
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 let recognition = null; let isListening = false; let transcript = '';
 
@@ -393,7 +417,11 @@ if (SpeechRecognition) {
   };
   
   recognition.onresult = (e) => { 
-    transcript = Array.from(e.results).map(r => r[0].transcript).join(''); 
+    let rawTranscript = Array.from(e.results).map(r => r[0].transcript).join(''); 
+    
+    // KUNCI PERBAIKAN: Bersihkan teks raw pakai kamus sebelum nampil di layar
+    transcript = applyVoiceCorrections(rawTranscript); 
+    
     document.getElementById('transcriptText').innerText = `"${transcript}"`; 
   };
   

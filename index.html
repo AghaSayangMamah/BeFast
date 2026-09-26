@@ -164,24 +164,28 @@
           <h3 class="font-bold text-sm theme-text">Ringkasan Keuangan</h3>
         </div>
         
-        <div class="mb-6">
+<!-- Area Saldo Bersih -->
+        <!-- Hapus w-fit, ganti jadi w-full overflow-hidden agar terkurung rapi di dalam card -->
+        <div class="mb-6 cursor-pointer hover:opacity-80 transition active:scale-95 origin-left w-full overflow-hidden" onclick="showDetailAngka('Saldo Bersih', 'cardBalance')">
           <div class="flex items-center gap-2 mb-2">
             <div class="w-6 h-6 theme-bg-light theme-primary rounded flex items-center justify-center text-[10px]"><i class="fa-solid fa-wallet"></i></div>
-            <p class="text-xs font-bold theme-text-muted">Saldo Bersih</p>
+            <p class="text-xs font-bold theme-text-muted">Saldo Bersih <span class="text-[9px] opacity-70 font-normal">(Tap detail)</span></p>
           </div>
-          <h2 id="cardBalance" class="text-4xl font-black theme-text truncate">Rp 0</h2>
+          <!-- Kembalikan ke text-3xl agar lebih proporsional di HP, text-4xl di desktop -->
+          <h2 id="cardBalance" class="text-3xl md:text-4xl font-black theme-text truncate pointer-events-none">Rp 0</h2>
         </div>
 
+        <!-- Area Pemasukan & Pengeluaran -->
         <div class="grid grid-cols-2 gap-4 mb-4">
-          <div class="theme-card p-4 rounded-2xl relative overflow-hidden" style="border-color: rgba(16,185,129,0.3)">
-            <div class="w-6 h-6 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-[10px] mb-3"><i class="fa-solid fa-arrow-up"></i></div>
-            <p class="text-[10px] theme-text-muted font-bold">Pemasukan</p>
-            <p id="cardIncome" class="text-base font-black text-green-600 mt-2 truncate">Rp 0</p>
+          <div onclick="showDetailAngka('Total Pemasukan', 'cardIncome')" class="theme-card p-4 rounded-2xl relative overflow-hidden cursor-pointer hover:opacity-80 transition active:scale-95" style="border-color: rgba(16,185,129,0.3)">
+            <div class="w-6 h-6 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-[10px] mb-3 pointer-events-none"><i class="fa-solid fa-arrow-up"></i></div>
+            <p class="text-[10px] theme-text-muted font-bold pointer-events-none">Pemasukan</p>
+            <p id="cardIncome" class="text-base font-black text-green-600 mt-2 truncate pointer-events-none">Rp 0</p>
           </div>
-          <div class="theme-card p-4 rounded-2xl relative overflow-hidden" style="border-color: rgba(239,68,68,0.3)">
-            <div class="w-6 h-6 bg-red-100 text-red-600 rounded-full flex items-center justify-center text-[10px] mb-3"><i class="fa-solid fa-arrow-down"></i></div>
-            <p class="text-[10px] theme-text-muted font-bold">Pengeluaran</p>
-            <p id="cardExpense" class="text-base font-black text-red-600 mt-2 truncate">Rp 0</p>
+          <div onclick="showDetailAngka('Total Pengeluaran', 'cardExpense')" class="theme-card p-4 rounded-2xl relative overflow-hidden cursor-pointer hover:opacity-80 transition active:scale-95" style="border-color: rgba(239,68,68,0.3)">
+            <div class="w-6 h-6 bg-red-100 text-red-600 rounded-full flex items-center justify-center text-[10px] mb-3 pointer-events-none"><i class="fa-solid fa-arrow-down"></i></div>
+            <p class="text-[10px] theme-text-muted font-bold pointer-events-none">Pengeluaran</p>
+            <p id="cardExpense" class="text-base font-black text-red-600 mt-2 truncate pointer-events-none">Rp 0</p>
           </div>
         </div>
 
@@ -436,6 +440,39 @@
       <p class="text-[10px] text-gray-400 font-bold">Menutup otomatis dalam <span id="verifyCountdown">3</span> detik...</p>
     </div>
   </div>
+
+  <!-- MODAL DETAIL ANGKA (MUNCUL SAAT DI TAP) -->
+  <div id="detailAngkaModal" onclick="if(event.target === this) this.classList.add('hidden')" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-center justify-center hidden z-[90] p-4 transition-all">
+    <div class="theme-card w-full max-w-xs p-6 relative rounded-3xl shadow-2xl text-center">
+      <button onclick="document.getElementById('detailAngkaModal').classList.add('hidden')" class="absolute top-4 right-4 w-8 h-8 bg-gray-500/10 rounded-full flex items-center justify-center theme-text-muted hover:opacity-70 transition"><i class="fa-solid fa-xmark"></i></button>
+      <div class="w-14 h-14 mx-auto mb-3 bg-blue-500/10 text-blue-500 rounded-full flex items-center justify-center text-2xl shadow-inner"><i class="fa-solid fa-magnifying-glass-dollar"></i></div>
+      <h3 id="detailAngkaTitle" class="text-xs font-bold theme-text-muted mb-1">Detail Angka</h3>
+      <p id="detailAngkaValue" class="text-2xl font-black theme-text break-words"></p>
+    </div>
+  </div>
+
+  <script>
+    // FUNGSI UNTUK MENAMPILKAN ANGKA FULL KE DALAM MODAL
+    function showDetailAngka(title, elementId) {
+      // Ambil angka mentah dari teks yang terpotong (walaupun terpotong ... di layar, isi aslinya tetap full)
+      const val = document.getElementById(elementId).textContent;
+      document.getElementById('detailAngkaTitle').innerText = title;
+      
+      const valEl = document.getElementById('detailAngkaValue');
+      valEl.innerText = val;
+      
+      // Kasih warna dinamis sesuai jenis uangnya
+      if (elementId === 'cardIncome') {
+        valEl.className = "text-2xl font-black break-words text-green-500";
+      } else if (elementId === 'cardExpense') {
+        valEl.className = "text-2xl font-black break-words text-red-500";
+      } else {
+        valEl.className = "text-2xl font-black break-words theme-text";
+      }
+      
+      document.getElementById('detailAngkaModal').classList.remove('hidden');
+    }
+  </script>
 
   <div id="chartModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-center justify-center hidden z-50 p-4 transition-all"><div class="theme-card w-full max-w-md p-6 relative rounded-3xl shadow-2xl"><div class="flex justify-between mb-4"><h3 id="modalTitle" class="font-black text-lg theme-text">Grafik</h3><button onclick="closeChartModal()" class="w-8 h-8 bg-gray-500/10 rounded-full theme-text-muted hover:opacity-70 transition"><i class="fa-solid fa-xmark"></i></button></div><div class="h-80 mb-4"><canvas id="financeChart"></canvas></div><div id="aiAdvice" class="p-3 theme-bg-light theme-primary text-xs font-bold text-center rounded-xl"></div></div></div>
   <div id="exportModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-center justify-center hidden z-50 p-4 transition-all"><div class="theme-card w-full max-w-sm p-6 relative rounded-3xl shadow-2xl"><div class="flex justify-between mb-4"><h3 class="font-black text-lg theme-text">Export CSV</h3><button onclick="closeExportModal()" class="w-8 h-8 bg-gray-500/10 rounded-full theme-text-muted hover:opacity-70 transition"><i class="fa-solid fa-xmark"></i></button></div><input type="hidden" id="exportPeriod" value="semua"><button onclick="processExport()" id="btnProcessExport" class="w-full py-3 theme-bg-primary font-bold rounded-xl mt-4 hover:opacity-80 transition shadow-md">Download Excel/PDF</button></div></div>
