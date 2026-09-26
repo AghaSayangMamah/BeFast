@@ -119,47 +119,52 @@ function getCategoryIcon(cat) {
 }
 
 function renderData() {
-  const container = document.getElementById('transactionList'); container.innerHTML = '';
-  let inc=0, exp=0;
-  transactions.forEach(t=>{
-    if(t.type==='pemasukan') inc+=t.amount; else exp+=t.amount;
-    const sign = t.type==='pemasukan'?'+':'-'; 
-    const col = t.type==='pemasukan'?'text-green-600':'text-red-600';
-    const bg = t.type==='pemasukan'?'bg-green-100 text-green-600':'bg-orange-100 text-orange-600';
+  const container = document.getElementById('transactionList'); 
+  if (container) container.innerHTML = '';
+  
+  let inc = 0, exp = 0;
+  
+  transactions.forEach(t => {
+    if (t.type === 'pemasukan') inc += t.amount; else exp += t.amount;
+    const sign = t.type === 'pemasukan' ? '+' : '-'; 
+    const col = t.type === 'pemasukan' ? 'text-green-500' : 'text-red-500';
+    const bg = t.type === 'pemasukan' ? 'bg-green-500/10 text-green-500' : 'bg-orange-500/10 text-orange-500';
     const catIcon = getCategoryIcon(t.category);
     
     const row = document.createElement('div');
-    row.className = "flex items-center justify-between p-3 bg-white/50 rounded-xl hover:bg-white transition cursor-pointer mb-2 border border-white/40 shadow-sm";
+    // KUNCI PERBAIKAN: Ganti bg-black/10 jadi theme-bg-light
+    // Ini bikin card sewarna dengan tema tapi 1 tone lebih tajam/pekat.
+    row.className = "flex items-center justify-between p-3 theme-bg-light rounded-xl hover:opacity-80 transition cursor-pointer mb-2 border border-gray-400/10 shadow-sm shrink-0 group";
+    
     row.innerHTML = `
       <div class="flex items-center gap-3 w-full">
         <div class="w-10 h-10 rounded-lg flex-shrink-0 ${bg} flex items-center justify-center text-sm"><i class="fa-solid ${catIcon}"></i></div>
         <div class="flex flex-col flex-grow min-w-0">
-           <h4 class="font-bold text-sm text-gray-800 truncate pr-2">${t.desc}</h4>
-           <p class="text-[10px] text-gray-500 font-medium">${t.date} • ${t.category}</p>
+           <h4 class="font-bold text-sm theme-text truncate pr-2">${t.desc}</h4>
+           <p class="text-[10px] theme-text-muted font-medium">${t.date} • ${t.category}</p>
         </div>
       </div>
       <div class="flex flex-col items-end flex-shrink-0">
-         <p class="font-black text-sm ${col}">${sign} Rp ${t.amount.toLocaleString('id-ID')}</p>
-         <button onclick="deleteSingleItem('${t.id}')" class="text-[9px] text-red-400 hover:text-red-600 mt-1 font-bold">Hapus</button>
+         <p class="font-black text-sm ${col} whitespace-nowrap">${sign} Rp ${t.amount.toLocaleString('id-ID')}</p>
+         <button onclick="deleteSingleItem('${t.id}')" class="text-[9px] text-red-500/70 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity mt-1 font-bold">Hapus</button>
       </div>`;
     if(container) container.appendChild(row);
   });
   
-  if(transactions.length===0 && container) {
-      container.innerHTML = '<p class="text-sm text-center text-gray-400 mt-10">Belum ada aktivitas</p>';
+  if (transactions.length === 0 && container) {
+      container.innerHTML = '<p class="text-sm text-center theme-text-muted mt-10">Belum ada aktivitas</p>';
   }
   
   const elInc = document.getElementById('cardIncome');
   const elExp = document.getElementById('cardExpense');
   const elBal = document.getElementById('cardBalance');
   
-  if(elInc) elInc.innerText = `Rp ${inc.toLocaleString('id-ID')}`;
-  if(elExp) elExp.innerText = `Rp ${exp.toLocaleString('id-ID')}`;
-  if(elBal) elBal.innerText = `Rp ${(inc-exp).toLocaleString('id-ID')}`;
+  if (elInc) elInc.innerText = `Rp ${inc.toLocaleString('id-ID')}`;
+  if (elExp) elExp.innerText = `Rp ${exp.toLocaleString('id-ID')}`;
+  if (elBal) elBal.innerText = `Rp ${(inc-exp).toLocaleString('id-ID')}`;
   
-  if(typeof updateSummaryUI === 'function') updateSummaryUI();
+  if (typeof updateSummaryUI === 'function') updateSummaryUI();
 }
-
 // =====================================================================
 // TRIGGER AUTO-LOAD (MEMPERBAIKI BUG BLANK SAAT RELOAD / BACK PAGE)
 // =====================================================================
