@@ -21,38 +21,47 @@ window.showChartModal = function(cmd) {
   let totalIn = filtered.filter(t => t.type === 'pemasukan').reduce((s, t) => s + Number(t.amount), 0);
   let totalEx = filtered.filter(t => t.type === 'pengeluaran').reduce((s, t) => s + Number(t.amount), 0);
   let totalFinance = totalIn + totalEx;
-  let netBalance = totalIn - totalEx;
 
-  // Hancurkan grafik lama
   if (window.myChart) {
     window.myChart.destroy();
   }
 
-  // --- PLUGIN KHUSUS: Teks Saldo di Tengah Lingkaran ---
+  // --- PLUGIN KHUSUS: Duel Angka ---
   const centerTextPlugin = {
     id: 'centerText',
     beforeDraw: function(chart) {
       if (totalFinance === 0) return;
-      let width = chart.width, height = chart.height, ctx = chart.ctx;
-      ctx.restore();
-      
-      // Teks "Saldo Bersih" (Kecil di atas)
-      let fontSize2 = (height / 350).toFixed(2);
-      ctx.font = "700 " + fontSize2 + "em 'Nunito', sans-serif";
-      ctx.textBaseline = "middle";
-      ctx.fillStyle = "#94a3b8"; // abu-abu kalem
-      let text2 = "Saldo Bersih";
-      let text2X = Math.round((width - ctx.measureText(text2).width) / 2);
-      ctx.fillText(text2, text2X, (height / 2) - 20);
-
-      // Angka Saldo (Besar di tengah)
-      let fontSize1 = (height / 150).toFixed(2);
-      ctx.font = "900 " + fontSize1 + "em 'Nunito', sans-serif";
-      ctx.fillStyle = netBalance >= 0 ? "#10b981" : "#ef4444";
-      let text = "Rp " + Math.abs(netBalance).toLocaleString('id-ID');
-      let textX = Math.round((width - ctx.measureText(text).width) / 2);
-      ctx.fillText(text, textX, (height / 2) + 10);
+      let ctx = chart.ctx;
       ctx.save();
+      
+      let width = chart.chartArea.right - chart.chartArea.left;
+      let height = chart.chartArea.bottom - chart.chartArea.top;
+      let centerX = chart.chartArea.left + width / 2;
+      let centerY = chart.chartArea.top + height / 2;
+
+      let isIncomeWin = totalIn >= totalEx;
+      let domVal = isIncomeWin ? totalIn : totalEx;
+      let subVal = isIncomeWin ? totalEx : totalIn;
+      
+      let domColor = isIncomeWin ? "#10b981" : "#ef4444"; 
+      let subColor = isIncomeWin ? "#ef4444" : "#10b981";
+
+      let domText = (isIncomeWin ? "+ Rp " : "- Rp ") + domVal.toLocaleString('id-ID');
+      let subText = (isIncomeWin ? "- Rp " : "+ Rp ") + subVal.toLocaleString('id-ID');
+
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+
+      ctx.font = "800 13px 'Nunito', sans-serif";
+      ctx.fillStyle = subColor;
+      ctx.fillText(subText, centerX, centerY - 14);
+
+      let domFontSize = (domText.length > 15) ? 18 : 22; 
+      ctx.font = "900 " + domFontSize + "px 'Nunito', sans-serif";
+      ctx.fillStyle = domColor;
+      ctx.fillText(domText, centerX, centerY + 12);
+
+      ctx.restore();
     }
   };
 
@@ -62,31 +71,24 @@ window.showChartModal = function(cmd) {
       labels: ['Pemasukan', 'Pengeluaran'],
       datasets: [{
         data: [totalIn, totalEx],
-        backgroundColor: ['#10b981', '#ef4444'], // Hijau & Merah BeFAST
+        backgroundColor: ['#10b981', '#ef4444'],
         borderWidth: 0,
-        borderRadius: 20, // Bikin ujung potongan membulat seperti referensi
-        spacing: 8,       // Jarak celah antar potongan warna
-        hoverOffset: 8    // Efek pop-up halus saat disentuh
+        borderRadius: 20, 
+        spacing: 8,       
+        hoverOffset: 8    
       }]
     },
-    plugins: [centerTextPlugin], // Masukkan teks tengah
+    plugins: [centerTextPlugin], 
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      cutout: '85%', // Cincin super tipis ala UI modern
+      cutout: '85%', 
       layout: { padding: 10 },
       plugins: {
-        legend: {
-          position: 'bottom', // Pindah ke bawah seperti referensi
-          labels: { 
-            usePointStyle: true, 
-            boxWidth: 8, 
-            padding: 20,
-            font: { family: "'Nunito', sans-serif", weight: '800', size: 12, color: '#475569' } 
-          }
-        },
+        // 1. MATIKAN LEGENDA BAWAAN CHART.JS YANG KAKU
+        legend: { display: false }, 
         tooltip: {
-          backgroundColor: 'rgba(15, 23, 42, 0.9)', // Tooltip gelap elegan
+          backgroundColor: 'rgba(15, 23, 42, 0.9)', 
           titleFont: { family: "'Nunito', sans-serif", size: 13 },
           bodyFont: { family: "'Nunito', sans-serif", size: 14, weight: 'bold' },
           padding: 12,
@@ -99,26 +101,53 @@ window.showChartModal = function(cmd) {
             }
           }
         },
-        // Matikan plugin teks melayang lama (kalau masih aktif) biar bersih
         datalabels: { display: false }
       }
     }
   });
 
-  // Percantik kotak saran AI di bawahnya
+  // 2. INJEKSI LEGENDA MANUAL (POSISI PRESISI DI TENGAH)
+  let customLegend = document.getElementById('customChartLegend');
+  if (!customLegend) {
+    customLegend = document.createElement('div');
+    customLegend.id = 'customChartLegend';
+    // Menempatkan legenda dengan padding vertikal (py-4) dan jarak yang pas (gap-8)
+    customLegend.className = 'flex justify-center items-center gap-8 py-5'; 
+    ctx.parentElement.insertAdjacentElement('afterend', customLegend);
+    
+    // Hapus margin dasar kanvas agar jarak atas dan bawah seimbang
+    ctx.parentElement.style.marginBottom = '0px'; 
+  }
+  
+  // Tampilan UI Legenda Baru
+// Tampilan UI Legenda Baru
+  customLegend.innerHTML = `
+    <div class="flex items-center gap-2">
+      <div class="w-3.5 h-3.5 rounded-full bg-[#10b981]"></div>
+      <span class="text-xs font-black theme-text">Pemasukan</span>
+    </div>
+    <div class="flex items-center gap-2">
+      <div class="w-3.5 h-3.5 rounded-full bg-[#ef4444]"></div>
+      <span class="text-xs font-black theme-text">Pengeluaran</span>
+    </div>
+  `;
+
+// 3. LOGIKA INSIGHT AI BAWAH
   const aiBox = document.getElementById('aiAdvice');
   if (aiBox) {
     if (totalEx > totalIn && totalIn > 0) {
       aiBox.innerHTML = `⚠️ Pengeluaran mencapai <b>${Math.round((totalEx/totalIn)*100)}%</b> dari pemasukan. Rem dikit ya!`;
-      aiBox.className = "p-3 bg-red-50 text-red-600 text-xs font-bold text-center rounded-xl mt-4 border border-red-100";
+      // Tetap warna merah untuk bahaya, tapi pakai transparansi agar masuk di tema gelap
+      aiBox.className = "p-3 bg-red-500/10 text-red-500 border border-red-500/20 text-xs font-bold text-center rounded-xl mt-2";
     } else if (totalIn > totalEx) {
       aiBox.innerHTML = "✨ Keuangan sehat! Pertahankan tren positif ini.";
-      aiBox.className = "p-3 bg-green-50 text-green-600 text-xs font-bold text-center rounded-xl mt-4 border border-green-100";
+      // Bunglon: Mengikuti warna tema yang sedang aktif
+      aiBox.className = "p-3 theme-bg-light theme-primary border border-gray-400/20 text-xs font-bold text-center rounded-xl mt-2";
     } else {
       aiBox.style.display = 'none';
     }
   }
-
+  
   if (cmd && typeof cmd === 'string' && !cmd.includes('klik_tombol')) {
     if (window.modalTimer) clearTimeout(window.modalTimer);
     window.modalTimer = setTimeout(() => { 
