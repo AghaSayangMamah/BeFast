@@ -270,10 +270,11 @@
     </div>
   </div>
 
-<div id="guideModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-center justify-center hidden z-50 p-4 transition-all">
+<!-- MODAL PANDUAN SUARA -->
+  <div id="guideModal" onclick="if(event.target === this) closeGuideModal()" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-center justify-center hidden z-50 p-4 transition-all">
     <div class="theme-card w-full max-w-4xl p-6 md:p-8 relative max-h-[85vh] overflow-y-auto no-scrollbar rounded-3xl shadow-2xl">
       <div class="flex justify-between items-center mb-6 border-b border-gray-400/20 pb-4">
-        <h3 class="font-black text-xl theme-text"><i class="fa-solid fa-microphone-lines text-blue-500 mr-2"></i> Panduan Suara Lengkap</h3>
+        <h3 class="font-black text-xl theme-text">Panduan Suara Lengkap</h3>
         <button onclick="closeGuideModal()" class="w-8 h-8 bg-gray-500/10 hover:bg-red-500/20 hover:text-red-500 rounded-full theme-text-muted transition flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
       </div>
       
@@ -281,7 +282,7 @@
         
         <!-- 1. Catat (Input) -->
         <div class="theme-glass p-5 rounded-2xl border border-gray-400/20">
-          <h4 class="font-bold text-green-500 mb-3 flex items-center gap-2"><i class="fa-solid fa-plus-circle"></i> Catat Transaksi</h4>
+          <h4 class="font-bold theme-primary mb-3 flex items-center gap-2"><i class="fa-solid fa-plus-circle"></i> Catat Transaksi</h4>
           <ul class="space-y-3">
             <li class="flex flex-col gap-1.5">
               <span class="font-semibold text-xs">Pengeluaran:</span>
@@ -302,7 +303,7 @@
 
         <!-- 2. Ubah (Edit) -->
         <div class="theme-glass p-5 rounded-2xl border border-gray-400/20">
-          <h4 class="font-bold text-blue-500 mb-3 flex items-center gap-2"><i class="fa-solid fa-pen-to-square"></i> Ubah Transaksi</h4>
+          <h4 class="font-bold theme-primary mb-3 flex items-center gap-2"><i class="fa-solid fa-pen-to-square"></i> Ubah Transaksi</h4>
           <p class="text-[10px] theme-text-muted mb-3 leading-snug">Jika ada transaksi bernama sama, sistem otomatis meminta kamu memilihnya di layar.</p>
           <ul class="space-y-3">
             <li class="flex flex-col gap-1.5">
@@ -324,7 +325,7 @@
 
         <!-- 3. Hapus (Delete) -->
         <div class="theme-glass p-5 rounded-2xl border border-gray-400/20">
-          <h4 class="font-bold text-red-500 mb-3 flex items-center gap-2"><i class="fa-solid fa-trash-can"></i> Hapus Transaksi</h4>
+          <h4 class="font-bold theme-primary mb-3 flex items-center gap-2"><i class="fa-solid fa-trash-can"></i> Hapus Transaksi</h4>
           <ul class="space-y-3">
             <li class="flex flex-col gap-1.5">
               <span class="font-semibold text-xs">Hapus Pilihan (Jika ada banyak):</span>
@@ -345,7 +346,7 @@
 
         <!-- 4. Cek (Laporan/Grafik) -->
         <div class="theme-glass p-5 rounded-2xl border border-gray-400/20">
-          <h4 class="font-bold text-purple-500 mb-3 flex items-center gap-2"><i class="fa-solid fa-chart-pie"></i> Cek & Laporan</h4>
+          <h4 class="font-bold theme-primary mb-3 flex items-center gap-2"><i class="fa-solid fa-chart-pie"></i> Cek & Laporan</h4>
           <ul class="space-y-3">
             <li class="flex flex-col gap-1.5">
               <span class="font-semibold text-xs">AI Bacakan Rincian:</span>
@@ -377,7 +378,7 @@
 
     </div>
   </div>
-  
+    
   <!-- MODAL AMBIGUITAS (Khusus Mobile) -->
   <div id="ambiguityModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-md flex items-center justify-center hidden z-[70] p-4 transition-all">
     <div class="theme-card w-full max-w-sm p-6 relative rounded-3xl shadow-2xl flex flex-col max-h-[80vh]">
