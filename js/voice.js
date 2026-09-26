@@ -362,23 +362,51 @@ async function processVoiceCommand(cmd) {
   if (cmd.includes('grafik') || cmd.includes('analisis') || cmd.includes('chart')) { showChartModal(cmd); return; }
   if (cmd.includes('baca') || cmd.includes('cek') || cmd.includes('spill') || cmd.includes('total')) { executeVoiceReadout(cmd); return; }
 
-  const nominal = parseNominal(cmd);
-  if (nominal > 0) {
-    let type = 'pengeluaran'; 
-    if (/(pemasukan|masuk|dapet|dapat|gaji|thr|transferan|honor|bonus|dikasih|nemu|uang bulanan)/i.test(cmd)) type = 'pemasukan';
-    
-    let { amount, desc, date } = extractTransactionDetails(cmd, type);
+  // --- FITUR BATCH / MULTI-TRANSACTION PARSING ---
+  // Pecah kalimat berdasarkan kata hubung atau koma (misal: "dan", "terus", "lalu", ",")
+  let subCommands = cmd.split(/\s+(?:dan|terus|lalu|serta)\s+|,+/g);
+  let successCount = 0;
 
-    if (amount > 0) {
-      const category = detectCategory(desc, type); 
-      updateSyncStatusUI(false, 'Menyimpan...');
-      const { error } = await supabaseClient.from('transactions').insert([{ id: Date.now().toString(), user_id: user.id, date: date, type: type, category: category, amount: amount, desc: desc }]);
-      if (error) { alert(`Gagal Disimpan: ${error.message}`); updateSyncStatusUI(false, 'Gagal Sinkron'); } 
-      else { await fetchTransactionsFromSupabase(); speak(`Siap! Udah dicatat ${type} ${desc} sebesar ${amount.toLocaleString('id-ID')} rupiah.`); }
-      return;
+  updateSyncStatusUI(false, 'Memproses banyak data...');
+
+  for (let subCmd of subCommands) {
+    subCmd = subCmd.trim();
+    if (!subCmd) continue;
+
+    const nominal = parseNominal(subCmd);
+    if (nominal > 0) {
+      let type = 'pengeluaran'; 
+      if (/(pemasukan|masuk|dapet|dapat|gaji|thr|transferan|honor|bonus|dikasih|nemu|uang bulanan)/i.test(subCmd)) type = 'pemasukan';
+      
+      let { amount, desc, date } = extractTransactionDetails(subCmd, type);
+
+      if (amount > 0) {
+        const category = detectCategory(desc, type); 
+        
+        // Simpan ke database Supabase secara beruntun (looping)
+        const { error } = await supabaseClient.from('transactions').insert([{ 
+          id: Date.now().toString() + Math.floor(Math.random() * 1000), 
+          user_id: user.id, 
+          date: date, 
+          type: type, 
+          category: category, 
+          amount: amount, 
+          desc: desc 
+        }]);
+
+        if (!error) {
+          successCount++;
+        }
+      }
     }
   }
-  speak("Nominal angkanya belum ketangkap nih. Coba sebutkan nominalnya.");
+
+  if (successCount > 0) {
+    await fetchTransactionsFromSupabase();
+    speak(`Siap! Berhasil mencatat ${successCount} transaksi sekaligus.`);
+  } else {
+    speak("Nominal angkanya belum ketangkap nih. Coba sebutkan nominalnya dengan jelas.");
+  }
 }
 
 // --- KAMUS KOREKSI SUARA (AUTO-CORRECT) ---
