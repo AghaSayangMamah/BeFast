@@ -10,16 +10,16 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
- <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body class="min-h-screen pb-10">
 
-  <!-- Header Sederhana -->
-  <header class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50 border-b border-gray-200">
-    <div class="max-w-[1200px] mx-auto px-4 py-4 flex items-center justify-between">
-      <div class="flex items-center gap-4">
-        <a href="index.html" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-blue-100 hover:text-blue-600 transition">
+  <!-- Header Sederhana dengan Tombol Back yang Pasti Bisa Diklik -->
+  <header class="bg-white/90 backdrop-blur-md shadow-sm sticky top-0 z-[100] border-b border-gray-200">
+    <div class="max-w-[1200px] mx-auto px-4 py-4 flex items-center justify-between relative">
+      <div class="flex items-center gap-4 relative z-10">
+        <a href="index.html" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-blue-100 hover:text-blue-600 transition cursor-pointer relative z-20">
           <i class="fa-solid fa-arrow-left"></i>
         </a>
         <h1 class="text-xl font-black text-[#1e3a8a]">Semua Transaksi</h1>
@@ -28,17 +28,20 @@
     </div>
   </header>
 
-  <!-- Konten Tabel -->
+  <!-- Konten Riwayat -->
   <main class="max-w-[1200px] mx-auto px-4 pt-8">
     <!-- KOTAK PENCARIAN REAL-TIME -->
     <div class="w-full flex justify-end mb-4">
-      <div class="relative group">
+      <div class="relative group w-full sm:w-64">
         <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 group-focus-within:text-[#1e3a8a] transition-colors"></i>
-        <input type="text" id="searchHistory" placeholder="Cari transaksi..." class="pl-11 pr-4 py-2.5 w-64 rounded-full bg-white border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#1e3a8a]/50 text-sm font-semibold transition-all shadow-sm text-gray-700">
+        <input type="text" id="searchHistory" placeholder="Cari transaksi..." class="pl-11 pr-4 py-2.5 w-full rounded-full bg-white border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#1e3a8a]/50 text-sm font-semibold transition-all shadow-sm text-gray-700">
       </div>
     </div>
-    <div class="glass-panel p-6 overflow-hidden">
-      <div class="overflow-x-auto no-scrollbar">
+    
+    <div class="glass-panel p-4 md:p-6 overflow-hidden">
+      
+      <!-- 1. TAMPILAN TABEL (Hanya muncul khusus di Desktop / md ke atas) -->
+      <div class="hidden md:block overflow-x-auto no-scrollbar">
         <table class="w-full text-left border-collapse">
           <thead>
             <tr class="border-b-2 border-gray-200 text-gray-500 text-xs uppercase tracking-wider">
@@ -50,11 +53,17 @@
               <th class="p-3 font-black text-center">Aksi</th>
             </tr>
           </thead>
-          <tbody id="tableBody" class="text-sm">
+          <tbody id="tableBodyDesktop" class="text-sm">
             <tr><td colspan="6" class="p-6 text-center text-gray-400 font-bold">Memuat data dari database...</td></tr>
           </tbody>
         </table>
       </div>
+
+      <!-- 2. TAMPILAN CARD (Hanya muncul khusus di Mobile / Layar HP) -->
+      <div id="tableBodyMobile" class="md:hidden flex flex-col gap-3">
+        <p class="p-6 text-center text-gray-400 font-bold">Memuat data dari database...</p>
+      </div>
+
     </div>
   </main>
 
@@ -66,12 +75,13 @@
     document.addEventListener('DOMContentLoaded', async () => {
       const userStr = localStorage.getItem('bf_user');
       if (!userStr || !supabaseClient) {
-        window.location.href = 'index.html'; // Usir ke depan kalau belum login
+        window.location.href = 'index.html'; 
         return;
       }
       
       const user = JSON.parse(userStr);
-      const tbody = document.getElementById('tableBody');
+      const desktopBody = document.getElementById('tableBodyDesktop');
+      const mobileBody = document.getElementById('tableBodyMobile');
 
       // Ambil data dari Supabase
       const { data, error } = await supabaseClient
@@ -81,29 +91,34 @@
         .order('date', { ascending: false });
 
       if (error) {
-        tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-red-500 font-bold">Gagal memuat data.</td></tr>`;
+        desktopBody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-red-500 font-bold">Gagal memuat data.</td></tr>`;
+        mobileBody.innerHTML = `<p class="p-6 text-center text-red-500 font-bold">Gagal memuat data.</p>`;
         return;
       }
 
       if (!data || data.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-gray-400 font-bold">Belum ada riwayat transaksi.</td></tr>`;
+        desktopBody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-gray-400 font-bold">Belum ada riwayat transaksi.</td></tr>`;
+        mobileBody.innerHTML = `<p class="p-6 text-center text-gray-400 font-bold">Belum ada riwayat transaksi.</p>`;
         return;
       }
 
-      // Render Tabel
-      tbody.innerHTML = '';
+      // Render Tampilan untuk Desktop & Mobile Secara Bersamaan
+      desktopBody.innerHTML = '';
+      mobileBody.innerHTML = '';
+
       data.forEach((t, index) => {
         const isIncome = t.type === 'pemasukan';
         const typeBadge = isIncome 
-          ? `<span class="bg-green-100 text-green-700 px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider">Pemasukan</span>`
-          : `<span class="bg-red-100 text-red-700 px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider">Pengeluaran</span>`;
+          ? `<span class="bg-green-100 text-green-700 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider">Pemasukan</span>`
+          : `<span class="bg-red-100 text-red-700 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider">Pengeluaran</span>`;
         
         const amountColor = isIncome ? 'text-green-600' : 'text-red-600';
         const amountSign = isIncome ? '+' : '-';
+        
+        // --- 1. CETAK KE TABEL (DESKTOP) ---
         const rowBg = index % 2 === 0 ? 'bg-transparent' : 'bg-gray-50/50';
-
         const tr = document.createElement('tr');
-        tr.className = `border-b border-gray-100 hover:bg-blue-50/50 transition ${rowBg}`;
+        tr.className = `border-b border-gray-100 hover:bg-blue-50/50 transition ${rowBg} searchable-row`;
         tr.innerHTML = `
           <td class="p-3 font-semibold text-gray-600 whitespace-nowrap">${t.date}</td>
           <td class="p-3">${typeBadge}</td>
@@ -116,16 +131,37 @@
             </button>
           </td>
         `;
-        tbody.appendChild(tr);
+        desktopBody.appendChild(tr);
+
+        // --- 2. CETAK KE CARD (MOBILE) ---
+        const cardDiv = document.createElement('div');
+        cardDiv.className = "bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between searchable-row";
+        cardDiv.innerHTML = `
+          <div class="flex flex-col gap-1 min-w-0 pr-3">
+            <div class="flex items-center gap-2">
+              ${typeBadge}
+              <span class="text-[10px] text-gray-400 font-semibold">• ${t.date}</span>
+            </div>
+            <h4 class="font-bold text-sm text-gray-800 truncate mt-0.5">${t.desc}</h4>
+            <p class="text-[10px] text-gray-500 font-medium">${t.category || '-'}</p>
+          </div>
+          <div class="flex flex-col items-end shrink-0">
+            <p class="font-black text-sm ${amountColor}">${amountSign} Rp ${Number(t.amount).toLocaleString('id-ID')}</p>
+            <button onclick="deleteTransaction('${t.id}')" class="mt-2 w-7 h-7 rounded-full bg-red-50 text-red-500 flex items-center justify-center hover:bg-red-500 hover:text-white transition">
+              <i class="fa-solid fa-trash text-[10px]"></i>
+            </button>
+          </div>
+        `;
+        mobileBody.appendChild(cardDiv);
       });
     });
 
-    // Fungsi Hapus Khusus Halaman Tabel
+    // Fungsi Hapus Transaksi
     async function deleteTransaction(id) {
       if(confirm('Yakin ingin menghapus transaksi ini?')) {
         const { error } = await supabaseClient.from('transactions').delete().eq('id', id);
         if(!error) {
-          location.reload(); // Refresh halaman tabel setelah dihapus
+          location.reload(); 
         } else {
           alert("Gagal menghapus data.");
         }
@@ -138,13 +174,9 @@
       
       searchInput.addEventListener('input', function() {
         const keyword = this.value.toLowerCase();
-        // Ambil semua baris transaksi (kecuali baris loading/kosong)
-        const rows = document.querySelectorAll('#tableBody tr');
+        const rows = document.querySelectorAll('.searchable-row');
 
         rows.forEach(row => {
-          // Abaikan baris pesan "Memuat data..." atau "Belum ada riwayat" yang cuma punya 1 kolom
-          if (row.cells.length === 1) return; 
-
           const rowText = row.innerText.toLowerCase();
           if (rowText.includes(keyword)) {
             row.style.display = '';
@@ -154,7 +186,6 @@
         });
       });
     });
-    
   </script>
 </body>
 </html>
