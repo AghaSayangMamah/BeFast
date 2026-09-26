@@ -27,8 +27,11 @@
 <body class="min-h-screen">
 
   <header class="fixed top-0 left-0 w-full z-50 px-4 md:px-6 lg:px-8 py-4 pointer-events-none flex justify-center">
-    <div class="w-full max-w-[1400px] flex justify-between items-center relative">
+    <!-- KUNCI PERBAIKAN: Tambahkan z-10 pada container relative ini -->
+    <div class="w-full max-w-[1400px] flex justify-between items-center relative z-10">
       
+<!-- SHAPE BACKGROUND KHUSUS MOBILE (Warna Solid ngikutin tema) -->
+      <div class="absolute -inset-x-3 -inset-y-2 md:hidden theme-card rounded-3xl shadow-md -z-10 pointer-events-auto"></div>
       <div class="flex items-center gap-1.5 md:gap-3 pointer-events-auto">
         <h1 class="text-xl md:text-2xl font-black theme-text leading-none tracking-tight drop-shadow-sm border-r-2 border-gray-400/20 pr-2 md:pr-3 py-1">BeFAST</h1>
         <p class="text-[9px] md:text-[11px] theme-text-muted font-bold drop-shadow-sm leading-tight">Catat Keuangan,<br>Semudah Bicara.</p>
@@ -49,10 +52,11 @@
           <button onclick="openSignupModal()" class="px-4 py-2 theme-bg-primary rounded-full text-xs font-bold shadow-sm transition hover:opacity-80">Daftar</button>
         </div>
 
-        <div id="authLoggedIn" class="hidden items-center gap-2.5">
+        <div id="authLoggedIn" class="hidden items-center gap-2 md:gap-2.5">
           
+          <!-- 1. Tombol Tema (Ukuran disesuaikan untuk HP) -->
           <div class="relative">
-            <button onclick="toggleThemeMenu(event)" class="w-10 h-10 rounded-full theme-glass shadow-sm flex items-center justify-center theme-text-muted hover:opacity-80 transition">
+            <button onclick="toggleThemeMenu(event)" class="w-9 h-9 md:w-10 md:h-10 rounded-full theme-glass shadow-sm flex items-center justify-center theme-text-muted hover:opacity-80 transition">
               <i class="fa-solid fa-palette text-sm"></i>
             </button>
             <div id="themeDropdownMenu" class="absolute right-0 mt-3 w-40 theme-card rounded-2xl shadow-xl hidden flex-col overflow-hidden z-50">
@@ -64,7 +68,8 @@
             </div>
           </div>
 
-         <div onclick="document.getElementById('profileUpload').click()" class="flex items-center gap-2 md:gap-3 theme-glass px-3 md:px-4 py-1.5 rounded-full shadow-sm cursor-pointer hover:opacity-80 transition relative group" title="Ganti Foto Profil">
+          <!-- 2. Tombol Profil (Padding diperbaiki agar jadi lingkaran sempurna di HP) -->
+         <div onclick="document.getElementById('profileUpload').click()" class="flex items-center gap-2 md:gap-3 theme-glass p-1 md:px-4 md:py-1.5 rounded-full shadow-sm cursor-pointer hover:opacity-80 transition relative group" title="Ganti Foto Profil">
             <div class="w-7 h-7 rounded-full theme-bg-light flex items-center justify-center theme-primary overflow-hidden relative">
               <img id="userProfilePic" src="" class="w-full h-full object-cover hidden">
               <i id="userProfileIcon" class="fa-solid fa-user text-xs"></i>
@@ -80,11 +85,11 @@
           <!-- INPUT FILE TERSEMBUNYI -->
           <input type="file" id="profileUpload" accept="image/*" class="hidden" onchange="handleProfileUpload(event)">
           
+          <!-- 3. Tombol Menu (Ukuran disesuaikan untuk HP) -->
           <div class="relative">
-            <button onclick="toggleUserMenu(event)" class="w-10 h-10 rounded-full theme-glass shadow-sm flex items-center justify-center theme-text-muted hover:opacity-80 transition">
+            <button onclick="toggleUserMenu(event)" class="w-9 h-9 md:w-10 md:h-10 rounded-full theme-glass shadow-sm flex items-center justify-center theme-text-muted hover:opacity-80 transition">
               <i class="fa-solid fa-bars text-sm"></i>
             </button>
-            
             <div id="userDropdownMenu" class="absolute right-0 mt-3 w-48 theme-card rounded-2xl shadow-xl hidden flex-col overflow-hidden z-50">
               <button onclick="toggleManualForm(); toggleUserMenu(event)" class="flex items-center gap-3 px-4 py-3 text-sm font-bold theme-text hover:opacity-70 transition text-left">
                 <i class="fa-solid fa-plus w-4 text-center"></i> Input Manual
@@ -97,6 +102,7 @@
               </button>
             </div>
           </div>
+          
         </div>
 
       </div>
