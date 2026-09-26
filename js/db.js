@@ -141,6 +141,14 @@ function getCategoryIcon(cat) {
 }
 
 function renderData() {
+  // --- LOGIKA SORTING BARU (Paling atas) ---
+  // Urutkan dari Tanggal terbaru. Jika tanggal sama, urutkan dari ID (Waktu Pembuatan) terbaru.
+  transactions.sort((a, b) => {
+    const dateDiff = new Date(b.date) - new Date(a.date);
+    if (dateDiff !== 0) return dateDiff;
+    return Number(b.id) - Number(a.id); 
+  });
+
   const container = document.getElementById('transactionList'); 
   if (container) container.innerHTML = '';
   
@@ -154,8 +162,6 @@ function renderData() {
     const catIcon = getCategoryIcon(t.category);
     
     const row = document.createElement('div');
-    // KUNCI PERBAIKAN: Ganti bg-black/10 jadi theme-bg-light
-    // Ini bikin card sewarna dengan tema tapi 1 tone lebih tajam/pekat.
     row.className = "flex items-center justify-between p-3 theme-bg-light rounded-xl hover:opacity-80 transition cursor-pointer mb-2 border border-gray-400/10 shadow-sm shrink-0 group";
     
     row.innerHTML = `
@@ -187,6 +193,7 @@ function renderData() {
   
   if (typeof updateSummaryUI === 'function') updateSummaryUI();
 }
+
 // =====================================================================
 // TRIGGER AUTO-LOAD (MEMPERBAIKI BUG BLANK SAAT RELOAD / BACK PAGE)
 // =====================================================================
