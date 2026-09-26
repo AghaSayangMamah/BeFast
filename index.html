@@ -164,14 +164,12 @@
           <h3 class="font-bold text-sm theme-text">Ringkasan Keuangan</h3>
         </div>
         
-<!-- Area Saldo Bersih -->
-        <!-- Hapus w-fit, ganti jadi w-full overflow-hidden agar terkurung rapi di dalam card -->
-        <div class="mb-6 cursor-pointer hover:opacity-80 transition active:scale-95 origin-left w-full overflow-hidden" onclick="showDetailAngka('Saldo Bersih', 'cardBalance')">
+<!-- Area Saldo Saat Ini -->
+        <div class="mb-6 cursor-pointer hover:opacity-80 transition active:scale-95 origin-left w-full overflow-hidden" onclick="showDetailAngka('Saldo Saat Ini', 'cardBalance')">
           <div class="flex items-center gap-2 mb-2">
             <div class="w-6 h-6 theme-bg-light theme-primary rounded flex items-center justify-center text-[10px]"><i class="fa-solid fa-wallet"></i></div>
-            <p class="text-xs font-bold theme-text-muted">Saldo Bersih <span class="text-[9px] opacity-70 font-normal">(Tap detail)</span></p>
+            <p class="text-xs font-bold theme-text-muted">Saldo Saat Ini <span class="text-[9px] opacity-70 font-normal">(Tap detail)</span></p>
           </div>
-          <!-- Kembalikan ke text-3xl agar lebih proporsional di HP, text-4xl di desktop -->
           <h2 id="cardBalance" class="text-3xl md:text-4xl font-black theme-text truncate pointer-events-none">Rp 0</h2>
         </div>
 
