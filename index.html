@@ -26,25 +26,21 @@
 </head>
 <body class="min-h-screen">
 
-  <header class="fixed top-0 left-0 w-full z-50 px-4 md:px-6 lg:px-8 py-4 pointer-events-none flex justify-center">
-    <!-- KUNCI PERBAIKAN: Tambahkan z-10 pada container relative ini -->
+ <header class="fixed top-0 left-0 w-full z-50 px-4 md:px-6 lg:px-8 py-4 pointer-events-none flex justify-center">
     <div class="w-full max-w-[1400px] flex justify-between items-center relative z-10">
       
-<!-- SHAPE BACKGROUND KHUSUS MOBILE (Warna Solid ngikutin tema) -->
+      <!-- SHAPE BACKGROUND KHUSUS MOBILE (Warna Solid ngikutin tema) -->
       <div class="absolute -inset-x-3 -inset-y-2 md:hidden theme-card rounded-3xl shadow-md -z-10 pointer-events-auto"></div>
+
+      <!-- KIRI: Logo & Tagline (Tanpa tanda baca, bersih & profesional) -->
       <div class="flex items-center gap-1.5 md:gap-3 pointer-events-auto">
         <h1 class="text-xl md:text-2xl font-black theme-text leading-none tracking-tight drop-shadow-sm border-r-2 border-gray-400/20 pr-2 md:pr-3 py-1">BeFAST</h1>
-        <p class="text-[9px] md:text-[11px] theme-text-muted font-bold drop-shadow-sm leading-tight">Catat Keuangan,<br>Semudah Bicara.</p>
+        <p class="text-[9px] md:text-[11px] theme-text-muted font-bold drop-shadow-sm leading-tight">Catat Keuangan<br>Semudah Bicara</p>
       </div>
       
-      <div class="hidden md:flex absolute left-1/2 -translate-x-1/2 items-center gap-3 theme-glass px-5 py-2.5 rounded-full shadow-sm pointer-events-auto">
-        <span class="flex items-center gap-1.5 text-xs font-bold text-green-600">
-          <div class="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]"></div> AI BeFAST Online
-        </span>
-        <span class="text-gray-300">|</span>
-        <span class="text-xs font-medium theme-text-muted">Siap membantumu kapan saja!</span>
-      </div>
+      <!-- TENGAH: Kapsul AI dihapus agar header lega dan tidak berisik -->
 
+      <!-- KANAN: Menu Navigasi -->
       <div class="flex items-center gap-3 pointer-events-auto relative">
         
         <div id="authLoggedOut" class="flex gap-2">
@@ -54,7 +50,7 @@
 
         <div id="authLoggedIn" class="hidden items-center gap-2 md:gap-2.5">
           
-          <!-- 1. Tombol Tema (Ukuran disesuaikan untuk HP) -->
+          <!-- 1. Tombol Tema -->
           <div class="relative">
             <button onclick="toggleThemeMenu(event)" class="w-9 h-9 md:w-10 md:h-10 rounded-full theme-glass shadow-sm flex items-center justify-center theme-text-muted hover:opacity-80 transition">
               <i class="fa-solid fa-palette text-sm"></i>
@@ -68,7 +64,7 @@
             </div>
           </div>
 
-          <!-- 2. Tombol Profil (Padding diperbaiki agar jadi lingkaran sempurna di HP) -->
+          <!-- 2. Tombol Profil -->
          <div onclick="document.getElementById('profileUpload').click()" class="flex items-center gap-2 md:gap-3 theme-glass p-1 md:px-4 md:py-1.5 rounded-full shadow-sm cursor-pointer hover:opacity-80 transition relative group" title="Ganti Foto Profil">
             <div class="w-7 h-7 rounded-full theme-bg-light flex items-center justify-center theme-primary overflow-hidden relative">
               <img id="userProfilePic" src="" class="w-full h-full object-cover hidden">
@@ -85,7 +81,7 @@
           <!-- INPUT FILE TERSEMBUNYI -->
           <input type="file" id="profileUpload" accept="image/*" class="hidden" onchange="handleProfileUpload(event)">
           
-          <!-- 3. Tombol Menu (Ukuran disesuaikan untuk HP) -->
+          <!-- 3. Tombol Menu -->
           <div class="relative">
             <button onclick="toggleUserMenu(event)" class="w-9 h-9 md:w-10 md:h-10 rounded-full theme-glass shadow-sm flex items-center justify-center theme-text-muted hover:opacity-80 transition">
               <i class="fa-solid fa-bars text-sm"></i>
@@ -104,8 +100,8 @@
           </div>
           
         </div>
-
       </div>
+
     </div>
   </header>
 
