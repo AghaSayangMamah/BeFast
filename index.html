@@ -243,7 +243,7 @@
       </form>
     </div>
   </div>
-  
+
   <!-- MODAL LOGIN & SIGNUP SAMA -->
   <div id="loginModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-center justify-center hidden z-50 p-4 transition-all">
     <div class="theme-card w-full max-w-sm p-8 relative shadow-2xl overflow-hidden rounded-3xl">
@@ -379,6 +379,21 @@
         </div>
       </div>
 
+    </div>
+  </div>
+
+  <!-- MODAL KONFIRMASI HAPUS -->
+  <div id="deleteConfirmModal" onclick="if(event.target === this) closeDeleteModal()" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-center justify-center hidden z-[80] p-4 transition-all">
+    <div class="theme-card w-full max-w-xs p-6 relative rounded-3xl shadow-2xl text-center">
+      <div class="w-14 h-14 mx-auto mb-4 bg-red-500/10 text-red-500 rounded-full flex items-center justify-center text-2xl shadow-inner"><i class="fa-solid fa-trash-can"></i></div>
+      <h3 class="font-black text-lg theme-text mb-1">Hapus Transaksi?</h3>
+      <p class="text-xs theme-text-muted mb-6">Tindakan ini tidak bisa dibatalkan.</p>
+      <div class="flex gap-3">
+        <!-- Tombol Tidak (Putih) -->
+        <button onclick="closeDeleteModal()" class="flex-1 py-3 bg-white text-gray-800 border border-gray-200 font-bold rounded-xl hover:bg-gray-100 transition shadow-sm text-sm">Tidak</button>
+        <!-- Tombol Iya (Sesuai Tema) -->
+        <button onclick="confirmDelete()" class="flex-1 py-3 theme-bg-primary font-bold rounded-xl hover:opacity-80 transition shadow-sm text-sm text-white">Iya, Hapus</button>
+      </div>
     </div>
   </div>
 

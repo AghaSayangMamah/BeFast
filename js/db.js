@@ -97,15 +97,37 @@ async function addManualTransaction(e) {
         toggleManualForm(); 
   }
 }
+// Variabel penyimpan ID sementara
+let pendingDeleteId = null;
 
-async function deleteSingleItem(id) {
-  if(!getCurrentUser()) return;
-  if(confirm('Hapus transaksi ini?')) {
-    updateSyncStatusUI(false, 'Hapus...');
-    await supabaseClient.from('transactions').delete().eq('id',id);
-    fetchTransactionsFromSupabase();
+window.deleteSingleItem = function(id) {
+  if (!getCurrentUser()) return;
+  pendingDeleteId = id; // Simpan ID yang mau dihapus
+  const modal = document.getElementById('deleteConfirmModal');
+  if (modal) modal.classList.remove('hidden'); // Munculkan pop-up cantik
+};
+
+window.closeDeleteModal = function() {
+  pendingDeleteId = null;
+  const modal = document.getElementById('deleteConfirmModal');
+  if (modal) modal.classList.add('hidden'); // Tutup pop-up
+};
+
+window.confirmDelete = async function() {
+  if (!pendingDeleteId) return;
+  const id = pendingDeleteId;
+  closeDeleteModal(); // Langsung tutup pop-up biar responsif
+
+  updateSyncStatusUI(false, 'Menghapus...');
+  const { error } = await supabaseClient.from('transactions').delete().eq('id', id);
+  
+  if (error) {
+    alert('Gagal menghapus data.');
+    updateSyncStatusUI(false, 'Gagal');
+  } else {
+    fetchTransactionsFromSupabase(); // Refresh list otomatis
   }
-}
+};
 
 function getCategoryIcon(cat) {
   if(cat.includes('Makanan')) return 'fa-utensils';
