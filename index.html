@@ -107,14 +107,21 @@
   </header>
 
 <main class="max-w-[1400px] mx-auto pt-24 pb-8 px-4 md:px-6 lg:px-8 flex flex-col md:grid md:grid-cols-3 gap-6 min-h-screen md:h-screen md:overflow-hidden">
-<aside class="glass-panel p-5 flex flex-col h-[500px] md:h-full md:min-w-[320px] order-3 md:order-1 mt-4 md:mt-0 min-h-0">         <div class="flex justify-between items-center mb-4 border-b border-gray-400/20 pb-3">
+<aside class="glass-panel p-5 flex flex-col h-[450px] md:h-full md:min-w-[320px] order-3 md:order-1 mt-4 md:mt-0">
+      
+      <!-- Header Riwayat -->
+      <div class="flex justify-between items-center mb-4 border-b border-gray-400/20 pb-3 shrink-0">
         <h3 class="font-black text-lg theme-text">Riwayat Transaksi</h3>
         <a href="riwayat.html" class="text-[10px] theme-bg-light theme-primary hover:opacity-80 transition px-3 py-1.5 rounded-full font-bold shadow-sm flex items-center gap-1">
           Lihat Semua <i class="fa-solid fa-arrow-right"></i>
         </a>
       </div>
-<div id="transactionList" class="flex-1 overflow-y-auto min-h-0 flex flex-col gap-3 pr-2 scrollbar-hide">    
-            <p class="text-sm text-center theme-text-muted mt-10">Memuat data...</p>
+      
+      <!-- List Transaksi dengan pengunci tinggi absolut max-h -->
+      <div class="flex-1 min-h-0 relative overflow-hidden">
+        <div id="transactionList" class="absolute inset-0 overflow-y-auto overscroll-contain flex flex-col gap-3 pr-2 scrollbar-hide">    
+          <p class="text-sm text-center theme-text-muted mt-10">Memuat data...</p>
+        </div>
       </div>
 
       <!-- TOMBOL GRAFIK & DOWNLOAD -->
@@ -128,7 +135,6 @@
       </div>
 
     </aside>
-
 <!-- KOLOM TENGAH: Hero & Voice Control -->
 <section class="flex flex-col items-center justify-center relative order-1 md:order-2 md:mt-0 mt-4">
       <div class="text-center mb-2 z-10">
@@ -164,12 +170,14 @@
           <h3 class="font-bold text-sm theme-text">Ringkasan Keuangan</h3>
         </div>
         
-<!-- Area Saldo Saat Ini -->
-        <div class="mb-6 cursor-pointer hover:opacity-80 transition active:scale-95 origin-left w-full overflow-hidden" onclick="showDetailAngka('Saldo Saat Ini', 'cardBalance')">
+<!-- Area Saldo Bersih -->
+        <!-- Hapus w-fit, ganti jadi w-full overflow-hidden agar terkurung rapi di dalam card -->
+        <div class="mb-6 cursor-pointer hover:opacity-80 transition active:scale-95 origin-left w-full overflow-hidden" onclick="showDetailAngka('Saldo Bersih', 'cardBalance')">
           <div class="flex items-center gap-2 mb-2">
             <div class="w-6 h-6 theme-bg-light theme-primary rounded flex items-center justify-center text-[10px]"><i class="fa-solid fa-wallet"></i></div>
-            <p class="text-xs font-bold theme-text-muted">Saldo Saat Ini <span class="text-[9px] opacity-70 font-normal">(Tap detail)</span></p>
+            <p class="text-xs font-bold theme-text-muted">Saldo Bersih <span class="text-[9px] opacity-70 font-normal">(Tap detail)</span></p>
           </div>
+          <!-- Kembalikan ke text-3xl agar lebih proporsional di HP, text-4xl di desktop -->
           <h2 id="cardBalance" class="text-3xl md:text-4xl font-black theme-text truncate pointer-events-none">Rp 0</h2>
         </div>
 
