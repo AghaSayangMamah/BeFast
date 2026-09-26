@@ -205,10 +205,13 @@
     </aside>
   </main>
 
-  <div id="manualInputModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-center justify-center hidden z-50 p-4 transition-all">
+  <div id="manualInputModal" onclick="if(event.target === this) toggleManualForm()" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-center justify-center hidden z-50 p-4 transition-all">
     <div class="theme-card w-full max-w-lg p-6 relative shadow-2xl rounded-3xl">
       <button onclick="toggleManualForm()" class="absolute top-4 right-4 theme-text-muted hover:text-red-500 bg-gray-500/10 rounded-full w-8 h-8 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
-      <h3 class="font-black text-lg theme-text mb-4"><i class="fa-solid fa-keyboard text-[#f59e0b]"></i> Input Manual</h3>
+      
+      <!-- Ikon keyboard dihapus, judul jadi lebih bersih -->
+      <h3 class="font-black text-lg theme-text mb-4">Input Manual</h3>
+      
       <form id="manualForm" onsubmit="addManualTransaction(event)" class="space-y-3">
         <div class="grid grid-cols-2 gap-3">
           <div>
@@ -240,7 +243,7 @@
       </form>
     </div>
   </div>
-
+  
   <!-- MODAL LOGIN & SIGNUP SAMA -->
   <div id="loginModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-center justify-center hidden z-50 p-4 transition-all">
     <div class="theme-card w-full max-w-sm p-8 relative shadow-2xl overflow-hidden rounded-3xl">
