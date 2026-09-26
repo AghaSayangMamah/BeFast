@@ -101,6 +101,9 @@ function parseNominal(str) {
   if (!str) return 0;
   let raw = str.toLowerCase().replace(/tanggal\s*\d{1,2}/gi, '').replace(/tahun\s*\d{4}/gi, '').replace(/rp|rupiah/gi, '').trim();
   
+  // BERSIHKAN PENGECOH: Buang angka yang diikuti kata porsi, bungkus, piring, atau orang agar tidak terbaca sebagai uang
+  raw = raw.replace(/\b\d+\s*(porsi|bungkus|piring|orang|buah|butir)\b/gi, '');
+
   // 1. JURUS PEMISAH: "20ribu" otomatis jadi "20 ribu"
   raw = raw.replace(/(\d+)([a-z]+)/gi, '$1 $2');
   
@@ -134,8 +137,6 @@ function parseNominal(str) {
     else if (cleanT === 'ratus') { if (tempVal === 0) tempVal = 1; currentGroup += tempVal * 100; tempVal = 0; foundNumber = true; }
     else if (cleanT === 'ribu' || cleanT === 'rb' || cleanT === 'k') { let groupSum = currentGroup + tempVal; if (groupSum === 0) groupSum = 1; grandTotal += groupSum * 1000; currentGroup = 0; tempVal = 0; foundNumber = true; }
     else if (cleanT === 'juta') { let groupSum = currentGroup + tempVal; if (groupSum === 0) groupSum = 1; grandTotal += groupSum * 1000000; currentGroup = 0; tempVal = 0; foundNumber = true; }
-    
-    // 3. JURUS KELAS SULTAN (Milyar udah masuk!)
     else if (cleanT === 'miliar' || cleanT === 'milyar') { let groupSum = currentGroup + tempVal; if (groupSum === 0) groupSum = 1; grandTotal += groupSum * 1000000000; currentGroup = 0; tempVal = 0; foundNumber = true; }
   }
   grandTotal += currentGroup + tempVal; if (foundNumber && grandTotal > 0) return Math.round(grandTotal); return 0;
@@ -159,10 +160,12 @@ function extractTransactionDetails(cmd, type) {
     .replace(/\b(kemarin|kemaren|hari ini|tanggal\s*\d{1,2})\b/gi, '')
     .replace(/\b(bulan|tahun)\s+(lalu|kemarin|ini)\b/gi, '')
     .replace(/rp\s*\d+([.,]\d+)?/gi, '') 
+    // HANYA HAPUS ANGKA YANG MENJADI NOMINAL HARGA (yang ada titik ribuan atau nominal besar), 
+    // biarkan angka kecil seperti "2" atau "10" yang melekat pada porsi tetap ada di deskripsi.
     .replace(/\b\d{1,3}(\.\d{3})+(,\d+)?\b|\b\d{1,3}(,\d{3})+(\.\d+)?\b/g, '')
-    // 4. BERSIHKAN SLANG DARI KETERANGAN (Biar nama barangnya ga kecampur kata 'gocap')
-    .replace(/\b(nol|satu|dua|tiga|empat|lima|enam|tujuh|delapan|sembilan|sepuluh|sebelas|belas|puluh|ratus|ribu|rb|k|juta|jt|miliar|milyar|setengah|se|sejuta|seribu|seratus|gocap|cepek|gopek|seceng|goceng|ceban|goban|pekgo|tigo)\b/gi, '')
-    .replace(/\b\d+\b/g, '')
+    .replace(/\b\d+\s*(ribu|rb|k|juta|jt)\b/gi, '')
+    // BERSIHKAN SLANG NOMINAL UANG
+    .replace(/\b(gocap|cepek|gopek|seceng|goceng|ceban|goban|pekgo|tigo)\b/gi, '')
     .replace(/[.,]/g, '')
     .replace(/\s+/g, ' ')
     .trim();
@@ -172,6 +175,7 @@ function extractTransactionDetails(cmd, type) {
   
   return { amount, desc, date: transactionDate };
 }
+
 function parseDateScopeFromCommand(cmd) {
   const monthNames = { 'januari': '01', 'jan': '01', 'februari': '02', 'feb': '02', 'maret': '03', 'mar': '03', 'april': '04', 'apr': '04', 'mei': '05', 'juni': '06', 'juli': '07', 'agustus': '08', 'agu': '08', 'september': '09', 'sep': '09', 'oktober': '10', 'okt': '10', 'november': '11', 'nov': '11', 'desember': '12', 'des': '12' };
   let periodLabel = "keseluruhan"; let filterFunc = () => true;
