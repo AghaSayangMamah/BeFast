@@ -141,3 +141,43 @@ span.flatpickr-weekday { color: var(--text-muted) !important; font-weight: 800 !
 .flatpickr-day:hover { background: var(--primary-light) !important; color: var(--primary) !important; }
 .flatpickr-day.selected { background: var(--primary) !important; color: white !important; }
 .flatpickr-day.today { border-color: #f59e0b !important; }
+
+/* --- CUSTOM SCROLLBAR ELEGAN & DIPAKSA MUNCUL --- */
+#transactionList {
+  scrollbar-width: thin; /* Untuk Firefox */
+  scrollbar-color: var(--primary) transparent; /* Untuk Firefox */
+}
+
+#transactionList::-webkit-scrollbar {
+  width: 6px !important;
+  display: block !important;
+}
+
+#transactionList::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+
+#transactionList::-webkit-scrollbar-thumb {
+  background: var(--primary) !important; /* Mengikuti warna utama tema yang aktif */
+  border-radius: 10px !important;
+  opacity: 0.8;
+}
+
+#transactionList::-webkit-scrollbar-thumb:hover {
+  background: var(--text-main) !important;
+}
+
+/* MEMAKSA SCROLLBAR MUNCUL PADA WADAH ABSOLUT */
+.absolute.inset-0::-webkit-scrollbar {
+  width: 5px !important;
+  display: block !important;
+}
+
+.absolute.inset-0::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+
+.absolute.inset-0::-webkit-scrollbar-thumb {
+  background: var(--primary) !important;
+  border-radius: 10px !important;
+}
