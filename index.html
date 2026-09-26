@@ -10,7 +10,6 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/id.js"></script>
@@ -29,29 +28,22 @@
  <header class="fixed top-0 left-0 w-full z-50 px-4 md:px-6 lg:px-8 py-4 pointer-events-none flex justify-center">
     <div class="w-full max-w-[1400px] flex justify-between items-center relative z-10">
       
-      <!-- SHAPE BACKGROUND KHUSUS MOBILE (Warna Solid ngikutin tema) -->
+      <!-- SHAPE BACKGROUND KHUSUS MOBILE -->
       <div class="absolute -inset-x-3 -inset-y-2 md:hidden theme-card rounded-3xl shadow-md -z-10 pointer-events-auto"></div>
       
-      <!-- KIRI: Logo & Tagline (Tanpa tanda baca, bersih & profesional) -->
-      <!-- Tambahan pl-2 (padding-left 8px) khusus di mobile agar tidak mepet shape -->
       <div class="flex items-center gap-1.5 md:gap-3 pointer-events-auto pl-2 md:pl-0">
         <h1 class="text-xl md:text-2xl font-black theme-text leading-none tracking-tight drop-shadow-sm border-r-2 border-gray-400/20 pr-2 md:pr-3 py-1">BeFAST</h1>
         <p class="text-[9px] md:text-[11px] theme-text-muted font-bold drop-shadow-sm leading-tight">Catat Keuangan<br>Semudah Bicara</p>
       </div>
-      
-      <!-- TENGAH: Kapsul AI dihapus agar header lega dan tidak berisik -->
 
-      <!-- KANAN: Menu Navigasi -->
       <div class="flex items-center gap-3 pointer-events-auto relative">
-        
         <div id="authLoggedOut" class="flex gap-2">
           <button onclick="openLoginModal()" class="px-4 py-2 theme-card theme-primary rounded-full text-xs font-bold shadow-sm transition">Masuk</button>
           <button onclick="openSignupModal()" class="px-4 py-2 theme-bg-primary rounded-full text-xs font-bold shadow-sm transition hover:opacity-80">Daftar</button>
         </div>
 
         <div id="authLoggedIn" class="hidden items-center gap-2 md:gap-2.5">
-          
-          <!-- 1. Tombol Tema -->
+          <!-- Tombol Tema -->
           <div class="relative">
             <button onclick="toggleThemeMenu(event)" class="w-9 h-9 md:w-10 md:h-10 rounded-full theme-glass shadow-sm flex items-center justify-center theme-text-muted hover:opacity-80 transition">
               <i class="fa-solid fa-palette text-sm"></i>
@@ -65,8 +57,8 @@
             </div>
           </div>
 
-          <!-- 2. Tombol Profil -->
-         <div onclick="document.getElementById('profileUpload').click()" class="flex items-center gap-2 md:gap-3 theme-glass p-1 md:px-4 md:py-1.5 rounded-full shadow-sm cursor-pointer hover:opacity-80 transition relative group" title="Ganti Foto Profil">
+          <!-- Tombol Profil -->
+          <div onclick="document.getElementById('profileUpload').click()" class="flex items-center gap-2 md:gap-3 theme-glass p-1 md:px-4 md:py-1.5 rounded-full shadow-sm cursor-pointer hover:opacity-80 transition relative group" title="Ganti Foto Profil">
             <div class="w-7 h-7 rounded-full theme-bg-light flex items-center justify-center theme-primary overflow-hidden relative">
               <img id="userProfilePic" src="" class="w-full h-full object-cover hidden">
               <i id="userProfileIcon" class="fa-solid fa-user text-xs"></i>
@@ -79,10 +71,9 @@
               <p class="text-[9px] theme-text-muted font-bold mt-0.5">Tetap Semangat!</p>
             </div>
           </div>
-          <!-- INPUT FILE TERSEMBUNYI -->
           <input type="file" id="profileUpload" accept="image/*" class="hidden" onchange="handleProfileUpload(event)">
           
-          <!-- 3. Tombol Menu -->
+          <!-- Tombol Menu -->
           <div class="relative">
             <button onclick="toggleUserMenu(event)" class="w-9 h-9 md:w-10 md:h-10 rounded-full theme-glass shadow-sm flex items-center justify-center theme-text-muted hover:opacity-80 transition">
               <i class="fa-solid fa-bars text-sm"></i>
@@ -99,17 +90,13 @@
               </button>
             </div>
           </div>
-          
         </div>
       </div>
-
     </div>
   </header>
 
 <main class="max-w-[1400px] mx-auto pt-24 pb-8 px-4 md:px-6 lg:px-8 flex flex-col md:grid md:grid-cols-3 gap-6 min-h-screen md:h-screen md:overflow-hidden">
-<aside class="glass-panel p-5 flex flex-col h-[450px] md:h-full md:min-w-[320px] order-3 md:order-1 mt-4 md:mt-0">
-      
-      <!-- Header Riwayat -->
+    <aside class="glass-panel p-5 flex flex-col h-[450px] md:h-full md:min-w-[320px] order-3 md:order-1 mt-4 md:mt-0">
       <div class="flex justify-between items-center mb-4 border-b border-gray-400/20 pb-3 shrink-0">
         <h3 class="font-black text-lg theme-text">Riwayat Transaksi</h3>
         <a href="riwayat.html" class="text-[10px] theme-bg-light theme-primary hover:opacity-80 transition px-3 py-1.5 rounded-full font-bold shadow-sm flex items-center gap-1">
@@ -117,14 +104,12 @@
         </a>
       </div>
       
-      <!-- List Transaksi dengan pengunci tinggi absolut max-h -->
       <div class="flex-1 min-h-0 relative overflow-hidden">
-          <div id="transactionList" class="absolute inset-0 overflow-y-auto overscroll-contain flex flex-col gap-3 pr-2">    
+        <div id="transactionList" class="absolute inset-0 overflow-y-auto overscroll-contain flex flex-col gap-3 pr-2">    
           <p class="text-sm text-center theme-text-muted mt-10">Memuat data...</p>
         </div>
       </div>
 
-      <!-- TOMBOL GRAFIK & DOWNLOAD -->
       <div class="grid grid-cols-2 gap-3 mt-4 pt-4 border-t border-gray-400/20 shrink-0">
         <button onclick="showChartModal()" class="flex items-center justify-center gap-2 py-2.5 theme-glass rounded-xl text-xs font-bold theme-text hover:opacity-80 transition shadow-sm border border-gray-400/20">
           <i class="fa-solid fa-chart-pie text-purple-500"></i> Lihat Grafik
@@ -133,10 +118,9 @@
           <i class="fa-solid fa-download"></i> Download
         </button>
       </div>
-
     </aside>
-<!-- KOLOM TENGAH: Hero & Voice Control -->
-<section class="flex flex-col items-center justify-center relative order-1 md:order-2 md:mt-0 mt-4">
+
+    <section class="flex flex-col items-center justify-center relative order-1 md:order-2 md:mt-0 mt-4">
       <div class="text-center mb-2 z-10">
         <p class="text-base font-bold theme-text-muted">Halo,</p>
         <h2 id="userGreetingCenter" class="text-4xl font-black theme-text leading-none">User 👋</h2>
@@ -146,9 +130,7 @@
         <div class="absolute inset-x-0 top-0 h-[280px] z-20 flex items-center justify-center pointer-events-none">
           <img src="mascot-3d.png" alt="BeFAST Mascot" class="w-56 h-56 object-contain drop-shadow-2xl animate-float">
         </div>
-
         <div class="absolute bottom-10 w-36 h-36 theme-bg-light rounded-full blur-2xl animate-pulse z-10 pointer-events-none opacity-50"></div>
-        
         <div class="relative z-30 flex flex-col items-center mt-auto">
           <button id="btnMic" class="w-20 h-20 theme-bg-primary rounded-full text-3xl flex items-center justify-center hover:scale-105 transition-all duration-300 border border-white/30 relative group mic-idle">
             <i class="fa-solid fa-microphone relative z-10"></i>
@@ -164,24 +146,20 @@
       </div>
     </section>
 
-<aside class="flex flex-col gap-5 md:h-full order-2 md:order-3">
-        <div class="glass-panel p-6 relative flex-grow flex flex-col">
+    <aside class="flex flex-col gap-5 md:h-full order-2 md:order-3">
+      <div class="glass-panel p-6 relative flex-grow flex flex-col">
         <div class="flex justify-between items-center mb-6">
           <h3 class="font-bold text-sm theme-text">Ringkasan Keuangan</h3>
         </div>
         
-<!-- Area Saldo Bersih -->
-        <!-- Hapus w-fit, ganti jadi w-full overflow-hidden agar terkurung rapi di dalam card -->
-        <div class="mb-6 cursor-pointer hover:opacity-80 transition active:scale-95 origin-left w-full overflow-hidden" onclick="showDetailAngka('Saldo Bersih', 'cardBalance')">
+        <div class="mb-6 cursor-pointer hover:opacity-80 transition active:scale-95 origin-left w-full overflow-hidden" onclick="showDetailAngka('Saldo Saat Ini', 'cardBalance')">
           <div class="flex items-center gap-2 mb-2">
             <div class="w-6 h-6 theme-bg-light theme-primary rounded flex items-center justify-center text-[10px]"><i class="fa-solid fa-wallet"></i></div>
-            <p class="text-xs font-bold theme-text-muted">Saldo Bersih <span class="text-[9px] opacity-70 font-normal">(Tap detail)</span></p>
+            <p class="text-xs font-bold theme-text-muted">Saldo Saat Ini <span class="text-[9px] opacity-70 font-normal">(Tap detail)</span></p>
           </div>
-          <!-- Kembalikan ke text-3xl agar lebih proporsional di HP, text-4xl di desktop -->
           <h2 id="cardBalance" class="text-3xl md:text-4xl font-black theme-text truncate pointer-events-none">Rp 0</h2>
         </div>
 
-        <!-- Area Pemasukan & Pengeluaran -->
         <div class="grid grid-cols-2 gap-4 mb-4">
           <div onclick="showDetailAngka('Total Pemasukan', 'cardIncome')" class="theme-card p-4 rounded-2xl relative overflow-hidden cursor-pointer hover:opacity-80 transition active:scale-95" style="border-color: rgba(16,185,129,0.3)">
             <div class="w-6 h-6 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-[10px] mb-3 pointer-events-none"><i class="fa-solid fa-arrow-up"></i></div>
@@ -218,11 +196,11 @@
     </aside>
   </main>
 
+  <!-- MODAL INPUT MANUAL -->
   <div id="manualInputModal" onclick="if(event.target === this) toggleManualForm()" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-center justify-center hidden z-50 p-4 transition-all">
     <div class="theme-card w-full max-w-lg p-6 relative shadow-2xl rounded-3xl">
       <button onclick="toggleManualForm()" class="absolute top-4 right-4 theme-text-muted hover:text-red-500 bg-gray-500/10 rounded-full w-8 h-8 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
       
-      <!-- Ikon keyboard dihapus, judul jadi lebih bersih -->
       <h3 class="font-black text-lg theme-text mb-4">Input Manual</h3>
       
       <form id="manualForm" onsubmit="addManualTransaction(event)" class="space-y-3">
@@ -238,26 +216,57 @@
               <input type="hidden" id="manualType" value="pengeluaran">
             </div>
           </div>
-          <div><label class="block text-xs font-bold theme-text-muted mb-1">Tanggal</label><input type="text" id="manualDate" class="w-full p-2.5 rounded-xl border border-gray-400/20 bg-transparent text-xs font-bold theme-text outline-none cursor-pointer" placeholder="Pilih Tanggal" required></div>
+          <div>
+            <label class="block text-xs font-bold theme-text-muted mb-1">Tanggal</label>
+            <input type="text" id="manualDate" class="w-full p-2.5 rounded-xl border border-gray-400/20 bg-transparent text-xs font-bold theme-text outline-none cursor-pointer" placeholder="Pilih Tanggal" required>
+          </div>
         </div>
+
+        <!-- KATEGORI DINAMIS BERDASARKAN JENIS TRANSAKSI -->
         <div>
           <label class="block text-xs font-bold theme-text-muted mb-1">Kategori</label>
           <div class="relative custom-dropdown" data-id="manualCategory">
             <div class="w-full p-2.5 rounded-xl border border-gray-400/20 bg-transparent text-xs font-bold theme-text flex justify-between items-center cursor-pointer select-trigger transition"><span class="selected-text">✨ Otomatis (AI)</span><i class="fa-solid fa-chevron-down theme-text-muted text-[10px]"></i></div>
-            <ul class="absolute z-20 w-full mt-1 border border-gray-400/20 theme-card rounded-xl shadow-xl hidden options-list overflow-y-auto max-h-48 py-1">
-              <li class="px-4 py-2 text-xs font-bold cursor-pointer theme-text hover:opacity-70" data-value="Otomatis">✨ Otomatis (AI)</li><li class="px-4 py-2 text-xs font-bold cursor-pointer theme-text hover:opacity-70" data-value="Makanan & Minuman">🍔 Makanan & Minuman</li><li class="px-4 py-2 text-xs font-bold cursor-pointer theme-text hover:opacity-70" data-value="Transportasi">🚗 Transportasi</li><li class="px-4 py-2 text-xs font-bold cursor-pointer theme-text hover:opacity-70" data-value="Belanja">🛍️ Belanja</li><li class="px-4 py-2 text-xs font-bold cursor-pointer theme-text hover:opacity-70" data-value="Tagihan & Utilitas">💡 Tagihan & Utilitas</li><li class="px-4 py-2 text-xs font-bold cursor-pointer theme-text hover:opacity-70" data-value="Hiburan & Hobi">🎮 Hiburan & Hobi</li>
+            
+            <!-- LIST KATEGORI PENGELUARAN -->
+            <ul id="categoryListExpense" class="absolute z-20 w-full mt-1 border border-gray-400/20 theme-card rounded-xl shadow-xl hidden options-list overflow-y-auto max-h-48 py-1">
+              <li class="px-4 py-2 text-xs font-bold cursor-pointer theme-text hover:opacity-70" data-value="Otomatis">✨ Otomatis (AI)</li>
+              <li class="px-4 py-2 text-xs font-bold cursor-pointer theme-text hover:opacity-70" data-value="Makanan & Minuman">🍔 Makanan & Minuman</li>
+              <li class="px-4 py-2 text-xs font-bold cursor-pointer theme-text hover:opacity-70" data-value="Transportasi">🚗 Transportasi</li>
+              <li class="px-4 py-2 text-xs font-bold cursor-pointer theme-text hover:opacity-70" data-value="Belanja">🛍️ Belanja</li>
+              <li class="px-4 py-2 text-xs font-bold cursor-pointer theme-text hover:opacity-70" data-value="Tagihan & Utilitas">💡 Tagihan & Utilitas</li>
+              <li class="px-4 py-2 text-xs font-bold cursor-pointer theme-text hover:opacity-70" data-value="Hiburan & Hobi">🎮 Hiburan & Hobi</li>
+              <li class="px-4 py-2 text-xs font-bold cursor-pointer theme-text hover:opacity-70" data-value="Kesehatan & Edukasi">💊 Kesehatan & Edukasi</li>
+              <li class="px-4 py-2 text-xs font-bold cursor-pointer theme-text hover:opacity-70" data-value="Lain-lain">📦 Lain-lain</li>
             </ul>
+
+            <!-- LIST KATEGORI PEMASUKAN -->
+            <ul id="categoryListIncome" class="absolute z-20 w-full mt-1 border border-gray-400/20 theme-card rounded-xl shadow-xl hidden options-list overflow-y-auto max-h-48 py-1">
+              <li class="px-4 py-2 text-xs font-bold cursor-pointer theme-text hover:opacity-70" data-value="Otomatis">✨ Otomatis (AI)</li>
+              <li class="px-4 py-2 text-xs font-bold cursor-pointer theme-text hover:opacity-70" data-value="Pendapatan">💰 Pendapatan / Gaji</li>
+              <li class="px-4 py-2 text-xs font-bold cursor-pointer theme-text hover:opacity-70" data-value="Bonus & THR">🎁 Bonus & THR</li>
+              <li class="px-4 py-2 text-xs font-bold cursor-pointer theme-text hover:opacity-70" data-value="Investasi & Cuan">📈 Investasi & Cuan</li>
+              <li class="px-4 py-2 text-xs font-bold cursor-pointer theme-text hover:opacity-70" data-value="Pemasukan Lain">💵 Pemasukan Lain</li>
+            </ul>
+
             <input type="hidden" id="manualCategory" value="Otomatis">
           </div>
         </div>
-        <div><label class="block text-xs font-bold theme-text-muted mb-1">Keterangan</label><input type="text" id="manualDesc" placeholder="Contoh: Beli kopi" class="w-full p-2.5 rounded-xl border border-gray-400/20 bg-transparent text-xs font-bold theme-text outline-none" required></div>
-        <div><label class="block text-xs font-bold theme-text-muted mb-1">Nominal (Rp)</label><input type="text" inputmode="numeric" id="manualAmount" placeholder="25.000" oninput="formatCurrencyInput(this)" class="w-full p-2.5 rounded-xl border border-gray-400/20 bg-transparent text-xs font-bold theme-text outline-none" required></div>
+
+        <div>
+          <label class="block text-xs font-bold theme-text-muted mb-1">Keterangan</label>
+          <input type="text" id="manualDesc" placeholder="Contoh: Beli kopi" class="w-full p-2.5 rounded-xl border border-gray-400/20 bg-transparent text-xs font-bold theme-text outline-none" required>
+        </div>
+        <div>
+          <label class="block text-xs font-bold theme-text-muted mb-1">Nominal (Rp)</label>
+          <input type="text" inputmode="numeric" id="manualAmount" placeholder="25.000" oninput="formatCurrencyInput(this)" class="w-full p-2.5 rounded-xl border border-gray-400/20 bg-transparent text-xs font-bold theme-text outline-none" required>
+        </div>
         <button type="submit" class="w-full py-3 mt-2 theme-bg-primary rounded-xl transition shadow hover:opacity-80">Simpan Transaksi</button>
       </form>
     </div>
   </div>
 
-  <!-- MODAL LOGIN & SIGNUP SAMA -->
+  <!-- MODAL LOGIN & SIGNUP -->
   <div id="loginModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-center justify-center hidden z-50 p-4 transition-all">
     <div class="theme-card w-full max-w-sm p-8 relative shadow-2xl overflow-hidden rounded-3xl">
       <button onclick="closeLoginModal()" class="absolute top-4 right-4 theme-text-muted hover:opacity-70 bg-gray-500/10 rounded-full w-8 h-8 flex items-center justify-center z-20"><i class="fa-solid fa-xmark"></i></button>
@@ -271,7 +280,7 @@
             <i id="loginEye" class="fa-solid fa-eye text-sm"></i>
           </button>
         </div>
-          <button type="submit" id="btnLoginSubmit" class="w-full py-3.5 theme-bg-primary text-sm font-black rounded-full hover:opacity-80 transition shadow-lg">Masuk Sekarang</button>
+        <button type="submit" id="btnLoginSubmit" class="w-full py-3.5 theme-bg-primary text-sm font-black rounded-full hover:opacity-80 transition shadow-lg">Masuk Sekarang</button>
       </form>
       <div class="mt-6 pt-4 border-t border-gray-400/20 text-center text-sm font-semibold theme-text-muted relative z-10">Belum punya akun? <button onclick="switchAuthModal('signup')" class="theme-primary font-black hover:underline">Daftar</button></div>
     </div>
@@ -283,35 +292,30 @@
       <div class="flex flex-col items-center mb-5 relative z-10 mt-2"><div class="w-14 h-14 mb-2 theme-bg-light rounded-2xl flex items-center justify-center p-1.5"><img src="mascot-3d.png" class="w-full h-full object-contain"></div><h3 class="font-black text-xl theme-primary">Daftar Baru</h3></div>
       <div id="signupAlert" class="hidden mb-4 p-3 rounded-full text-xs font-semibold z-10 relative"></div>
       <form onsubmit="handleSignup(event)" class="space-y-3 z-10 relative">
-        <input type="text" id="signupName" name="nickname" required autocomplete="off" placeholder="Username bebas (tanpa spasi)" oninput="this.value = this.value.toLowerCase().replace(/\s/g, '')" class="w-full p-3 rounded-full border border-gray-400/20 bg-transparent theme-text text-sm font-semibold">        <input type="email" id="signupEmail" required placeholder="Email" class="w-full p-3 rounded-full border border-gray-400/20 bg-transparent theme-text text-sm font-bold">
+        <input type="text" id="signupName" name="nickname" required autocomplete="off" placeholder="Username bebas (tanpa spasi)" oninput="this.value = this.value.toLowerCase().replace(/\s/g, '')" class="w-full p-3 rounded-full border border-gray-400/20 bg-transparent theme-text text-sm font-semibold">
+        <input type="email" id="signupEmail" required placeholder="Email" class="w-full p-3 rounded-full border border-gray-400/20 bg-transparent theme-text text-sm font-bold">
         <input type="tel" id="signupPhone" required placeholder="Nomor HP" class="w-full p-3 rounded-full border border-gray-400/20 bg-transparent theme-text text-sm font-bold">
-<div class="relative">
+        <div class="relative">
           <input type="password" id="signupPassword" required minlength="6" placeholder="Kata Sandi (Min 6)" class="w-full p-3 pr-12 rounded-full border border-gray-400/20 bg-transparent theme-text text-sm font-bold">
           <button type="button" onclick="togglePassword('signupPassword', 'signupEye')" class="absolute right-4 top-1/2 -translate-y-1/2 theme-text-muted hover:theme-primary transition flex items-center justify-center">
             <i id="signupEye" class="fa-solid fa-eye text-sm"></i>
           </button>
         </div>
-          <button type="submit" id="btnSignupSubmit" class="w-full py-3.5 mt-4 theme-bg-primary text-sm font-bold rounded-full hover:opacity-80 transition shadow-lg">Buat Akun</button>
+        <button type="submit" id="btnSignupSubmit" class="w-full py-3.5 mt-4 theme-bg-primary text-sm font-bold rounded-full hover:opacity-80 transition shadow-lg">Buat Akun</button>
       </form>
     </div>
   </div>
-<!-- MODAL PANDUAN SUARA DENGAN HEADER STICKY -->
+
+  <!-- MODAL PANDUAN SUARA -->
   <div id="guideModal" onclick="if(event.target === this) closeGuideModal()" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-center justify-center hidden z-50 p-4 transition-all">
-    
-    <!-- KONTROL UTAMA MODAL (overflow-hidden agar rapi) -->
     <div class="theme-card w-full max-w-4xl relative max-h-[85vh] flex flex-col rounded-3xl shadow-2xl overflow-hidden">
-      
-      <!-- HEADER YANG DIAM DI ATAS (STICKY) -->
       <div class="flex justify-between items-center px-6 py-5 md:px-8 border-b border-gray-400/20 theme-card sticky top-0 z-20 shrink-0">
         <h3 class="font-black text-xl theme-text">Panduan Suara Lengkap</h3>
         <button onclick="closeGuideModal()" class="w-8 h-8 bg-gray-500/10 hover:bg-red-500/20 hover:text-red-500 rounded-full theme-text-muted transition flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
       </div>
       
-      <!-- ISI KONTEN YANG BISA DIGULIR (SCROLLABLE) -->
       <div class="p-6 md:p-8 overflow-y-auto no-scrollbar flex-1">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5 text-sm theme-text">
-          
-          <!-- 1. Catat (Input) -->
           <div class="theme-glass p-5 rounded-2xl border border-gray-400/20">
             <h4 class="font-bold theme-primary mb-3 flex items-center gap-2"><i class="fa-solid fa-plus-circle"></i> Catat Transaksi</h4>
             <ul class="space-y-3">
@@ -332,7 +336,6 @@
             </ul>
           </div>
 
-          <!-- 2. Ubah (Edit) -->
           <div class="theme-glass p-5 rounded-2xl border border-gray-400/20">
             <h4 class="font-bold theme-primary mb-3 flex items-center gap-2"><i class="fa-solid fa-pen-to-square"></i> Ubah Transaksi</h4>
             <p class="text-[10px] theme-text-muted mb-3 leading-snug">Jika ada transaksi kembar, sistem otomatis meminta kamu memilihnya.</p>
@@ -354,7 +357,6 @@
             </ul>
           </div>
 
-          <!-- 3. Hapus (Delete) -->
           <div class="theme-glass p-5 rounded-2xl border border-gray-400/20">
             <h4 class="font-bold theme-primary mb-3 flex items-center gap-2"><i class="fa-solid fa-trash-can"></i> Hapus Transaksi</h4>
             <ul class="space-y-3">
@@ -375,7 +377,6 @@
             </ul>
           </div>
 
-          <!-- 4. Cek (Laporan/Grafik) -->
           <div class="theme-glass p-5 rounded-2xl border border-gray-400/20">
             <h4 class="font-bold theme-primary mb-3 flex items-center gap-2"><i class="fa-solid fa-chart-pie"></i> Cek & Laporan</h4>
             <ul class="space-y-3">
@@ -395,10 +396,8 @@
               </li>
             </ul>
           </div>
-
         </div>
         
-        <!-- Info Tambahan Slang -->
         <div class="mt-5 p-4 bg-[#f59e0b]/10 border border-[#f59e0b]/30 rounded-xl flex items-start gap-3">
           <i class="fa-solid fa-lightbulb text-[#f59e0b] mt-0.5"></i>
           <div>
@@ -406,9 +405,7 @@
             <p class="text-[11px] theme-text-muted">Gunakan nominal slang: <span class="font-bold">gocap</span>, <span class="font-bold">cepek</span>, <span class="font-bold">gopek</span>, <span class="font-bold">ceban</span>, hingga <span class="font-bold">miliar</span>. Gunakan juga waktu seperti <span class="font-bold">"kemarin"</span>, <span class="font-bold">"bulan lalu"</span>, atau <span class="font-bold">"tanggal 15"</span>. AI memahaminya!</p>
           </div>
         </div>
-
       </div>
-
     </div>
   </div>
 
@@ -419,15 +416,13 @@
       <h3 class="font-black text-lg theme-text mb-1">Hapus Transaksi?</h3>
       <p class="text-xs theme-text-muted mb-6">Tindakan ini tidak bisa dibatalkan.</p>
       <div class="flex gap-3">
-        <!-- Tombol Tidak (Putih) -->
         <button onclick="closeDeleteModal()" class="flex-1 py-3 bg-white text-gray-800 border border-gray-200 font-bold rounded-xl hover:bg-gray-100 transition shadow-sm text-sm">Tidak</button>
-        <!-- Tombol Iya (Sesuai Tema) -->
         <button onclick="confirmDelete()" class="flex-1 py-3 theme-bg-primary font-bold rounded-xl hover:opacity-80 transition shadow-sm text-sm text-white">Iya, Hapus</button>
       </div>
     </div>
   </div>
 
-  <!-- MODAL AMBIGUITAS (Khusus Mobile) -->
+  <!-- MODAL AMBIGUITAS -->
   <div id="ambiguityModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-md flex items-center justify-center hidden z-[70] p-4 transition-all">
     <div class="theme-card w-full max-w-sm p-6 relative rounded-3xl shadow-2xl flex flex-col max-h-[80vh]">
       <div class="flex justify-between items-center mb-4 border-b border-gray-400/20 pb-3">
@@ -435,13 +430,11 @@
         <button onclick="cancelAmbiguity()" class="w-8 h-8 bg-gray-500/10 rounded-full theme-text-muted hover:opacity-70 transition flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <p class="text-xs theme-text-muted mb-4 font-bold">Ada beberapa data yang mirip. Tekan salah satu yang ingin kamu proses:</p>
-      <div id="ambiguityList" class="flex-1 overflow-y-auto space-y-3 pr-1 scrollbar-hide">
-        <!-- List kembaran akan otomatis masuk ke sini via Javascript -->
-      </div>
+      <div id="ambiguityList" class="flex-1 overflow-y-auto space-y-3 pr-1 scrollbar-hide"></div>
     </div>
   </div>
 
-<!-- MODAL VERIFIKASI EMAIL (Ditambahkan agar animasi 3 detik berjalan) -->
+  <!-- MODAL VERIFIKASI EMAIL -->
   <div id="verifyEmailModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-md flex items-center justify-center hidden z-[60] p-4 transition-all">
     <div class="theme-card w-full max-w-sm p-6 md:p-8 relative shadow-2xl overflow-hidden text-center rounded-3xl">
       <div class="w-16 h-16 mx-auto mb-4 bg-green-100 text-[#10b981] rounded-full flex items-center justify-center text-3xl shadow-inner"><i class="fa-solid fa-envelope-open-text"></i></div>
@@ -454,7 +447,7 @@
     </div>
   </div>
 
-  <!-- MODAL DETAIL ANGKA (MUNCUL SAAT DI TAP) -->
+  <!-- MODAL DETAIL ANGKA -->
   <div id="detailAngkaModal" onclick="if(event.target === this) this.classList.add('hidden')" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-center justify-center hidden z-[90] p-4 transition-all">
     <div class="theme-card w-full max-w-xs p-6 relative rounded-3xl shadow-2xl text-center">
       <button onclick="document.getElementById('detailAngkaModal').classList.add('hidden')" class="absolute top-4 right-4 w-8 h-8 bg-gray-500/10 rounded-full flex items-center justify-center theme-text-muted hover:opacity-70 transition"><i class="fa-solid fa-xmark"></i></button>
@@ -465,16 +458,11 @@
   </div>
 
   <script>
-    // FUNGSI UNTUK MENAMPILKAN ANGKA FULL KE DALAM MODAL
     function showDetailAngka(title, elementId) {
-      // Ambil angka mentah dari teks yang terpotong (walaupun terpotong ... di layar, isi aslinya tetap full)
       const val = document.getElementById(elementId).textContent;
       document.getElementById('detailAngkaTitle').innerText = title;
-      
       const valEl = document.getElementById('detailAngkaValue');
       valEl.innerText = val;
-      
-      // Kasih warna dinamis sesuai jenis uangnya
       if (elementId === 'cardIncome') {
         valEl.className = "text-2xl font-black break-words text-green-500";
       } else if (elementId === 'cardExpense') {
@@ -482,7 +470,6 @@
       } else {
         valEl.className = "text-2xl font-black break-words theme-text";
       }
-      
       document.getElementById('detailAngkaModal').classList.remove('hidden');
     }
   </script>

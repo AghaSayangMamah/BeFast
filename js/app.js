@@ -185,12 +185,67 @@ function updateAIInsight() {
 function formatCurrencyInput(input) { let v = input.value.replace(/\D/g, ''); if (v) v = parseInt(v, 10).toLocaleString('id-ID'); input.value = v; }
 
 function setupCustomDropdowns() {
-  document.addEventListener('click', e => { const isD = e.target.closest('.custom-dropdown'); document.querySelectorAll('.options-list').forEach(l => { if (!isD || l !== isD.closest('.custom-dropdown').querySelector('.options-list')) l.classList.add('hidden'); }); });
+  document.addEventListener('click', e => { 
+    const isD = e.target.closest('.custom-dropdown'); 
+    document.querySelectorAll('.options-list').forEach(l => { 
+      if (!isD || l !== isD.closest('.custom-dropdown').querySelector('.options-list:not(.hidden)')) {
+        // Jangan tutup jika itu list kategori yang aktif
+      }
+    }); 
+  });
+
   document.querySelectorAll('.custom-dropdown').forEach(d => {
-    const t = d.querySelector('.select-trigger'); const l = d.querySelector('.options-list'); if (!t || !l) return;
-    const s = t.querySelector('.selected-text'); const h = d.dataset.id ? document.getElementById(d.dataset.id) : null;
-    t.addEventListener('click', (e) => { e.stopPropagation(); l.classList.toggle('hidden'); });
-    l.querySelectorAll('li').forEach(o => { o.addEventListener('click', () => { if (s && h) { s.innerHTML = o.innerHTML; h.value = o.dataset.value || o.innerText.trim(); } l.classList.add('hidden'); }); });
+    const t = d.querySelector('.select-trigger'); 
+    if (!t) return;
+    const s = t.querySelector('.selected-text'); 
+    const h = d.dataset.id ? document.getElementById(d.dataset.id) : null;
+    
+    t.addEventListener('click', (e) => { 
+      e.stopPropagation(); 
+      // Tutup dropdown lain dulu
+      document.querySelectorAll('.options-list').forEach(l => {
+        if(l.parentElement !== d) l.classList.add('hidden');
+      });
+
+      if (d.dataset.id === 'manualCategory') {
+        const typeVal = document.getElementById('manualType').value;
+        const expList = document.getElementById('categoryListExpense');
+        const incList = document.getElementById('categoryListIncome');
+        if (typeVal === 'pemasukan') {
+          if(incList) incList.classList.toggle('hidden');
+          if(expList) expList.classList.add('hidden');
+        } else {
+          if(expList) expList.classList.toggle('hidden');
+          if(incList) incList.classList.add('hidden');
+        }
+      } else {
+        const l = d.querySelector('.options-list');
+        if(l) l.classList.toggle('hidden');
+      }
+    });
+
+    // Handle klik pada pilihan item dropdown
+    d.querySelectorAll('.options-list li').forEach(o => { 
+      o.addEventListener('click', () => { 
+        if (s && h) { 
+          s.innerHTML = o.innerHTML; 
+          h.value = o.dataset.value || o.innerText.trim(); 
+        } 
+        
+        // Sembunyikan semua list setelah dipilih
+        d.querySelectorAll('.options-list').forEach(l => l.classList.add('hidden'));
+
+        // JIKA YANG DIPILIH ADALAH JENIS TRANSAKSI (Pemasukan/Pengeluaran), RESET KATEGORI KE OTOMATIS
+        if (d.dataset.id === 'manualType') {
+          const catTrigger = document.querySelector('[data-id="manualCategory"] .selected-text');
+          const catInput = document.getElementById('manualCategory');
+          if(catTrigger && catInput) {
+            catTrigger.innerText = "✨ Otomatis (AI)";
+            catInput.value = "Otomatis";
+          }
+        }
+      }); 
+    });
   });
 }
 
