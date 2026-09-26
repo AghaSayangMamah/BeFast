@@ -161,18 +161,18 @@ function renderData() {
     const bg = t.type === 'pemasukan' ? 'bg-green-500/10 text-green-500' : 'bg-orange-500/10 text-orange-500';
     const catIcon = getCategoryIcon(t.category);
     
-    const row = document.createElement('div');
+const row = document.createElement('div');
     row.className = "flex items-center justify-between p-3 theme-bg-light rounded-xl hover:opacity-80 transition cursor-pointer mb-2 border border-gray-400/10 shadow-sm shrink-0 group";
     
     row.innerHTML = `
-      <div class="flex items-center gap-3 w-full">
+      <div class="flex items-center gap-3 min-w-0 flex-grow pr-2">
         <div class="w-10 h-10 rounded-lg flex-shrink-0 ${bg} flex items-center justify-center text-sm"><i class="fa-solid ${catIcon}"></i></div>
-        <div class="flex flex-col flex-grow min-w-0">
-           <h4 class="font-bold text-sm theme-text truncate pr-2">${t.desc}</h4>
-           <p class="text-[10px] theme-text-muted font-medium">${t.date} • ${t.category}</p>
+        <div class="flex flex-col min-w-0 flex-grow">
+           <h4 class="font-bold text-sm theme-text truncate">${t.desc}</h4>
+           <p class="text-[10px] theme-text-muted font-medium truncate">${t.date} • ${t.category}</p>
         </div>
       </div>
-      <div class="flex flex-col items-end flex-shrink-0">
+      <div class="flex flex-col items-end flex-shrink-0 pl-2">
          <p class="font-black text-sm ${col} whitespace-nowrap">${sign} Rp ${t.amount.toLocaleString('id-ID')}</p>
          <button onclick="deleteSingleItem('${t.id}')" class="text-[9px] text-red-500/70 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity mt-1 font-bold">Hapus</button>
       </div>`;
