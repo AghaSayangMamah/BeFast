@@ -457,6 +457,12 @@
     </div>
   </div>
 
+  <!-- TOAST NOTIFIKASI UNDO DELETE -->
+  <div id="undoToast" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-900/90 text-white px-5 py-3 rounded-2xl shadow-2xl z-[100] hidden flex items-center gap-4 transition-all duration-300 backdrop-blur-md border border-white/10">
+    <span id="undoText" class="text-xs font-semibold">Transaksi dihapus.</span>
+    <button onclick="executeUndoDelete()" class="bg-[#496af1] hover:opacity-80 text-white text-xs font-black px-3 py-1.5 rounded-xl transition shadow-sm cursor-pointer">Batalkan</button>
+  </div>
+
   <script>
     function showDetailAngka(title, elementId) {
       const val = document.getElementById(elementId).textContent;
