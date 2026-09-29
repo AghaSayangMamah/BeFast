@@ -106,7 +106,7 @@ function renderData() {
   transactions.sort((a, b) => {
     const dateDiff = new Date(b.date) - new Date(a.date);
     if (dateDiff !== 0) return dateDiff;
-    return Number(b.id) - Number(id.id); 
+    return Number(b.id) - Number(a.id); 
   });
 
   const container = document.getElementById('transactionList'); 
