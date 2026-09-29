@@ -279,6 +279,11 @@
             <i id="loginEye" class="fa-solid fa-eye text-sm"></i>
           </button>
         </div>
+        <!-- TAMBAHKAN BARIS INI SUPAYA TOMBOL LUPA SANDI MUNCUL -->
+        <div class="text-right">
+          <button type="button" onclick="openForgotEmailModal()" class="text-xs font-bold theme-primary hover:underline">Lupa kata sandi?</button>
+        </div>
+
         <button type="submit" id="btnLoginSubmit" class="w-full py-3.5 theme-bg-primary text-sm font-black rounded-full hover:opacity-80 transition shadow-lg">Masuk Sekarang</button>
       </form>
       <div class="mt-6 pt-4 border-t border-gray-400/20 text-center text-sm font-semibold theme-text-muted relative z-10">Belum punya akun? <button onclick="switchAuthModal('signup')" class="theme-primary font-black hover:underline">Daftar</button></div>
@@ -480,6 +485,61 @@
           <button onclick="nextOnboardingStep()" id="tourNextBtn" class="px-5 py-2.5 theme-bg-primary text-xs font-black rounded-xl shadow hover:opacity-80 transition">Lanjut</button>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- MODAL 1: INPUT EMAIL UNTUK LUPA SANDI -->
+  <div id="forgotEmailModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-md flex items-center justify-center hidden z-[120] p-4 transition-all">
+    <div class="theme-card w-full max-w-sm p-8 relative shadow-2xl rounded-3xl text-center">
+      <button onclick="closeForgotEmailModal()" class="absolute top-4 right-4 theme-text-muted hover:opacity-70 bg-gray-500/10 rounded-full w-8 h-8 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+      <div class="w-14 h-14 mx-auto mb-3 bg-blue-500/10 text-blue-500 rounded-full flex items-center justify-center text-2xl shadow-inner"><i class="fa-solid fa-envelope-circle-check"></i></div>
+      <h3 class="font-black text-xl theme-primary mb-2">Lupa Kata Sandi?</h3>
+      <p class="text-xs theme-text-muted mb-6">Masukkan email yang terdaftar pada akun kamu untuk menerima tautan pemulihan.</p>
+      
+      <form onsubmit="handleSendResetEmail(event)" class="space-y-4">
+        <div id="forgotAlert" class="hidden"></div>
+        <input type="email" id="forgotEmailInput" required placeholder="Masukkan Email Kamu" class="w-full p-3.5 rounded-full border border-gray-400/20 bg-transparent text-sm theme-text outline-none font-bold">
+        <button type="submit" id="btnSendReset" class="w-full py-3.5 theme-bg-primary text-sm font-black rounded-full hover:opacity-80 transition shadow-lg">Kirim Tautan Reset</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 2: NOTIFIKASI EMAIL TERKIRIM -->
+  <div id="forgotSuccessModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-md flex items-center justify-center hidden z-[120] p-4 transition-all">
+    <div class="theme-card w-full max-w-sm p-8 relative shadow-2xl rounded-3xl text-center">
+      <div class="w-16 h-16 mx-auto mb-4 bg-green-100 text-[#10b981] rounded-full flex items-center justify-center text-3xl shadow-inner"><i class="fa-solid fa-paper-plane"></i></div>
+      <h3 class="font-black text-xl theme-primary mb-2">Email Terkirim!</h3>
+      <p class="text-xs theme-text-muted mb-6">Reset password sudah dikirim ke email kamu. Silakan buka email dan klik tautan di dalamnya.</p>
+      <button onclick="closeForgotSuccessModal()" class="w-full py-3.5 theme-bg-primary text-sm font-black rounded-full hover:opacity-80 transition shadow-lg">Mengerti</button>
+    </div>
+  </div>
+
+  <!-- MODAL 3: INPUT PASSWORD BARU & KONFIRMASI -->
+  <div id="newPasswordModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-md flex items-center justify-center hidden z-[120] p-4 transition-all">
+    <div class="theme-card w-full max-w-sm p-8 relative shadow-2xl rounded-3xl text-center">
+      <div class="w-14 h-14 mx-auto mb-3 bg-purple-500/15 text-purple-500 rounded-full flex items-center justify-center text-2xl shadow-inner"><i class="fa-solid fa-lock-open"></i></div>
+      <h3 class="font-black text-xl theme-primary mb-2">Buat Sandi Baru</h3>
+      <p class="text-xs theme-text-muted mb-6">Masukkan kata sandi baru dan konfirmasi sandi kamu.</p>
+      
+      <form onsubmit="handleUpdateNewPassword(event)" class="space-y-4">
+        <!-- Input Password Baru dengan Tombol Mata -->
+        <div class="relative">
+          <input type="password" id="newPasswordInput" required minlength="6" placeholder="Sandi Baru (Min. 6 Karakter)" class="w-full p-3.5 pr-12 rounded-full border border-gray-400/20 bg-transparent text-sm theme-text outline-none font-bold">
+          <button type="button" onclick="togglePassword('newPasswordInput', 'eyeNew1')" class="absolute right-4 top-1/2 -translate-y-1/2 theme-text-muted hover:theme-primary transition flex items-center justify-center">
+            <i id="eyeNew1" class="fa-solid fa-eye text-sm"></i>
+          </button>
+        </div>
+
+        <!-- Input Konfirmasi Password dengan Tombol Mata -->
+        <div class="relative">
+          <input type="password" id="confirmPasswordInput" required minlength="6" placeholder="Konfirmasi Sandi Baru" class="w-full p-3.5 pr-12 rounded-full border border-gray-400/20 bg-transparent text-sm theme-text outline-none font-bold">
+          <button type="button" onclick="togglePassword('confirmPasswordInput', 'eyeNew2')" class="absolute right-4 top-1/2 -translate-y-1/2 theme-text-muted hover:theme-primary transition flex items-center justify-center">
+            <i id="eyeNew2" class="fa-solid fa-eye text-sm"></i>
+          </button>
+        </div>
+
+        <button type="submit" id="btnUpdatePassword" class="w-full py-3.5 theme-bg-primary text-sm font-black rounded-full hover:opacity-80 transition shadow-lg">Simpan Sandi Baru</button>
+      </form>
     </div>
   </div>
 

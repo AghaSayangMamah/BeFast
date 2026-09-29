@@ -249,4 +249,249 @@ function updateProfilePicUI(base64Image) {
   }
 }
 
+// --- MODAL KONTROL LUPA SANDI ---
+function openForgotEmailModal() {
+  closeLoginModal();
+  document.getElementById('forgotEmailModal').classList.remove('hidden');
+}
+
+function closeForgotEmailModal() {
+  document.getElementById('forgotEmailModal').classList.add('hidden');
+}
+
+function closeForgotSuccessModal() {
+  document.getElementById('forgotSuccessModal').classList.add('hidden');
+  openLoginModal();
+}
+
+// 1. Kirim Email Reset Password
+// 1. Kirim Email Reset Password dengan Validasi Ketat
+async function handleSendResetEmail(e) {
+  e.preventDefault();
+  const email = document.getElementById('forgotEmailInput').value.trim().toLowerCase();
+  const btn = document.getElementById('btnSendReset');
+
+  if (!email) return alert('Masukkan email kamu.');
+
+  // Validasi Format Email Resmi (Harus berakhiran @gmail.com atau @yahoo.com)
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@(gmail\.com|yahoo\.com)$/;
+  if (!emailRegex.test(email)) {
+    return alert('Format email tidak valid! Gunakan email yang benar (contoh: nama@gmail.com).');
+  }
+
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Memeriksa...';
+
+  try {
+    // Validasi Cek Database: Apakah email ini terdaftar di tabel users?
+    const { data: checkUser, error: dbError } = await supabaseClient
+      .from('users')
+      .select('id')
+      .eq('email', email)
+      .maybeSingle();
+
+    if (dbError || !checkUser) {
+      throw new Error('Email ini tidak terdaftar di database kami. Pastikan email yang kamu masukkan benar.');
+    }
+
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Mengirim...';
+
+    // Jika email terbukti asli dan terdaftar, kirim tautan reset via Supabase Auth
+    const { error: resetError } = await supabaseClient.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.href,
+    });
+
+    if (resetError) throw resetError;
+
+    closeForgotEmailModal();
+    document.getElementById('forgotSuccessModal').classList.remove('hidden');
+    if (typeof speak === 'function') speak("Reset password sudah dikirim ke email kamu.");
+
+  } catch (err) {
+    alert(err.message || 'Gagal memproses permintaan.');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = 'Kirim Tautan Reset';
+  }
+}
+
+// 2. Deteksi otomatis jika user membuka link dari email
+if (supabaseClient) {
+  supabaseClient.auth.onAuthStateChange(async (event, session) => {
+    if (event === 'PASSWORD_RECOVERY') {
+      // Munculkan modal input sandi baru
+      const modal = document.getElementById('newPasswordModal');
+      if (modal) modal.classList.remove('hidden');
+    }
+  });
+}
+
+// 3. Simpan Password Baru & Konfirmasi
+async function handleUpdateNewPassword(e) {
+  e.preventDefault();
+  const pass1 = document.getElementById('newPasswordInput').value;
+  const pass2 = document.getElementById('confirmPasswordInput').value;
+  const btn = document.getElementById('btnUpdatePassword');
+
+  if (pass1.length < 6) {
+    return alert('Kata sandi minimal harus 6 karakter.');
+  }
+
+  if (pass1 !== pass2) {
+    return alert('Konfirmasi kata sandi tidak cocok! Pastikan keduanya sama.');
+  }
+
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menyimpan...';
+
+  try {
+    const { error } = await supabaseClient.auth.updateUser({ password: pass1 });
+    if (error) throw error;
+
+    alert('Kata sandi berhasil diperbarui! Silakan masuk kembali menggunakan sandi baru.');
+    document.getElementById('newPasswordModal').classList.add('hidden');
+    if (typeof speak === 'function') speak("Kata sandi berhasil diperbarui.");
+    
+    // Logout otomatis agar user login ulang dengan aman
+    await handleLogout();
+  } catch (err) {
+    alert('Gagal memperbarui sandi: ' + err.message);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = 'Simpan Sandi Baru';
+  }
+}
+
+// --- MODAL KONTROL LUPA SANDI ---
+function openForgotEmailModal() {
+  closeLoginModal();
+  document.getElementById('forgotEmailModal').classList.remove('hidden');
+  hideAlert('forgotAlert'); // Bersihkan pesan error sebelumnya jika ada
+}
+
+function closeForgotEmailModal() {
+  document.getElementById('forgotEmailModal').classList.add('hidden');
+}
+
+function closeForgotSuccessModal() {
+  document.getElementById('forgotSuccessModal').classList.add('hidden');
+  openLoginModal();
+}
+
+// Fungsi helper penampil error khusus untuk modal Lupa Sandi
+function showForgotAlert(msg) {
+  let alertEl = document.getElementById('forgotAlert');
+  if (!alertEl) {
+    // Jika elemen alert belum ada di HTML modal, buat secara dinamis di atas form
+    const formEl = document.querySelector('#forgotEmailModal form');
+    alertEl = document.createElement('div');
+    alertEl.id = 'forgotAlert';
+    formEl.insertBefore(alertEl, formEl.firstChild);
+  }
+  alertEl.innerText = msg;
+  alertEl.className = "mb-4 p-3 rounded-xl text-xs font-bold bg-red-100 text-red-700 block text-center";
+}
+
+// 1. Kirim Email Reset Password dengan Pop-up UI (Bukan Alert Browser)
+async function handleSendResetEmail(e) {
+  e.preventDefault();
+  const email = document.getElementById('forgotEmailInput').value.trim().toLowerCase();
+  const btn = document.getElementById('btnSendReset');
+
+  if (!email) return showForgotAlert('Masukkan email kamu.');
+
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@(gmail\.com|yahoo\.com)$/;
+  if (!emailRegex.test(email)) {
+    return showForgotAlert('Format email tidak valid! Gunakan email yang benar (contoh: nama@gmail.com).');
+  }
+
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Memeriksa...';
+
+  try {
+    const { data: checkUser, error: dbError } = await supabaseClient
+      .from('users')
+      .select('id')
+      .eq('email', email)
+      .maybeSingle();
+
+    if (dbError || !checkUser) {
+      throw new Error('Email ini tidak terdaftar di database kami. Pastikan email yang kamu masukkan benar.');
+    }
+
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Mengirim...';
+
+    const { error: resetError } = await supabaseClient.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.origin + window.location.pathname,
+    });
+
+    if (resetError) throw resetError;
+
+    closeForgotEmailModal();
+    document.getElementById('forgotSuccessModal').classList.remove('hidden');
+    if (typeof speak === 'function') speak("Reset password sudah dikirim ke email kamu.");
+  } catch (err) {
+    showForgotAlert(err.message || 'Gagal memproses permintaan.');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = 'Kirim Tautan Reset';
+  }
+}
+
+// 2. DETEKSI TOKEN HASH DARI URL EMAIL SUPABASE (Agar modal sandi baru langsung muncul)
+window.addEventListener('DOMContentLoaded', () => {
+  const hash = window.location.hash;
+  if (hash && hash.includes('type=recovery')) {
+    const modal = document.getElementById('newPasswordModal');
+    if (modal) modal.classList.remove('hidden');
+  }
+});
+
+if (supabaseClient) {
+  supabaseClient.auth.onAuthStateChange(async (event, session) => {
+    if (event === 'PASSWORD_RECOVERY') {
+      const modal = document.getElementById('newPasswordModal');
+      if (modal) modal.classList.remove('hidden');
+    }
+  });
+}
+
+// 3. Simpan Password Baru & Konfirmasi
+async function handleUpdateNewPassword(e) {
+  e.preventDefault();
+  const pass1 = document.getElementById('newPasswordInput').value;
+  const pass2 = document.getElementById('confirmPasswordInput').value;
+  const btn = document.getElementById('btnUpdatePassword');
+
+  if (pass1.length < 6) {
+    return alert('Kata sandi minimal harus 6 karakter.');
+  }
+
+  if (pass1 !== pass2) {
+    return alert('Konfirmasi kata sandi tidak cocok! Pastikan keduanya sama.');
+  }
+
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menyimpan...';
+
+  try {
+    const { error } = await supabaseClient.auth.updateUser({ password: pass1 });
+    if (error) throw error;
+
+    alert('Kata sandi berhasil diperbarui! Silakan masuk kembali menggunakan sandi baru.');
+    document.getElementById('newPasswordModal').classList.add('hidden');
+    if (typeof speak === 'function') speak("Kata sandi berhasil diperbarui.");
+    
+    // Hapus hash token dari URL agar bersih
+    history.replaceState(null, null, window.location.pathname);
+    
+    await handleLogout();
+  } catch (err) {
+    alert('Gagal memperbarui sandi: ' + err.message);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = 'Simpan Sandi Baru';
+  }
+}
+
 updateAuthUI();
