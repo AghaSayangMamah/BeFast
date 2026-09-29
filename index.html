@@ -37,7 +37,14 @@
       </div>
 
       <div class="flex items-center gap-3 pointer-events-auto relative">
-        <div id="authLoggedOut" class="flex gap-2">
+<div id="authLoggedOut" class="flex items-center gap-2">
+          <!-- Tombol Pill Menuju Landing Page -->
+          <a href="landing.html" class="flex items-center gap-1.5 md:gap-2 px-3 py-1.5 md:px-3.5 md:py-2 rounded-full theme-glass border border-blue-500/30 text-xs font-black theme-primary hover:scale-105 active:scale-95 transition shadow-sm" title="Pelajari Lebih Lanjut Tentang BeFAST">
+            <i class="fa-solid fa-compass text-xs md:text-sm"></i>
+            <span class="text-[11px] md:text-xs">Kenali BeFAST</span>
+            <span class="bg-blue-500 text-white text-[8px] md:text-[9px] px-1.5 py-0.5 rounded-md font-bold uppercase tracking-wider">Info</span>
+          </a>
+
           <button onclick="openLoginModal()" class="px-4 py-2 theme-card theme-primary rounded-full text-xs font-bold shadow-sm transition">Masuk</button>
           <button onclick="openSignupModal()" class="px-4 py-2 theme-bg-primary rounded-full text-xs font-bold shadow-sm transition hover:opacity-80">Daftar</button>
         </div>
