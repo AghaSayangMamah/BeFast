@@ -195,7 +195,7 @@ function showUndoToast(message) {
   undoTimer = setTimeout(() => {
     toast.classList.add('hidden');
     deletedDataCache = null; 
-  }, 5000);
+  }, 8000);
 }
 
 async function executeUndoDelete() {
@@ -205,13 +205,34 @@ async function executeUndoDelete() {
   if (toast) toast.classList.add('hidden');
   if (undoTimer) clearTimeout(undoTimer);
 
-  const { error } = await supabaseClient.from('transactions').insert([deletedDataCache]);
+  // Ambil user yang sedang aktif saat ini untuk menghindari pelanggaran RLS
+  const currentUser = getCurrentUser();
+  if (!currentUser) {
+    alert("Sesi login kedaluwarsa. Silakan masuk kembali.");
+    deletedDataCache = null;
+    return;
+  }
+
+  // Rancang ulang objek data yang akan dikembalikan dengan user_id yang valid
+  const dataToRestore = {
+    id: Date.now().toString() + Math.floor(Math.random() * 1000), // ID Baru agar tidak bentrok
+    user_id: currentUser.id, // Ambil ID dari sesi aktif yang sah
+    date: deletedDataCache.date,
+    type: deletedDataCache.type,
+    category: deletedDataCache.category,
+    amount: Number(deletedDataCache.amount),
+    desc: deletedDataCache.desc
+  };
+
+  // Masukkan kembali ke Supabase
+  const { error } = await supabaseClient.from('transactions').insert([dataToRestore]);
 
   if (!error) {
     if (typeof fetchTransactionsFromSupabase === 'function') await fetchTransactionsFromSupabase();
     if (typeof speak === 'function') speak("Sip! Transaksi berhasil dikembalikan.");
   } else {
-    alert("Gagal mengembalikan data.");
+    console.error("Error Undo RLS:", error);
+    alert("Gagal mengembalikan data: " + error.message);
   }
 
   deletedDataCache = null;

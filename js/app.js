@@ -253,4 +253,90 @@ function setupDatePicker() {
   const d = document.getElementById('manualDate'); if (!d || typeof flatpickr !== 'function') return;
   flatpickr(d, { dateFormat: "Y-m-d", defaultDate: "today", locale: "id", disableMobile: true, animate: true, onReady: function(s, ds, i) { try { const yw = i.currentYearElement.parentNode; yw.style.display = 'none'; const mc = yw.parentNode; const ys = document.createElement('select'); ys.className = 'flatpickr-monthDropdown-months flatpickr-custom-year-select'; const cy = new Date().getFullYear(); for (let j = cy; j >= 2000; j--) { let o = document.createElement('option'); o.value = j; o.text = j; ys.appendChild(o); } ys.value = i.currentYear; mc.appendChild(ys); ys.addEventListener('change', function(e) { i.changeYear(parseInt(e.target.value)); }); i.customYearSelect = ys; } catch (err) {} }, onMonthChange: function(s, ds, i) { if(i.customYearSelect) i.customYearSelect.value = i.currentYear; }, onYearChange: function(s, ds, i) { if(i.customYearSelect) i.customYearSelect.value = i.currentYear; } });
 }
+
+// --- ONBOARDING TOUR LOGIC ---
+let currentTourStep = 1;
+const totalTourSteps = 3;
+
+const tourData = [
+  {
+    icon: "fa-microphone",
+    title: "Catat Lewat Suara",
+    desc: "Tekan tombol mikrofon besar di tengah, lalu ucapkan transaksi kamu seperti: 'beli mie ayam 15 ribu'. Sistem akan mencatatnya otomatis!"
+  },
+  {
+    icon: "fa-list-ul",
+    title: "Riwayat Transaksi",
+    desc: "Semua catatanmu tersusun rapi di panel kiri. Kamu bisa menghapusnya dan tenang saja, ada fitur batalkan (undo) jika salah hapus."
+  },
+  {
+    icon: "fa-wallet",
+    title: "Ringkasan & Grafik",
+    desc: "Pantau saldo bersih, total pemasukan, dan pengeluaran harianmu secara real-time di panel kanan dengan tampilan minimalis."
+  }
+];
+
+function checkAndShowOnboarding() {
+  const hasSeenTour = localStorage.getItem('befast_tour_seen');
+  if (!hasSeenTour && getCurrentUser()) {
+    setTimeout(startOnboarding, 1000);
+  }
+}
+
+function startOnboarding() {
+  currentTourStep = 1;
+  updateTourContent();
+  document.getElementById('onboardingModal').classList.remove('hidden');
+}
+
+function updateTourContent() {
+  const step = tourData[currentTourStep - 1];
+  document.getElementById('tourStepIcon').innerHTML = `<i class="fa-solid ${step.icon}">`;
+  document.getElementById('tourStepTitle').innerText = step.title;
+  document.getElementById('tourStepDesc').innerText = step.desc;
+  document.getElementById('tourStepIndicator').innerText = `Langkah ${currentTourStep} dari ${totalTourSteps}`;
+  
+  // Atur kemunculan tombol "Kembali"
+  const prevBtn = document.getElementById('tourPrevBtn');
+  if (currentTourStep > 1) {
+    prevBtn.classList.remove('hidden');
+  } else {
+    prevBtn.classList.add('hidden');
+  }
+
+  // Atur teks tombol Lanjut/Selesai
+  const btn = document.getElementById('tourNextBtn');
+  if (currentTourStep === totalTourSteps) {
+    btn.innerText = "Selesai";
+  } else {
+    btn.innerText = "Lanjut";
+  }
+}
+
+function nextOnboardingStep() {
+  if (currentTourStep < totalTourSteps) {
+    currentTourStep++;
+    updateTourContent();
+  } else {
+    skipOnboarding();
+  }
+}
+
+// Fungsi Mundur ke Langkah Sebelumnya
+function prevOnboardingStep() {
+  if (currentTourStep > 1) {
+    currentTourStep--;
+    updateTourContent();
+  }
+}
+
+function skipOnboarding() {
+  document.getElementById('onboardingModal').classList.add('hidden');
+  localStorage.setItem('befast_tour_seen', 'true');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(checkAndShowOnboarding, 1500);
+});
+
 document.addEventListener('DOMContentLoaded', () => { setupCustomDropdowns(); setupDatePicker(); });

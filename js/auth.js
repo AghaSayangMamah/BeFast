@@ -2,12 +2,17 @@ function formatPhoneNumber(phone) { let c = phone.replace(/\D/g, ''); if(c.start
 
 if (supabaseClient) {
   supabaseClient.auth.onAuthStateChange((event, session) => {
-    if (session && session.user) { 
+if (session && session.user) { 
         localStorage.setItem('bf_user', JSON.stringify(session.user)); 
         const userTheme = localStorage.getItem('bf_theme_' + session.user.id);
         if (userTheme && typeof setTheme === 'function') { setTheme(userTheme); }
         if(typeof fetchTransactionsFromSupabase === 'function') fetchTransactionsFromSupabase(); 
-    } else if (event === 'SIGNED_OUT') { 
+        
+        // PANGGIL TOUR DI SINI SUPAYA PASTI MUNCUL PAS LOGIN
+        if(typeof startOnboarding === 'function' && !localStorage.getItem('befast_tour_seen')) {
+            setTimeout(startOnboarding, 1200);
+        }
+    }else if (event === 'SIGNED_OUT') { 
         localStorage.removeItem('bf_user'); transactions = []; 
         if(typeof renderData === 'function') renderData(); 
     }

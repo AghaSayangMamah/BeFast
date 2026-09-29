@@ -123,8 +123,7 @@
     <section class="flex flex-col items-center justify-center relative order-1 md:order-2 md:mt-0 mt-4">
       <div class="text-center mb-2 z-10">
         <p class="text-base font-bold theme-text-muted">Halo,</p>
-        <h2 id="userGreetingCenter" class="text-4xl font-black theme-text leading-none">User 👋</h2>
-      </div>
+        <h2 id="userGreetingCenter" class="text-4xl font-black theme-text leading-none">User</h2>      </div>
 
       <div class="relative w-full max-w-[320px] h-[380px] flex flex-col items-center justify-end mb-8 z-10">
         <div class="absolute inset-x-0 top-0 h-[280px] z-20 flex items-center justify-center pointer-events-none">
@@ -461,6 +460,27 @@
   <div id="undoToast" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-900/90 text-white px-5 py-3 rounded-2xl shadow-2xl z-[100] hidden flex items-center gap-4 transition-all duration-300 backdrop-blur-md border border-white/10">
     <span id="undoText" class="text-xs font-semibold">Transaksi dihapus.</span>
     <button onclick="executeUndoDelete()" class="bg-[#496af1] hover:opacity-80 text-white text-xs font-black px-3 py-1.5 rounded-xl transition shadow-sm cursor-pointer">Batalkan</button>
+  </div>
+
+<!-- ONBOARDING TOUR OVERLAY -->
+  <div id="onboardingModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-[110] hidden flex items-center justify-center p-4 transition-all">
+    <div class="theme-card w-full max-w-sm p-6 rounded-3xl shadow-2xl text-center relative border border-white/10">
+      <div id="tourStepIcon" class="w-14 h-14 mx-auto mb-4 theme-bg-light theme-primary rounded-2xl flex items-center justify-center text-2xl shadow-inner">
+        <i class="fa-solid fa-microphone"></i>
+      </div>
+      <h3 id="tourStepTitle" class="font-black text-lg theme-text mb-2">Selamat Datang di BeFAST!</h3>
+      <p id="tourStepDesc" class="text-xs theme-text-muted mb-6 leading-relaxed">Catat keuanganmu semudah berbicara. Mari kita kenali fitur utamanya sebentar yuk!</p>
+      
+      <div class="flex items-center justify-between">
+        <span id="tourStepIndicator" class="text-[10px] theme-text-muted font-bold">Langkah 1 dari 3</span>
+        <div class="flex gap-2 items-center">
+          <!-- Tombol Kembali (Awalnya tersembunyi di langkah 1) -->
+          <button onclick="prevOnboardingStep()" id="tourPrevBtn" class="px-3 py-2 text-xs font-bold theme-text-muted hover:opacity-80 hidden">Kembali</button>
+          <button onclick="skipOnboarding()" class="px-3 py-2 text-xs font-bold theme-text-muted hover:opacity-80">Lewati</button>
+          <button onclick="nextOnboardingStep()" id="tourNextBtn" class="px-5 py-2.5 theme-bg-primary text-xs font-black rounded-xl shadow hover:opacity-80 transition">Lanjut</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script>
