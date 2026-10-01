@@ -1,26 +1,479 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="scroll-smooth">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kenali BeFAST - Smart Financial Assistant</title>
+  <title>BeFAST - Asisten Keuangan Pribadi</title>
+  
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-  <style>body { font-family: 'Nunito', sans-serif; }</style>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              light: '#e0f2fe', // Background biru sangat muda
+              cyan: '#38bdf8',  // Warna utama (Tombol, Aksen)
+              cyanHover: '#0284c7',
+              navy: '#0f172a',  // Teks Judul (Gelap)
+              gray: '#64748b'   // Teks Paragraf
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Latar Belakang Blob Kanan Atas (Gaya Referensi) */
+    .hero-bg {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 55%;
+      height: 100%;
+      background-color: #e0f2fe;
+      border-bottom-left-radius: 40%;
+      z-index: -1;
+    }
+    .floating { animation: float 4s ease-in-out infinite; }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    /* Animasi Buka-Tutup FAQ */
+    .faq-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease-out, opacity 0.3s ease;
+      opacity: 0;
+    }
+    .faq-item.active .faq-content {
+      max-height: 200px;
+      opacity: 1;
+    }
+    .faq-item.active .faq-icon {
+      transform: rotate(180deg);
+    }
+    .faq-icon { transition: transform 0.3s ease; }
+  </style>
 </head>
-<body class="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-6 text-center">
-  <div class="bg-white p-8 md:p-10 rounded-3xl shadow-xl max-w-md w-full border border-gray-100 flex flex-col items-center">
-    <div class="w-20 h-20 mb-4 bg-blue-50 text-blue-600 rounded-3xl flex items-center justify-center text-3xl shadow-inner">
-      <i class="fa-solid fa-rocket"></i>
+<body class="text-brand-navy antialiased overflow-x-hidden">
+
+  <!-- HERO SECTION BACKGROUND -->
+  <div class="hero-bg hidden lg:block"></div>
+
+  <!-- 0. NAVBAR -->
+  <nav class="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between relative z-20">
+    <div class="flex items-center gap-2">
+      <div class="w-8 h-8 rounded-full border-2 border-brand-cyan text-brand-cyan flex items-center justify-center text-xs font-black">
+        <i class="fa-solid fa-bolt"></i>
+      </div>
+      <span class="font-bold text-lg tracking-tight">BeFAST</span>
     </div>
-    <h1 class="text-2xl font-black text-slate-800 mb-2">Landing Page BeFAST</h1>
-    <p class="text-xs text-slate-500 font-semibold mb-6 leading-relaxed">
-      Halaman pengenalan fitur, keunggulan AI voice, dan panduan lengkap BeFAST sedang dalam tahap penyusunan.
-    </p>
-    <a href="index.html" class="w-full py-3 bg-[#496af1] text-white text-xs font-black rounded-xl hover:opacity-90 transition shadow-md flex items-center justify-center gap-2">
-      <i class="fa-solid fa-arrow-left"></i> Kembali ke Dashboard
+
+    <div class="hidden md:flex items-center gap-8 text-sm font-semibold text-brand-gray">
+      <a href="#tentang-kami" class="hover:text-brand-cyan transition">Tentang Kami</a>
+      <a href="#fitur" class="hover:text-brand-cyan transition">Fitur</a>
+      <a href="#kreator" class="hover:text-brand-cyan transition">Kreator</a>
+      <a href="#testimoni" class="hover:text-brand-cyan transition">Testimoni</a>
+      <a href="#dukungan" class="hover:text-brand-cyan transition">Dukungan</a>
+    </div>
+
+    <a href="https://befast.my.id/" class="px-6 py-2.5 rounded-full bg-brand-cyan text-white text-sm font-bold hover:bg-brand-cyanHover transition shadow-md shadow-sky-200">
+      Buka Dashboard &rarr;
     </a>
-  </div>
+  </nav>
+
+  <!-- 0. HERO SECTION -->
+  <section class="max-w-7xl mx-auto px-6 pt-10 pb-20 flex flex-col lg:flex-row items-center relative z-10">
+    <!-- Hero Kiri (Teks) -->
+    <div class="w-full lg:w-1/2 pr-0 lg:pr-10 text-center lg:text-left mb-16 lg:mb-0">
+      <p class="text-brand-cyan font-bold text-sm mb-4">Gerakan literasi finansial anak muda</p>
+      <h1 class="text-5xl md:text-6xl font-extrabold text-brand-navy leading-[1.1] mb-6">
+        Asisten Keuangan <br> Pribadi Cerdas <br> BeFAST ☕
+      </h1>
+      <p class="text-brand-gray text-base leading-relaxed mb-8 max-w-lg mx-auto lg:mx-0">
+        Kelola uang jajan harian tanpa pusing ngetik manual. Ucapkan transaksimu, pantau saldomu, dan mulai kebiasaan finansial yang sehat dari sekarang.
+      </p>
+      <div class="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start mb-8">
+        <a href="https://befast.my.id/" class="px-8 py-3.5 rounded-full bg-brand-cyan text-white text-sm font-bold hover:bg-brand-cyanHover transition shadow-lg shadow-sky-200">
+          Coba Sekarang Gratis
+        </a>
+      </div>
+      <!-- Social Proof -->
+      <div class="flex items-center justify-center lg:justify-start gap-4">
+        <div class="flex -space-x-3">
+          <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop" class="w-10 h-10 rounded-full border-2 border-white shadow-sm" alt="User">
+          <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&h=100&fit=crop" class="w-10 h-10 rounded-full border-2 border-white shadow-sm" alt="User">
+          <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop" class="w-10 h-10 rounded-full border-2 border-white shadow-sm" alt="User">
+        </div>
+        <div class="text-left">
+          <div class="text-yellow-400 text-xs mb-0.5">
+            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+          </div>
+          <p class="text-[11px] font-semibold text-brand-gray leading-tight">Digunakan puluhan pelajar <br> untuk literasi keuangan</p>
+        </div>
+      </div>
+    </div>
+    <!-- Hero Kanan (Mockup + Kartu Melayang) -->
+    <div class="w-full lg:w-1/2 relative flex justify-center">
+      <!-- Ganti dummy gambar ini dengan Mockup Dashboard BeFAST mu -->
+      <img src="https://images.unsplash.com/photo-1573164713988-8665fc963095?auto=format&fit=crop&w=700&q=80" alt="Mockup Aplikasi BeFAST" class="w-full max-w-md rounded-[2.5rem] object-cover shadow-2xl relative z-10 border-[6px] border-white" style="height: 550px;">
+      
+      <!-- Kartu Melayang 1 (Atas Kanan) -->
+      <div class="absolute -right-4 md:-right-8 top-12 bg-white px-4 py-3 rounded-2xl shadow-xl z-20 flex items-center gap-3 floating border border-slate-50">
+        <div class="w-8 h-8 rounded-full bg-sky-100 flex items-center justify-center text-brand-cyan text-sm"><i class="fa-solid fa-heart"></i></div>
+        <div class="text-left">
+          <p class="text-xs font-bold text-brand-navy">100% Gratis</p>
+          <p class="text-[10px] text-brand-gray">Tanpa langganan bulanan</p>
+        </div>
+      </div>
+      <!-- Kartu Melayang 2 (Tengah Kanan) -->
+      <div class="absolute -right-6 md:-right-12 top-1/2 -translate-y-1/2 bg-white px-5 py-4 rounded-2xl shadow-xl z-20 border border-slate-50 floating" style="animation-delay: 1s;">
+        <p class="text-[10px] text-brand-gray font-semibold mb-1">Catatan Otomatis</p>
+        <p class="text-xl font-black text-brand-navy mb-2">+ Rp 25.000</p>
+        <div class="w-24 h-8 bg-sky-50 rounded-lg flex items-end overflow-hidden px-1 pb-1">
+          <svg viewBox="0 0 100 30" class="w-full stroke-brand-cyan fill-none stroke-[3]">
+            <path d="M0 25 Q 25 5, 50 20 T 100 5"></path>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 1. TENTANG KAMI (Visi & Misi Sosial) -->
+  <section id="tentang-kami" class="max-w-6xl mx-auto px-6 py-20 border-t border-slate-100 mt-10">
+    <div class="flex flex-col lg:flex-row items-center gap-16">
+      <div class="w-full lg:w-1/2">
+        <p class="text-brand-cyan text-sm font-bold mb-2 uppercase tracking-wide">Tentang Kami</p>
+        <h2 class="text-3xl md:text-4xl font-extrabold text-brand-navy mb-6 leading-tight">Misi kami: Menghapus buta finansial sejak masa sekolah.</h2>
+        <p class="text-brand-gray text-sm leading-relaxed mb-4">
+          Kami sering melihat teman-teman di sekitar kami yang kehabisan uang jajan sebelum waktunya karena malas mencatat. Masalahnya selalu sama: <strong>aplikasi keuangan yang ada terlalu kaku dan ribet digunakan.</strong>
+        </p>
+        <p class="text-brand-gray text-sm leading-relaxed">
+          Dari keresahan itu, BeFAST lahir. Kami menciptakan alat yang menyesuaikan dengan gaya hidup pelajar—hanya perlu berbicara dengan bahasa tongkrongan (ceban, gocap, dll), dan AI akan membereskannya.
+        </p>
+      </div>
+      <div class="w-full lg:w-1/2">
+        <div class="bg-brand-light p-8 rounded-3xl relative border border-sky-100">
+          <i class="fa-solid fa-quote-left text-4xl text-brand-cyan absolute top-6 left-6 opacity-30"></i>
+          <p class="text-brand-navy font-bold text-lg italic relative z-10 leading-relaxed mt-4">
+            "Generasi muda tidak butuh tabel akuntansi yang rumit. Mereka hanya butuh asisten pintar yang mau mendengar dan mencatat dengan cepat."
+          </p>
+          <p class="text-brand-cyan font-bold text-sm mt-6">— Visi BeFAST Team</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. FITUR (Layout Penuh Tanpa Kotak Border, Sesuai Referensi "What You'll Learn") -->
+  <section id="fitur" class="max-w-7xl mx-auto px-6 py-24 text-center">
+    <p class="text-brand-cyan text-sm font-bold mb-2 uppercase tracking-wide">Fitur Unggulan</p>
+    <h2 class="text-3xl font-extrabold text-brand-navy mb-16">Segala yang kamu butuhkan<br>untuk mencatat keuangan</h2>
+
+    <!-- Grid 6 Kolom -->
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-x-6 gap-y-12">
+      <!-- Fitur 1 -->
+      <div class="flex flex-col items-center text-center">
+        <div class="w-14 h-14 rounded-2xl bg-sky-100 flex items-center justify-center text-brand-cyan text-2xl mb-4 transform rotate-3">
+          <i class="fa-solid fa-microphone-lines"></i>
+        </div>
+        <h3 class="font-bold text-brand-navy text-sm mb-2 leading-tight">Input Suara<br>Santai</h3>
+        <p class="text-xs text-brand-gray leading-relaxed">Cukup ucapkan transaksimu tanpa perlu mengetik manual.</p>
+      </div>
+      <!-- Fitur 2 -->
+      <div class="flex flex-col items-center text-center">
+        <div class="w-14 h-14 rounded-2xl bg-indigo-100 flex items-center justify-center text-indigo-500 text-2xl mb-4 transform -rotate-3">
+          <i class="fa-solid fa-language"></i>
+        </div>
+        <h3 class="font-bold text-brand-navy text-sm mb-2 leading-tight">Paham<br>Bahasa Gaul</h3>
+        <p class="text-xs text-brand-gray leading-relaxed">Mengerti istilah ceban, gocap, gopek secara instan.</p>
+      </div>
+      <!-- Fitur 3 -->
+      <div class="flex flex-col items-center text-center">
+        <div class="w-14 h-14 rounded-2xl bg-amber-100 flex items-center justify-center text-amber-500 text-2xl mb-4 transform rotate-6">
+          <i class="fa-solid fa-rotate-left"></i>
+        </div>
+        <h3 class="font-bold text-brand-navy text-sm mb-2 leading-tight">Penyelamat<br>8 Detik</h3>
+        <p class="text-xs text-brand-gray leading-relaxed">Undo transaksi yang tak sengaja terhapus dengan aman.</p>
+      </div>
+      <!-- Fitur 4 -->
+      <div class="flex flex-col items-center text-center">
+        <div class="w-14 h-14 rounded-2xl bg-emerald-100 flex items-center justify-center text-emerald-500 text-2xl mb-4 transform -rotate-6">
+          <i class="fa-solid fa-layer-group"></i>
+        </div>
+        <h3 class="font-bold text-brand-navy text-sm mb-2 leading-tight">Pilah<br>Otomatis</h3>
+        <p class="text-xs text-brand-gray leading-relaxed">Catat beberapa barang sekaligus dalam satu kalimat.</p>
+      </div>
+      <!-- Fitur 5 -->
+      <div class="flex flex-col items-center text-center">
+        <div class="w-14 h-14 rounded-2xl bg-rose-100 flex items-center justify-center text-rose-500 text-2xl mb-4 transform rotate-3">
+          <i class="fa-solid fa-chart-column"></i>
+        </div>
+        <h3 class="font-bold text-brand-navy text-sm mb-2 leading-tight">Grafik<br>Proporsional</h3>
+        <p class="text-xs text-brand-gray leading-relaxed">Visual chart yang tak menenggelamkan nominal kecil.</p>
+      </div>
+      <!-- Fitur 6 -->
+      <div class="flex flex-col items-center text-center">
+        <div class="w-14 h-14 rounded-2xl bg-purple-100 flex items-center justify-center text-purple-500 text-2xl mb-4 transform -rotate-3">
+          <i class="fa-solid fa-file-excel"></i>
+        </div>
+        <h3 class="font-bold text-brand-navy text-sm mb-2 leading-tight">Ekspor<br>Excel</h3>
+        <p class="text-xs text-brand-gray leading-relaxed">Unduh data keuangan utuh untuk laporan akhir bulan.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. CREATOR / PROFIL TIM (Sesuai Referensi Banner "Hi, I'm Sara") -->
+  <section id="kreator" class="max-w-5xl mx-auto px-6 py-20 mt-10">
+    <div class="bg-brand-cyan rounded-[2.5rem] relative pt-12 pb-12 px-8 lg:px-16 flex flex-col md:flex-row items-center gap-10 shadow-2xl shadow-sky-200">
+      
+      <!-- Gambar Kiri (Overlap ke Atas) -->
+      <!-- Ganti dummy gambar tim di bawah ini dengan foto tim kalian (disarankan yang background-nya transparan/putih) -->
+      <div class="w-full md:w-1/3 flex justify-center md:absolute md:bottom-0 md:left-8 z-10 mt-8 md:mt-0">
+        <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Tim Pengembang BeFAST" class="w-64 h-80 object-cover rounded-t-[2.5rem] border-4 border-white shadow-lg object-top">
+      </div>
+
+      <!-- Spacer untuk desktop (karena posisi gambar absolute) -->
+      <div class="hidden md:block md:w-1/3"></div>
+
+      <!-- Konten Tengah & Kanan -->
+      <div class="w-full md:w-2/3 flex flex-col md:flex-row gap-8 z-20">
+        <!-- Teks Tengah -->
+        <div class="md:w-1/2 text-white text-center md:text-left">
+          <p class="text-sm font-bold text-sky-100 mb-2 uppercase tracking-wide">Tim Pengembang</p>
+          <h2 class="text-3xl font-extrabold mb-4">Hi, Kami Tim BeFAST! <span class="text-yellow-300">👋</span></h2>
+          <p class="text-sm text-sky-50 leading-relaxed">
+            Kami adalah 4 pelajar yang membangun aplikasi ini dari nol. Kami menolak UI yang kaku dan lebih memilih membangun ekosistem di mana mencatat keuangan bisa dilakukan sambil santai, semudah mengirim pesan suara.
+          </p>
+        </div>
+        <!-- Teks Kanan (Statistik / Fakta Tim) -->
+        <div class="md:w-1/2 flex flex-col justify-center space-y-5 text-sm font-semibold text-white">
+          <div class="flex items-center gap-4 border-b border-sky-300/50 pb-3">
+            <div class="w-10 h-10 rounded-full border border-sky-200 flex items-center justify-center shrink-0 bg-sky-400/30"><i class="fa-solid fa-users"></i></div>
+            <p>4 Pelajar Independen</p>
+          </div>
+          <div class="flex items-center gap-4 border-b border-sky-300/50 pb-3">
+            <div class="w-10 h-10 rounded-full border border-sky-200 flex items-center justify-center shrink-0 bg-sky-400/30"><i class="fa-solid fa-code"></i></div>
+            <p>100% Buatan Sendiri</p>
+          </div>
+          <div class="flex items-center gap-4 border-b border-sky-300/50 pb-3">
+            <div class="w-10 h-10 rounded-full border border-sky-200 flex items-center justify-center shrink-0 bg-sky-400/30"><i class="fa-solid fa-shield-halved"></i></div>
+            <p>Database Supabase Aman</p>
+          </div>
+          <div class="flex items-center gap-4">
+            <div class="w-10 h-10 rounded-full border border-sky-200 flex items-center justify-center shrink-0 bg-sky-400/30"><i class="fa-solid fa-earth-asia"></i></div>
+            <p>Bebas Akses Selamanya</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. TESTIMONI (3 Kolom Grid, Gaya Minimalis) -->
+  <section id="testimoni" class="max-w-7xl mx-auto px-6 py-24 border-t border-slate-100 mt-10">
+    <div class="text-center mb-16">
+      <p class="text-brand-cyan text-sm font-bold mb-2 uppercase tracking-wide">Kata Mereka</p>
+      <h2 class="text-3xl font-extrabold text-brand-navy">Dipercaya oleh pelajar & pengguna aktif</h2>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <!-- Testimoni 1 -->
+      <div class="bg-white p-8 rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 flex flex-col justify-between">
+        <div>
+          <div class="text-yellow-400 text-sm mb-4">
+            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+          </div>
+          <p class="text-brand-navy font-semibold italic text-sm leading-relaxed mb-6">
+            "Biasanya malas mencatat pengeluaran harian. Di BeFAST tinggal ngomong sambil jalan, beres semua. Bahasa tongkrongan kayak ceban dan gocap pun langsung paham!"
+          </p>
+        </div>
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-sky-100 text-brand-cyan flex items-center justify-center font-bold">A</div>
+          <div>
+            <p class="text-xs font-bold text-brand-navy">Aris Setiawan</p>
+            <p class="text-[10px] text-brand-gray">Pelajar SMK</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Testimoni 2 -->
+      <div class="bg-white p-8 rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 flex flex-col justify-between">
+        <div>
+          <div class="text-yellow-400 text-sm mb-4">
+            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+          </div>
+          <p class="text-brand-navy font-semibold italic text-sm leading-relaxed mb-6">
+            "Fitur Undo 8 detiknya jenius banget. Pas lagi buru-buru terus salah pencet hapus, datanya langsung bisa balik seketika. Tampilannya juga clean banget!"
+          </p>
+        </div>
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-rose-100 text-rose-500 flex items-center justify-center font-bold">N</div>
+          <div>
+            <p class="text-xs font-bold text-brand-navy">Nadia Faradila</p>
+            <p class="text-[10px] text-brand-gray">Mahasiswi</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Testimoni 3 -->
+      <div class="bg-white p-8 rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 flex flex-col justify-between">
+        <div>
+          <div class="text-yellow-400 text-sm mb-4">
+            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+          </div>
+          <p class="text-brand-navy font-semibold italic text-sm leading-relaxed mb-6">
+            "Akhir bulan tinggal sekali klik langsung jadi file Excel rapi. Sangat membantu memantau pos anggaran makan dan belanja biar nggak boncos di pertengahan bulan."
+          </p>
+        </div>
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-amber-100 text-amber-500 flex items-center justify-center font-bold">B</div>
+          <div>
+            <p class="text-xs font-bold text-brand-navy">Bima Pratama</p>
+            <p class="text-[10px] text-brand-gray">Freelancer Muda</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. DUKUNGAN / TRAKTEER (Sesuai Referensi Harga $297) -->
+  <section id="dukungan" class="max-w-6xl mx-auto px-6 py-24 bg-brand-light/30 rounded-[3rem] my-10">
+    <div class="flex flex-col lg:flex-row items-center gap-16">
+      
+      <!-- Kiri: Penjelasan & Ceklis -->
+      <div class="w-full lg:w-1/2 relative">
+        <p class="text-brand-cyan text-sm font-bold mb-2">Bantu Kami Berkembang</p>
+        <h2 class="text-4xl font-extrabold text-brand-navy mb-4 leading-tight">Dukung misi literasi finansial.</h2>
+        <p class="text-brand-gray text-sm mb-8 leading-relaxed">
+          BeFAST selamanya gratis tanpa sistem <i>paywall</i>. Namun biaya server database (Supabase) tetap berjalan setiap bulannya. Dukunganmu sangat berarti bagi kelangsungan proyek ini.
+        </p>
+        <ul class="space-y-4 text-sm font-bold text-brand-navy mb-12">
+          <li class="flex items-center gap-3"><div class="w-5 h-5 rounded-full bg-brand-cyan text-white flex items-center justify-center text-[10px]"><i class="fa-solid fa-check"></i></div> Akses seluruh fitur tanpa dikunci</li>
+          <li class="flex items-center gap-3"><div class="w-5 h-5 rounded-full bg-brand-cyan text-white flex items-center justify-center text-[10px]"><i class="fa-solid fa-check"></i></div> Bebas iklan yang mengganggu</li>
+          <li class="flex items-center gap-3"><div class="w-5 h-5 rounded-full bg-brand-cyan text-white flex items-center justify-center text-[10px]"><i class="fa-solid fa-check"></i></div> Jaminan keamanan data pribadi</li>
+          <li class="flex items-center gap-3"><div class="w-5 h-5 rounded-full bg-brand-cyan text-white flex items-center justify-center text-[10px]"><i class="fa-solid fa-check"></i></div> Pembaruan fitur-fitur baru</li>
+        </ul>
+      </div>
+
+      <!-- Kanan: Kartu Donasi Trakteer (Putih Tebal) -->
+      <div class="w-full lg:w-1/2 flex justify-center lg:justify-end">
+        <div class="w-full max-w-sm bg-white rounded-3xl shadow-2xl border border-slate-100 p-10 text-center relative overflow-hidden">
+          <p class="text-brand-gray text-xs font-bold uppercase tracking-wider mb-2">Bebas Biaya Berlangganan</p>
+          <h3 class="text-4xl font-extrabold text-brand-navy mb-4">Traktir Kopi</h3>
+          <p class="text-brand-gray text-xs mb-8">
+            Dukung operasional developer independen secara sukarela.
+          </p>
+          
+          <!-- GANTI LINK INI DENGAN LINK TRAKTEER ASLIMU -->
+          <a href="https://trakteer.id" target="_blank" rel="noopener noreferrer" class="block w-full py-4 rounded-full bg-brand-cyan text-white font-bold shadow-lg shadow-sky-200 hover:bg-brand-cyanHover hover:-translate-y-1 transition-all mb-4">
+            Traktir via Trakteer &rarr;
+          </a>
+          <div class="flex items-center justify-center gap-2 text-[10px] font-bold text-brand-gray mt-6">
+            <i class="fa-solid fa-heart text-brand-cyan"></i> 100% Dukungan Sukarela & Terbuka
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. FAQ (Pertanyaan Umum) -->
+  <section id="faq" class="max-w-3xl mx-auto px-6 py-20">
+    <div class="text-center mb-12">
+      <h2 class="text-3xl font-extrabold text-brand-navy mb-4">Pertanyaan yang Sering Diajukan</h2>
+      <p class="text-sm text-brand-gray">Punya kebingungan? Temukan jawabannya di bawah ini.</p>
+    </div>
+
+    <div class="space-y-4">
+      <!-- Item FAQ 1 -->
+      <div class="faq-item border-b border-slate-200 pb-4">
+        <button class="w-full text-left py-4 flex justify-between items-center focus:outline-none" onclick="toggleFaq(this)">
+          <span class="font-bold text-brand-navy text-sm md:text-base hover:text-brand-cyan transition">Apakah BeFAST benar-benar gratis?</span>
+          <i class="fa-solid fa-chevron-down text-brand-gray text-sm faq-icon"></i>
+        </button>
+        <div class="faq-content">
+          <p class="text-brand-gray text-sm pb-4 leading-relaxed">
+            Ya, 100% gratis! Kami tidak menggunakan sistem paket berlangganan bulanan. Seluruh fitur (termasuk voice recognition dan ekspor Excel) bisa langsung kamu gunakan tanpa batas.
+          </p>
+        </div>
+      </div>
+
+      <!-- Item FAQ 2 -->
+      <div class="faq-item border-b border-slate-200 pb-4">
+        <button class="w-full text-left py-4 flex justify-between items-center focus:outline-none" onclick="toggleFaq(this)">
+          <span class="font-bold text-brand-navy text-sm md:text-base hover:text-brand-cyan transition">Bagaimana cara kerja pencatatan suaranya?</span>
+          <i class="fa-solid fa-chevron-down text-brand-gray text-sm faq-icon"></i>
+        </button>
+        <div class="faq-content">
+          <p class="text-brand-gray text-sm pb-4 leading-relaxed">
+            Kamu hanya perlu menekan tombol mikrofon di dashboard, lalu sebutkan transaksimu seperti biasa (misal: "Beli nasi goreng 15 ribu"). AI kami akan memproses nominal dan kategorinya, lalu menyimpannya secara otomatis ke database.
+          </p>
+        </div>
+      </div>
+
+      <!-- Item FAQ 3 -->
+      <div class="faq-item border-b border-slate-200 pb-4">
+        <button class="w-full text-left py-4 flex justify-between items-center focus:outline-none" onclick="toggleFaq(this)">
+          <span class="font-bold text-brand-navy text-sm md:text-base hover:text-brand-cyan transition">Apakah data keuangan saya aman?</span>
+          <i class="fa-solid fa-chevron-down text-brand-gray text-sm faq-icon"></i>
+        </button>
+        <div class="faq-content">
+          <p class="text-brand-gray text-sm pb-4 leading-relaxed">
+            Sangat aman. Kami menggunakan sistem autentikasi dari Supabase. Data pengeluaranmu dilindungi oleh *Row-Level Security* (RLS), artinya hanya akun milikmu yang bisa membaca dan mengubah data transaksimu sendiri.
+          </p>
+        </div>
+      </div>
+
+      <!-- Item FAQ 4 -->
+      <div class="faq-item border-b border-slate-200 pb-4">
+        <button class="w-full text-left py-4 flex justify-between items-center focus:outline-none" onclick="toggleFaq(this)">
+          <span class="font-bold text-brand-navy text-sm md:text-base hover:text-brand-cyan transition">Apakah saya harus mendownload aplikasi di Play Store?</span>
+          <i class="fa-solid fa-chevron-down text-brand-gray text-sm faq-icon"></i>
+        </button>
+        <div class="faq-content">
+          <p class="text-brand-gray text-sm pb-4 leading-relaxed">
+            Tidak perlu! BeFAST berbasis web (Progressive Web App). Kamu cukup buka `befast.my.id` di browser HP-mu (Chrome/Safari), lalu tambahkan ke layar utama (Add to Home Screen) agar berfungsi persis seperti aplikasi asli.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="text-center py-10 mt-10 border-t border-slate-100 flex flex-col items-center justify-center">
+    <div class="w-8 h-8 rounded-full bg-brand-cyan text-white flex items-center justify-center text-xs font-black mb-4">
+      <i class="fa-solid fa-bolt"></i>
+    </div>
+    <p class="text-brand-navy font-bold text-sm mb-1">BeFAST - Financial Assistant</p>
+    <p class="text-brand-gray text-xs font-medium mb-4">Dibuat dengan dedikasi untuk generasi muda.</p>
+    <p class="text-brand-gray text-[10px] font-semibold">&copy; 2026 BeFAST Team. All rights reserved.</p>
+  </footer>
+
+  <!-- SCRIPT UNTUK ACCORDION FAQ -->
+  <script>
+    function toggleFaq(button) {
+      // Cari parent terdekat dengan class .faq-item
+      const item = button.closest('.faq-item');
+      // Cek apakah item yang diklik sudah aktif
+      const isActive = item.classList.contains('active');
+      
+      // Tutup semua FAQ terlebih dahulu (opsional, jika ingin satu-satu yang terbuka)
+      document.querySelectorAll('.faq-item').forEach(el => {
+        el.classList.remove('active');
+      });
+
+      // Jika sebelumnya tidak aktif, maka buka
+      if (!isActive) {
+        item.classList.add('active');
+      }
+    }
+  </script>
+
 </body>
 </html>
