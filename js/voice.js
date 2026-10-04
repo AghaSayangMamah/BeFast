@@ -1,25 +1,27 @@
 // --- MESIN MEMORI AMBIGUITAS ---
 window.pendingVoiceAction = null;
+let pendingVoiceDeleteIds = [];
 
 window.showAmbiguitySelection = function(items) {
   try {
-    let htmlMobile = '';
-    let htmlDesktop = `<button onclick="cancelAmbiguity()" class="mb-3 w-full py-2.5 bg-red-500/10 text-red-500 rounded-xl text-xs font-bold hover:bg-red-500/20 border border-red-500/20 transition cursor-pointer"><i class="fa-solid fa-ban"></i> Batal Edit/Hapus</button>`;
-    
-    // Cetak semua elemen HTML-nya ke dalam variabel dulu biar nggak ngeberatin layar
-    items.forEach(t => { 
-      htmlMobile += createAmbiguityCard(t, false); 
-      htmlDesktop += createAmbiguityCard(t, true);
-    });
+    const isDesktop = window.innerWidth >= 768;
+    const cards = items.map(item => createAmbiguityCard(item, isDesktop));
 
     if (window.innerWidth < 768) {
       const list = document.getElementById('ambiguityList');
-      if (list) list.innerHTML = htmlMobile;
+      if (list) list.replaceChildren(...cards);
       const modal = document.getElementById('ambiguityModal');
       if (modal) modal.classList.remove('hidden');
     } else {
       const list = document.getElementById('transactionList');
-      if (list) list.innerHTML = htmlDesktop;
+      if (list) {
+        const cancelButton = document.createElement('button');
+        cancelButton.type = 'button';
+        cancelButton.className = 'mb-3 w-full py-2.5 bg-red-500/10 text-red-500 rounded-xl text-xs font-bold hover:bg-red-500/20 border border-red-500/20 transition cursor-pointer';
+        cancelButton.textContent = 'Batal Edit/Hapus';
+        cancelButton.addEventListener('click', window.cancelAmbiguity);
+        list.replaceChildren(cancelButton, ...cards);
+      }
     }
   } catch (err) {
     console.error("Crash di UI Ambiguitas:", err);
@@ -28,46 +30,67 @@ window.showAmbiguitySelection = function(items) {
 };
 
 function createAmbiguityCard(t, isDesktop) {
-  let color = t.type === 'pemasukan' ? 'text-green-500' : 'text-red-500';
-  let sign = t.type === 'pemasukan' ? '+' : '-';
-  
-  // PERISAI ANTI-CRASH: Paksa jadi angka, kalau null/rusak otomatis jadi 0
-  let safeAmount = Number(t.amount) || 0; 
-  
-  // LOGIKA TEKS DINAMIS: Cek apakah user niatnya hapus atau edit
-  let isDelete = window.pendingVoiceAction && window.pendingVoiceAction.type === 'delete';
-  let actionText = isDelete ? 'Tap untuk hapus <i class="fa-solid fa-trash-can"></i>' : 'Tap untuk ubah <i class="fa-solid fa-hand-pointer"></i>';
-  let actionColor = isDelete ? 'bg-red-500/10 text-red-500' : 'bg-blue-500/10 text-blue-500';
-  
-  let cls = isDesktop 
-    ? 'ambiguous-item shrink-0 w-full theme-glass p-4 rounded-2xl flex justify-between items-center cursor-pointer' 
-    : 'theme-glass shrink-0 w-full p-4 rounded-xl flex justify-between items-center border border-gray-400/20 active:scale-95 transition cursor-pointer';
-    
-  return `
-    <div onclick="resolveAmbiguity('${t.id}')" class="${cls} relative overflow-hidden group">
-      <div class="relative z-10 min-w-0 flex-1 pr-2 pointer-events-none">
-        <p class="font-bold text-sm theme-text truncate">${t.desc || 'Tanpa Keterangan'}</p>
-        <p class="text-[10px] theme-text-muted mt-1 truncate"><i class="fa-regular fa-calendar"></i> ${t.date || '-'} • ${t.category || '-'}</p>
-      </div>
-      <div class="relative z-10 text-right shrink-0 pointer-events-none">
-        <p class="font-black text-sm ${color}">${sign} Rp ${safeAmount.toLocaleString('id-ID')}</p>
-        <!-- Tombol mini yang warnanya dan tulisannya berubah otomatis -->
-        <div class="mt-1.5 inline-block ${actionColor} text-[9px] px-2 py-0.5 rounded-full font-bold">${actionText}</div>
-      </div>
-    </div>
-  `;
+  const isIncome = t.type === 'pemasukan';
+  const safeAmount = Number(t.amount) || 0;
+  const isDelete = window.pendingVoiceAction && window.pendingVoiceAction.type === 'delete';
+  const card = document.createElement('button');
+  card.type = 'button';
+  card.className = isDesktop
+    ? 'ambiguous-item shrink-0 w-full theme-glass p-4 rounded-2xl flex justify-between items-center cursor-pointer relative overflow-hidden group text-left'
+    : 'ambiguous-item theme-glass shrink-0 w-full p-4 rounded-xl flex justify-between items-center border border-gray-400/20 active:scale-95 transition cursor-pointer relative overflow-hidden group text-left';
+  card.addEventListener('click', () => window.resolveAmbiguity(t.id));
+
+  const details = document.createElement('span');
+  details.className = 'relative z-10 min-w-0 flex-1 pr-2';
+  const description = document.createElement('span');
+  description.className = 'block font-bold text-sm theme-text truncate';
+  description.textContent = t.desc || 'Tanpa Keterangan';
+  const metadata = document.createElement('span');
+  metadata.className = 'block text-[10px] theme-text-muted mt-1 truncate';
+  metadata.textContent = `${t.date || '-'} • ${t.category || '-'}`;
+  details.append(description, metadata);
+
+  const amount = document.createElement('span');
+  amount.className = 'relative z-10 text-right shrink-0';
+  const amountText = document.createElement('span');
+  amountText.className = `block font-black text-sm ${isIncome ? 'text-green-500' : 'text-red-500'}`;
+  amountText.textContent = `${isIncome ? '+' : '-'} Rp ${safeAmount.toLocaleString('id-ID')}`;
+  const actionText = document.createElement('span');
+  actionText.className = `mt-1.5 inline-block text-[9px] px-2 py-0.5 rounded-full font-bold ${isDelete ? 'bg-red-500/10 text-red-500' : 'bg-blue-500/10 text-blue-500'}`;
+  actionText.textContent = isDelete ? 'Tap untuk hapus' : 'Tap untuk ubah';
+  amount.append(amountText, actionText);
+  card.append(details, amount);
+  return card;
 }
 window.resolveAmbiguity = async function(id) {
   const action = window.pendingVoiceAction;
   if(!action) return;
+  if (!supabaseClient) {
+    updateSyncStatusUI(false, 'Database belum siap');
+    speak("Koneksi database belum siap. Coba lagi sebentar.");
+    return;
+  }
   if(typeof updateSyncStatusUI === 'function') updateSyncStatusUI(false, 'Memproses...');
   
-  if (action.type === 'delete') {
-    const { error } = await supabaseClient.from('transactions').delete().eq('id', id);
-    if (!error) speak("Sip! Berhasil dihapus.");
-  } else if (action.type === 'edit') {
-    const { error } = await supabaseClient.from('transactions').update(action.payload).eq('id', id);
-    if (!error) speak(action.successText);
+  try {
+    let result;
+    if (action.type === 'delete') {
+      result = await supabaseClient.from('transactions').delete().eq('id', id);
+    } else if (action.type === 'edit') {
+      result = await supabaseClient.from('transactions').update(action.payload).eq('id', id);
+    }
+    if (result && result.error) {
+      console.error('Gagal memproses transaksi suara:', result.error);
+      updateSyncStatusUI(false, 'Gagal');
+      speak("Gagal memproses transaksi di server. Coba lagi.");
+      return;
+    }
+    speak(action.type === 'delete' ? "Sip! Berhasil dihapus." : action.successText);
+  } catch (error) {
+    console.error('Gagal memproses transaksi suara:', error);
+    updateSyncStatusUI(false, 'Gagal');
+    speak("Koneksi ke server bermasalah. Transaksi belum diproses.");
+    return;
   }
   
   cancelAmbiguity();
@@ -82,6 +105,74 @@ window.cancelAmbiguity = function() {
   // Ini yang ngereset tampilan layar sebelah kiri balik ke semula
   if (typeof fetchTransactionsFromSupabase === 'function') fetchTransactionsFromSupabase(); 
 };
+
+window.cancelVoiceDeleteConfirmation = function() {
+  pendingVoiceDeleteIds = [];
+  const modal = document.getElementById('deleteConfirmModal');
+  if (modal) modal.classList.add('hidden');
+};
+
+window.confirmVoiceDelete = async function() {
+  if (!pendingVoiceDeleteIds.length) return;
+  if (!supabaseClient) {
+    updateSyncStatusUI(false, 'Database belum siap');
+    speak("Koneksi database belum siap. Coba lagi sebentar.");
+    return;
+  }
+
+  const modalButtons = document.querySelectorAll('#deleteConfirmModal button');
+  modalButtons.forEach(button => { button.disabled = true; });
+  updateSyncStatusUI(false, 'Menghapus data...');
+
+  try {
+    const idsToDelete = [...pendingVoiceDeleteIds];
+    const { error } = await supabaseClient.from('transactions').delete().in('id', idsToDelete);
+    if (error) {
+      console.error('Gagal menghapus transaksi melalui perintah suara:', error);
+      updateSyncStatusUI(false, 'Gagal');
+      speak("Gagal menghapus transaksi dari server. Coba lagi.");
+      return;
+    }
+
+    window.cancelVoiceDeleteConfirmation();
+    if (typeof fetchTransactionsFromSupabase === 'function') await fetchTransactionsFromSupabase();
+    speak(idsToDelete.length > 1
+      ? `Sip! Berhasil menghapus ${idsToDelete.length} transaksi.`
+      : "Sip! Berhasil dihapus.");
+  } catch (error) {
+    console.error('Gagal menghapus transaksi melalui perintah suara:', error);
+    updateSyncStatusUI(false, 'Gagal');
+    speak("Koneksi ke server bermasalah. Transaksi belum dihapus.");
+  } finally {
+    modalButtons.forEach(button => { button.disabled = false; });
+  }
+};
+
+function showVoiceDeleteConfirmation(items) {
+  pendingVoiceDeleteIds = items.map(item => item.id);
+  const modal = document.getElementById('deleteConfirmModal');
+  const title = document.getElementById('deleteConfirmTitle');
+  const message = document.getElementById('deleteConfirmMessage');
+  const confirmButton = document.getElementById('voiceDeleteConfirmButton');
+  if (!modal || !title || !message || !confirmButton) {
+    pendingVoiceDeleteIds = [];
+    speak("Tidak bisa menampilkan konfirmasi hapus. Transaksi tidak dihapus.");
+    return;
+  }
+
+  title.textContent = items.length > 1 ? 'Hapus Semua Transaksi?' : 'Hapus Transaksi?';
+  const itemSummary = items.slice(0, 3).map(item => {
+    const amount = Number(item.amount) || 0;
+    return `${item.desc || 'Tanpa Keterangan'} (Rp ${amount.toLocaleString('id-ID')})`;
+  }).join(', ');
+  const remainingCount = items.length - 3;
+  const remainingText = remainingCount > 0 ? ` dan ${remainingCount} transaksi lainnya` : '';
+  message.textContent = items.length > 1
+    ? `Yakin mau menghapus semua ${items.length} transaksi ini: ${itemSummary}${remainingText}?`
+    : `Yakin mau menghapus transaksi ${itemSummary}? Tindakan ini tidak bisa dibatalkan.`;
+  confirmButton.disabled = false;
+  modal.classList.remove('hidden');
+}
 
 function getLocalDateStr(dateObj = new Date()) { const year = dateObj.getFullYear(); const month = String(dateObj.getMonth() + 1).padStart(2, '0'); const day = String(dateObj.getDate()).padStart(2, '0'); return `${year}-${month}-${day}`; }
 function getRelativeDateStr(modifier) {
@@ -144,7 +235,9 @@ function parseNominal(str) {
   let tokens = text.split(/[\s]+/); let grandTotal = 0; let currentGroup = 0; let tempVal = 0; let foundNumber = false;
   
   for (let i = 0; i < tokens.length; i++) {
-    let t = tokens[i].replace(/[^\w\.]/g, ''); if (!t) continue; let cleanT = t.replace(/\./g, ''); let num = parseFloat(cleanT);
+    let t = tokens[i].replace(/[^\w.,]/g, ''); if (!t) continue;
+    let cleanT = t.replace(/[.,]/g, '');
+    let num = /^\d+(?:[.,]\d+)?$/.test(t) ? parseFloat(t.replace(',', '.')) : NaN;
     
     if (!isNaN(num) && !['juta', 'ribu', 'rb', 'k', 'miliar', 'milyar'].includes(cleanT)) { tempVal += num; foundNumber = true; }
     else if (wordMap[cleanT] !== undefined) { tempVal += wordMap[cleanT]; foundNumber = true; }
@@ -181,6 +274,7 @@ function extractTransactionDetails(cmd, type) {
     .replace(/\b(pemasukan|pengeluaran|masuk|keluar|beli|membeli|bayar|membayar|dapet|dapat|mendapat|catat|tambah|tolong|tadi|saya|aku)\b/gi, '')
     .replace(/\b(kemarin|kemaren|hari ini|tanggal\s*\d{1,2})\b/gi, '')
     .replace(/\b(bulan|tahun)\s+(lalu|kemarin|ini)\b/gi, '')
+    .replace(/\b\d+[.,]\d+\s*(ribu|rb|k|juta|jt|miliar|milyar)\b/gi, '')
     .replace(/rp\s*[.,]?\s*\d+([.,]\d+)?/gi, '') 
     // HANYA HAPUS ANGKA YANG MENJADI NOMINAL HARGA (yang ada titik ribuan atau nominal besar), 
     // biarkan angka kecil seperti "2" atau "10" yang melekat pada porsi tetap ada di deskripsi.
@@ -237,31 +331,22 @@ async function executeVoiceDelete(cmd) {
   let isBulkDelete = cmd.includes('semua') || cmd.includes('semuanya'); 
   
   let scope = parseDateScopeFromCommand(cmd);
-  let keyword = cmd.replace(/(hapus|delete|hilangin|bersihin|buang|pemasukan|pengeluaran|masuk|keluar|dapet|dapat|beli|bayar|semua|semuanya)/gi, '').replace(/(kemarin|kemaren|hari ini|bulan ini|bulan lalu|bulan kemarin|tahun ini|tahun lalu|tahun kemarin|tanggal\s*\d{1,2}|tahun\s*\d{4}| 20\d{2} )/gi, '').trim();
+  let keyword = cmd.replace(/(hapus|delete|hilangin|bersihin|buang|kategori|pemasukan|pengeluaran|masuk|keluar|dapet|dapat|beli|bayar|semua|semuanya)/gi, '').replace(/(kemarin|kemaren|hari ini|bulan ini|bulan lalu|bulan kemarin|tahun ini|tahun lalu|tahun kemarin|tanggal\s*\d{1,2}|tahun\s*\d{4}| 20\d{2} )/gi, '').trim();
 
   let itemsToDelete = transactions.filter(t => {
     if (isIncome && t.type !== 'pemasukan') return false; 
     if (isExpense && t.type !== 'pengeluaran') return false;
     if (scope.label !== 'keseluruhan' && !scope.func(t)) return false; 
-    if (keyword && !t.desc.toLowerCase().includes(keyword.toLowerCase())) return false; 
+    const normalizedKeyword = keyword.toLowerCase();
+    if (normalizedKeyword && !t.desc.toLowerCase().includes(normalizedKeyword) && !(t.category || '').toLowerCase().includes(normalizedKeyword)) return false;
     return true;
   });
 
   if (itemsToDelete.length === 0) return speak(`Aduh, tidak ditemukan transaksi yang cocok untuk dihapus.`);
   
-  // LOGIKA BARU: Eksekusi langsung JIKA datanya cuma 1, ATAU user sengaja bilang "semua"
-  if (itemsToDelete.length === 1 || isBulkDelete) {
-    if(typeof updateSyncStatusUI === 'function') updateSyncStatusUI(false, 'Menghapus data...');
-    
-    const idsToDelete = itemsToDelete.map(t => t.id);
-    const { error } = await supabaseClient.from('transactions').delete().in('id', idsToDelete);
-    
-    if (!error) { 
-      if (typeof fetchTransactionsFromSupabase === 'function') await fetchTransactionsFromSupabase(); 
-      speak(itemsToDelete.length > 1 ? `Sip! Berhasil menghapus ${itemsToDelete.length} data sekaligus.` : `Sip! Berhasil dihapus.`); 
-    } else {
-      speak("Gagal menghapus data dari server.");
-    }
+  // Hapus semua hasil atau satu-satunya hasil hanya setelah pengguna mengonfirmasi.
+  if (isBulkDelete || itemsToDelete.length === 1) {
+    showVoiceDeleteConfirmation(itemsToDelete);
   } else {
     // TERDETEKSI GANDA & TIDAK ADA KATA "SEMUA" -> Minta user milih
     window.pendingVoiceAction = { type: 'delete' };
@@ -272,22 +357,25 @@ async function executeVoiceDelete(cmd) {
 
 async function executeVoiceEdit(cmd) {
   let newAmount = parseNominal(cmd);
+  const descriptionChange = newAmount === 0 ? cmd.match(/\b(?:jadi|menjadi)\b\s+(.+)$/i) : null;
+  const searchCommand = descriptionChange ? cmd.slice(0, descriptionChange.index) : cmd;
   let targetType = null; 
   if (/(pemasukan|masuk|dapat|dapet)/i.test(cmd)) targetType = 'pemasukan'; 
   if (/(pengeluaran|keluar|beli|bayar)/i.test(cmd)) targetType = 'pengeluaran';
   let scope = parseDateScopeFromCommand(cmd);
-  let keyword = cmd.replace(/(ubah|edit|ganti|jadi|menjadi|pemasukan|pengeluaran|masuk|keluar|beli|bayar|dapet|dapat)/gi, '')
+  let keyword = searchCommand.replace(/\b(ubah|edit|ganti|jadi|menjadi|kategori|keterangan|deskripsi|transaksi|nama|pemasukan|pengeluaran|masuk|keluar|beli|bayar|dapet|dapat)\b/gi, '')
                      .replace(/(kemarin|kemaren|hari ini|bulan ini|bulan lalu|bulan kemarin|tahun ini|tahun lalu|tahun kemarin|tanggal\s*\d{1,2}|tahun\s*\d{4}| 20\d{2} )/gi, '')
                      .replace(/rp\s*\d+([.,]\d+)?/gi, '')
                      .replace(/\b\d{1,3}(\.\d{3})+(,\d+)?\b|\b\d{1,3}(,\d{3})+(\.\d+)?\b/g, '')
                      .replace(/\b(nol|satu|dua|tiga|empat|lima|enam|tujuh|delapan|sembilan|sepuluh|sebelas|belas|puluh|ratus|ribu|rb|k|juta|jt|miliar|milyar|setengah|se|sejuta|seribu|seratus)\b/gi, '')
                      .replace(/\b\d+\b/g, '')
-                     .replace(/[.,]/g, '').replace(/\s+/g, ' ').trim();
+                     .replace(/[.,]/g, '').replace(/\s+/g, ' ').replace(/\bkategori\b/gi, '').trim();
 
   let matches = transactions.filter(t => {
     if (targetType && t.type !== targetType) return false; 
     if (scope.label !== 'keseluruhan' && !scope.func(t)) return false; 
-    if (keyword && !t.desc.toLowerCase().includes(keyword.toLowerCase())) return false; 
+    const normalizedKeyword = keyword.toLowerCase();
+    if (normalizedKeyword && !t.desc.toLowerCase().includes(normalizedKeyword) && !(t.category || '').toLowerCase().includes(normalizedKeyword)) return false;
     return true;
   });
 
@@ -299,9 +387,8 @@ async function executeVoiceEdit(cmd) {
     payload = { amount: newAmount };
     speakText = `Sip! Nominal diubah jadi ${newAmount.toLocaleString('id-ID')} rupiah.`;
   } else {
-    let parts = cmd.split(/ (jadi|menjadi) /i);
-    if (parts.length >= 3) {
-      let newDesc = parts.slice(2).join(' ').trim();
+    if (descriptionChange) {
+      let newDesc = descriptionChange[1].trim().replace(/[.,!?]+$/, '');
       newDesc = newDesc.charAt(0).toUpperCase() + newDesc.slice(1);
       payload = { desc: newDesc, category: typeof detectCategory === 'function' ? detectCategory(newDesc, matches[0].type) : 'Lain-lain' };
       speakText = `Sip! Keterangan diubah menjadi ${newDesc}.`;
@@ -312,8 +399,21 @@ async function executeVoiceEdit(cmd) {
 
   if (matches.length === 1) {
     if(typeof updateSyncStatusUI === 'function') updateSyncStatusUI(false, 'Menyimpan Cloud...');
-    const { error } = await supabaseClient.from('transactions').update(payload).eq('id', matches[0].id);
-    if (!error) { await fetchTransactionsFromSupabase(); speak(speakText); }
+    try {
+      const { error } = await supabaseClient.from('transactions').update(payload).eq('id', matches[0].id);
+      if (error) {
+        console.error('Gagal mengedit transaksi melalui perintah suara:', error);
+        updateSyncStatusUI(false, 'Gagal');
+        speak("Gagal mengedit transaksi di server. Coba lagi.");
+        return;
+      }
+      await fetchTransactionsFromSupabase();
+      speak(speakText);
+    } catch (error) {
+      console.error('Gagal mengedit transaksi melalui perintah suara:', error);
+      updateSyncStatusUI(false, 'Gagal');
+      speak("Koneksi ke server bermasalah. Transaksi belum diubah.");
+    }
   } else {
     // TERDETEKSI GANDA -> LEMPAR KE MODE AMBIGUITAS MEMBAWA MEMORI BARU
     window.pendingVoiceAction = { type: 'edit', payload: payload, successText: speakText };
@@ -385,8 +485,12 @@ async function processVoiceCommand(cmd) {
   if (cmd.includes('baca') || cmd.includes('cek') || cmd.includes('spill') || cmd.includes('total')) { executeVoiceReadout(cmd); return; }
 
   // --- FITUR BATCH / MULTI-TRANSACTION PARSING ---
-  let subCommands = cmd.split(/\s+(?:dan|terus|lalu|serta)\s+|,+/g);
+  const splitCommands = cmd.split(/\s+(?:dan|terus|lalu|serta)\s+|(?<!\d),|,(?!\d)/g).map(part => part.trim()).filter(Boolean);
+  const subCommands = splitCommands.length > 1 && splitCommands.every(part => parseNominal(part) > 0)
+    ? splitCommands
+    : [cmd];
   let successCount = 0;
+  let failedCount = 0;
 
   updateSyncStatusUI(false, 'Memproses banyak data...');
 
@@ -405,18 +509,26 @@ async function processVoiceCommand(cmd) {
         const category = detectCategory(desc, type); 
         
         // Simpan ke database Supabase secara beruntun (looping)
-        const { error } = await supabaseClient.from('transactions').insert([{ 
-          id: Date.now().toString() + Math.floor(Math.random() * 1000), 
-          user_id: user.id, 
-          date: date, 
-          type: type, 
-          category: category, 
-          amount: amount, 
-          desc: desc 
-        }]);
+        try {
+          const { error } = await supabaseClient.from('transactions').insert([{
+            id: Date.now().toString() + Math.floor(Math.random() * 1000),
+            user_id: user.id,
+            date: date,
+            type: type,
+            category: category,
+            amount: amount,
+            desc: desc
+          }]);
 
-        if (!error) {
-          successCount++;
+          if (error) {
+            console.error('Gagal menyimpan transaksi suara:', error);
+            failedCount++;
+          } else {
+            successCount++;
+          }
+        } catch (error) {
+          console.error('Gagal menyimpan transaksi suara:', error);
+          failedCount++;
         }
       }
     }
@@ -424,7 +536,12 @@ async function processVoiceCommand(cmd) {
 
   if (successCount > 0) {
     await fetchTransactionsFromSupabase();
-    speak(`Siap! Berhasil mencatat ${successCount} transaksi sekaligus.`);
+    speak(failedCount > 0
+      ? `Berhasil mencatat ${successCount} transaksi, tetapi ${failedCount} gagal disimpan.`
+      : `Siap! Berhasil mencatat ${successCount} transaksi.`);
+  } else if (failedCount > 0) {
+    updateSyncStatusUI(false, 'Gagal menyimpan');
+    speak(`Gagal menyimpan ${failedCount} transaksi ke server. Periksa koneksi lalu coba lagi.`);
   } else {
     speak("Nominal angkanya belum ketangkap nih. Coba sebutkan nominalnya dengan jelas.");
   }
@@ -437,10 +554,6 @@ function applyVoiceCorrections(text) {
   // DAFTAR KATA YANG SERING SALAH DENGER SAMA BROWSER
   // Tambahkan kata baru di sini kalau ada feedback dari user lagi
   const corrections = {
-    'copy': 'kopi',
-    'the': 'teh',
-    'project': 'gojek',
-    'st': 'es teh',
     'grab foot': 'grabfood',
     'grab food': 'grabfood',
     'go foot': 'gofood',
@@ -448,7 +561,6 @@ function applyVoiceCorrections(text) {
     'sopee': 'shopee',
     'shope': 'shopee',
     'mekdi': 'mcd',
-    'kfc': 'kfc',
     'go-jek': 'gojek',
     'gojekin': 'gojek',
     'baso': 'bakso',
@@ -461,27 +573,40 @@ function applyVoiceCorrections(text) {
     'bensir': 'bensin'
   };
   
-  for (const [wrong, right] of Object.entries(corrections)) {
-    // Regex \b memastikan hanya mengganti kata yang berdiri sendiri
-    const regex = new RegExp(`\\b${wrong}\\b`, 'gi');
+  for (const [wrong, right] of Object.entries(corrections).sort(([left], [right]) => right.length - left.length)) {
+    const escapedWrong = wrong.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const regex = new RegExp(`\\b${escapedWrong}\\b`, 'gi');
     corrected = corrected.replace(regex, right);
   }
   return corrected;
 }
 
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-let recognition = null; let isListening = false; let transcript = '';
+let recognition = null; let isListening = false; let isStarting = false; let transcript = '';
+let recognitionFailed = false;
+const micButton = document.getElementById('btnMic');
+const speechStatus = document.getElementById('speechStatus');
+const transcriptText = document.getElementById('transcriptText');
 
 if (SpeechRecognition) {
-  recognition = new SpeechRecognition(); recognition.lang = 'id-ID';
+  try {
+    recognition = new SpeechRecognition();
+    recognition.lang = 'id-ID';
+  } catch (error) {
+    console.error('Gagal menginisialisasi speech recognition:', error);
+  }
+}
+
+if (recognition) {
   
   // Animasi saat mulai mendengarkan (Mic aktif)
   recognition.onstart = () => { 
-    isListening = true; transcript = ''; 
-    const mic = document.getElementById('btnMic');
-    if(mic) { mic.classList.remove('mic-idle'); mic.classList.add('mic-listening'); }
-    const status = document.getElementById('speechStatus');
-    if(status) status.innerText = "Mendengarkan..."; 
+    isListening = true;
+    isStarting = false;
+    recognitionFailed = false;
+    transcript = '';
+    if (micButton) { micButton.classList.remove('mic-idle'); micButton.classList.add('mic-listening'); }
+    if (speechStatus) speechStatus.innerText = 'Mendengarkan...';
   };
   
   recognition.onresult = (e) => { 
@@ -490,21 +615,62 @@ if (SpeechRecognition) {
     // KUNCI PERBAIKAN: Bersihkan teks raw pakai kamus sebelum nampil di layar
     transcript = applyVoiceCorrections(rawTranscript); 
     
-    document.getElementById('transcriptText').innerText = `"${transcript}"`; 
+    if (transcriptText) transcriptText.innerText = `"${transcript}"`;
   };
   
   // Animasi saat selesai (Mic bernapas lambat)
   recognition.onend = () => { 
     isListening = false; 
-    const mic = document.getElementById('btnMic');
-    if(mic) { mic.classList.add('mic-idle'); mic.classList.remove('mic-listening'); }
-    const status = document.getElementById('speechStatus');
-    if(status) status.innerText = "Klik mikrofon"; 
-    if (transcript.length >= 3) processVoiceCommand(transcript.toLowerCase()); 
+    isStarting = false;
+    if (micButton) { micButton.classList.add('mic-idle'); micButton.classList.remove('mic-listening'); }
+    if (!recognitionFailed && speechStatus) speechStatus.innerText = 'Klik mikrofon';
+    if (!recognitionFailed && transcript.length >= 3) processVoiceCommand(transcript.toLowerCase());
   };
+
+  recognition.onerror = (event) => {
+    isListening = false;
+    isStarting = false;
+    recognitionFailed = true;
+    if (micButton) { micButton.classList.add('mic-idle'); micButton.classList.remove('mic-listening'); }
+    const errorMessages = {
+      'not-allowed': 'Izin mikrofon ditolak. Izinkan akses mikrofon di browser.',
+      'service-not-allowed': 'Layanan pengenalan suara tidak diizinkan browser.',
+      'audio-capture': 'Mikrofon tidak ditemukan atau sedang digunakan aplikasi lain.',
+      'no-speech': 'Suara belum terdengar. Coba bicara lebih jelas.',
+      'network': 'Koneksi bermasalah. Periksa internet lalu coba lagi.',
+      'aborted': 'Perekaman suara dibatalkan.'
+    };
+    const message = errorMessages[event.error] || 'Pengenalan suara gagal. Coba lagi.';
+    if (speechStatus) speechStatus.innerText = message;
+    if (event.error !== 'aborted') console.error('Speech recognition error:', event.error);
+    if (event.error !== 'aborted') speak(message);
+  };
+} else if (speechStatus) {
+  speechStatus.innerText = 'Browser ini belum mendukung pengenalan suara.';
+  if (micButton) {
+    micButton.disabled = true;
+    micButton.title = 'Pengenalan suara tidak didukung browser ini';
+    micButton.classList.add('opacity-50', 'cursor-not-allowed');
+  }
 }
 
-document.getElementById('btnMic').addEventListener('click', () => {
-  if(!getCurrentUser()) { speak("Masuk dulu ya!"); openLoginModal(); return; }
-  if(isListening) recognition.stop(); else recognition.start();
+if (micButton) micButton.addEventListener('click', () => {
+  if (!getCurrentUser()) { speak("Masuk dulu ya!"); openLoginModal(); return; }
+  if (!recognition) {
+    if (speechStatus) speechStatus.innerText = 'Browser ini belum mendukung pengenalan suara.';
+    return;
+  }
+
+  try {
+    if (isStarting) return;
+    if (isListening) recognition.stop();
+    else {
+      isStarting = true;
+      recognition.start();
+    }
+  } catch (error) {
+    isStarting = false;
+    console.error('Gagal menjalankan speech recognition:', error);
+    if (speechStatus) speechStatus.innerText = 'Mikrofon tidak dapat dimulai. Coba lagi.';
+  }
 });
