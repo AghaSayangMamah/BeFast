@@ -52,25 +52,33 @@ async function addManualTransaction(e) {
   const rawAmount = document.getElementById('manualAmount').value.replace(/\./g, '');
   const a = parseInt(rawAmount, 10);
   
-  if(!desc || isNaN(a) || a<=0 || !d) return alert("Mohon isi dengan benar!");
-  
+  if(!desc || isNaN(a) || a<=0 || !d) {
+    showManualFormFeedback("Mohon isi keterangan, tanggal, dan nominal yang valid (lebih dari Rp 0).");
+    return;
+  }
+
   const cat = c === 'Otomatis' ? detectCategory(desc, t) : c;
 
   updateSyncStatusUI(false, 'Menyimpan...');
-  const { error } = await supabaseClient.from('transactions').insert([{
-    id: Date.now().toString(),
-    user_id: user.id,
-    date: d,
-    type: t,
-    category: cat,
-    amount: a,
-    desc: desc
-  }]);
-  
-  if(error) { 
-    alert('Gagal disimpan ke database.'); 
-    updateSyncStatusUI(false, 'Gagal'); 
-  } else { 
+  try {
+    const { error } = await supabaseClient.from('transactions').insert([{
+      id: Date.now().toString(),
+      user_id: user.id,
+      date: d,
+      type: t,
+      category: cat,
+      amount: a,
+      desc: desc
+    }]);
+
+    if(error) {
+      console.error('Gagal menyimpan transaksi manual:', error);
+      showManualFormFeedback('Transaksi gagal disimpan. Periksa koneksi, lalu coba lagi.');
+      updateSyncStatusUI(false, 'Gagal');
+      return;
+    }
+
+    showManualFormFeedback('');
     await fetchTransactionsFromSupabase(); 
     document.getElementById('manualForm').reset(); 
     document.querySelector('[data-id="manualType"] .selected-text').innerText = 'Pengeluaran';
@@ -82,7 +90,20 @@ async function addManualTransaction(e) {
       dateInput._flatpickr.setDate(new Date());
     }
     toggleManualForm(); 
+  } catch (error) {
+    console.error('Gagal menyimpan transaksi manual:', error);
+    showManualFormFeedback('Koneksi ke server bermasalah. Transaksi belum disimpan.');
+    updateSyncStatusUI(false, 'Gagal');
   }
+}
+
+function showManualFormFeedback(message) {
+  const feedback = document.getElementById('manualFormFeedback');
+  if (!feedback) return;
+  feedback.textContent = message;
+  feedback.className = message
+    ? 'p-3 rounded-xl text-xs font-bold bg-red-100 text-red-700'
+    : 'hidden p-3 rounded-xl text-xs font-bold';
 }
 
 window.deleteSingleItem = function(id) {
@@ -147,8 +168,7 @@ function renderData() {
   const elExp = document.getElementById('cardExpense');
   const elBal = document.getElementById('cardBalance');
   
-  const remainingIncome = Math.max(0, inc - exp);
-  if (elInc) elInc.innerText = `Rp ${remainingIncome.toLocaleString('id-ID')}`;
+  if (elInc) elInc.innerText = `Rp ${inc.toLocaleString('id-ID')}`;
   if (elExp) elExp.innerText = `Rp ${exp.toLocaleString('id-ID')}`;
   if (elBal) elBal.innerText = `Rp ${(inc-exp).toLocaleString('id-ID')}`;
   

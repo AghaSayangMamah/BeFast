@@ -30,7 +30,7 @@
       
       <!-- SHAPE BACKGROUND KHUSUS MOBILE -->
       <div class="absolute -inset-x-3 -inset-y-2 md:hidden theme-card rounded-3xl shadow-md -z-10 pointer-events-auto"></div>
-      
+       
       <div class="flex items-center gap-1.5 md:gap-3 pointer-events-auto pl-2 md:pl-0">
         <h1 class="text-xl md:text-2xl font-black theme-text leading-none tracking-tight drop-shadow-sm border-r-2 border-gray-400/20 pr-2 md:pr-3 py-1">BeFAST</h1>
         <p class="text-[9px] md:text-[11px] theme-text-muted font-bold drop-shadow-sm leading-tight">Catat Keuangan<br>Semudah Bicara</p>
@@ -170,7 +170,7 @@
         </div>
 
         <div class="grid grid-cols-2 gap-4 mb-4">
-          <div onclick="showDetailAngka('Sisa Pemasukan', 'cardIncome')" class="theme-card p-4 rounded-2xl relative overflow-hidden cursor-pointer hover:opacity-80 transition active:scale-95" style="border-color: rgba(16,185,129,0.3)">
+          <div onclick="showDetailAngka('Total Pemasukan', 'cardIncome')" class="theme-card p-4 rounded-2xl relative overflow-hidden cursor-pointer hover:opacity-80 transition active:scale-95" style="border-color: rgba(16,185,129,0.3)">
             <div class="w-6 h-6 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-[10px] mb-3 pointer-events-none"><i class="fa-solid fa-arrow-up"></i></div>
             <p class="text-[10px] theme-text-muted font-bold pointer-events-none">Pemasukan</p>
             <p id="cardIncome" class="text-base font-black text-green-600 mt-2 truncate pointer-events-none">Rp 0</p>
@@ -270,6 +270,7 @@
           <label class="block text-xs font-bold theme-text-muted mb-1">Nominal (Rp)</label>
           <input type="text" inputmode="numeric" id="manualAmount" placeholder="25.000" oninput="formatCurrencyInput(this)" class="w-full p-2.5 rounded-xl border border-gray-400/20 bg-transparent text-xs font-bold theme-text outline-none" required>
         </div>
+        <p id="manualFormFeedback" class="hidden p-3 rounded-xl text-xs font-bold" role="alert"></p>
         <button type="submit" class="w-full py-3 mt-2 theme-bg-primary rounded-xl transition shadow hover:opacity-80">Simpan Transaksi</button>
       </form>
     </div>
