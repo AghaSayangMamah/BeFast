@@ -33,22 +33,31 @@
        
       <div class="flex items-center gap-1.5 md:gap-3 pointer-events-auto pl-2 md:pl-0">
         <h1 class="text-xl md:text-2xl font-black theme-text leading-none tracking-tight drop-shadow-sm border-r-2 border-gray-400/20 pr-2 md:pr-3 py-1">BeFAST</h1>
-        <p class="text-[9px] md:text-[11px] theme-text-muted font-bold drop-shadow-sm leading-tight">Catat Keuangan<br>Semudah Bicara</p>
+        <p class="hidden sm:block text-[9px] md:text-[11px] theme-text-muted font-bold drop-shadow-sm leading-tight">Catat Keuangan<br>Semudah Bicara</p>
       </div>
 
-<div class="flex items-center gap-3 pointer-events-auto relative">
+      <div class="flex items-center gap-2 md:gap-3 pointer-events-auto relative">
         
-        <!-- TOMBOL PILL DIPINDAH KE SINI AGAR SELALU MUNCUL SEBELUM / SESUDAH LOGIN -->
-        <a href="landing.html" class="flex items-center gap-1.5 md:gap-2 px-3 py-1.5 md:px-3.5 md:py-2 rounded-full theme-glass border border-blue-500/30 text-xs font-black theme-primary hover:scale-105 active:scale-95 transition shadow-sm" title="Pelajari Lebih Lanjut Tentang BeFAST">
+        <a href="landing.html" class="hidden md:flex items-center gap-1.5 md:gap-2 px-3 py-1.5 md:px-3.5 md:py-2 rounded-full theme-glass border border-blue-500/30 text-xs font-black theme-primary hover:scale-105 active:scale-95 transition shadow-sm" title="Pelajari Lebih Lanjut Tentang BeFAST">
           <i class="fa-solid fa-compass text-xs md:text-sm"></i>
           <span class="text-[11px] md:text-xs">Kenali BeFAST</span>
           <span class="bg-blue-500 text-white text-[8px] md:text-[9px] px-1.5 py-0.5 rounded-md font-bold uppercase tracking-wider">Info</span>
         </a>
 
         <!-- Kondisi Saat Belum Login -->
-        <div id="authLoggedOut" class="flex gap-2">
+        <div id="authLoggedOut" class="flex items-center gap-1.5 sm:gap-2">
           <button onclick="openLoginModal()" class="px-4 py-2 theme-card theme-primary rounded-full text-xs font-bold shadow-sm transition">Masuk</button>
           <button onclick="openSignupModal()" class="px-4 py-2 theme-bg-primary rounded-full text-xs font-bold shadow-sm transition hover:opacity-80">Daftar</button>
+          <div class="relative md:hidden">
+            <button id="publicMenuButton" type="button" onclick="togglePublicMenu(event)" aria-label="Buka menu informasi" aria-expanded="false" class="w-9 h-9 rounded-full theme-glass shadow-sm flex items-center justify-center theme-text-muted hover:opacity-80 transition">
+              <i class="fa-solid fa-bars text-sm"></i>
+            </button>
+            <div id="publicMenuDropdown" class="absolute right-0 mt-3 w-48 theme-card rounded-2xl shadow-xl hidden flex-col overflow-hidden z-50">
+              <a href="landing.html" class="flex items-center gap-3 px-4 py-3 text-sm font-bold theme-text hover:opacity-70 transition">
+                <i class="fa-solid fa-compass w-4 text-center"></i> Kenali BeFAST
+              </a>
+            </div>
+          </div>
         </div>
 
         <!-- Kondisi Saat Sudah Login -->
@@ -89,6 +98,9 @@
               <i class="fa-solid fa-bars text-sm"></i>
             </button>
             <div id="userDropdownMenu" class="absolute right-0 mt-3 w-48 theme-card rounded-2xl shadow-xl hidden flex-col overflow-hidden z-50">
+              <a href="landing.html" class="flex items-center gap-3 px-4 py-3 text-sm font-bold theme-text hover:opacity-70 transition text-left">
+                <i class="fa-solid fa-compass w-4 text-center"></i> Kenali BeFAST
+              </a>
               <button onclick="toggleManualForm(); toggleUserMenu(event)" class="flex items-center gap-3 px-4 py-3 text-sm font-bold theme-text hover:opacity-70 transition text-left">
                 <i class="fa-solid fa-plus w-4 text-center"></i> Input Manual
               </button>

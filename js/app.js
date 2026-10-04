@@ -109,10 +109,26 @@ setTheme(savedTheme);
    ========================================= */
 function toggleUserMenu(event) { if (event) event.stopPropagation(); const m = document.getElementById('userDropdownMenu'); if (m) { m.classList.toggle('hidden'); m.classList.toggle('flex'); } }
 function toggleThemeMenu(event) { if (event) event.stopPropagation(); const m = document.getElementById('themeDropdownMenu'); if (m) { m.classList.toggle('hidden'); m.classList.toggle('flex'); } }
+function togglePublicMenu(event) {
+  if (event) event.stopPropagation();
+  const menu = document.getElementById('publicMenuDropdown');
+  const button = document.getElementById('publicMenuButton');
+  if (!menu || !button) return;
+  const isOpening = menu.classList.contains('hidden');
+  menu.classList.toggle('hidden', !isOpening);
+  menu.classList.toggle('flex', isOpening);
+  button.setAttribute('aria-expanded', String(isOpening));
+}
 
 document.addEventListener('click', (e) => {
   const u = document.getElementById('userDropdownMenu'); if(u && !u.classList.contains('hidden') && !e.target.closest('#userDropdownMenu')) { u.classList.add('hidden'); u.classList.remove('flex'); }
   const t = document.getElementById('themeDropdownMenu'); if(t && !t.classList.contains('hidden') && !e.target.closest('#themeDropdownMenu')) { t.classList.add('hidden'); t.classList.remove('flex'); }
+  const p = document.getElementById('publicMenuDropdown');
+  if (p && !p.classList.contains('hidden') && !e.target.closest('#publicMenuDropdown') && !e.target.closest('#publicMenuButton')) {
+    p.classList.add('hidden');
+    p.classList.remove('flex');
+    document.getElementById('publicMenuButton')?.setAttribute('aria-expanded', 'false');
+  }
 });
 
 function toggleManualForm() { const m = document.getElementById('manualInputModal'); if (m.classList.contains('hidden')) m.classList.remove('hidden'); else m.classList.add('hidden'); }
