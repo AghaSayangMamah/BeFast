@@ -30,6 +30,7 @@
     }
   </script>
   <style>
+    html { scroll-padding-top: 6rem; }
     /* Latar Belakang Blob Kanan Atas (Gaya Referensi) */
     .hero-bg {
       position: absolute;
@@ -68,27 +69,53 @@
   <!-- HERO SECTION BACKGROUND -->
   <div class="hero-bg hidden lg:block"></div>
 
-  <!-- 0. NAVBAR -->
-  <nav class="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between relative z-20">
-    <div class="flex items-center gap-2">
-      <div class="w-8 h-8 rounded-full border-2 border-brand-cyan text-brand-cyan flex items-center justify-center text-xs font-black">
-        <i class="fa-solid fa-bolt"></i>
+  <!-- LOGO KOMPETISI & MITRA -->
+  <section aria-label="Penyelenggara dan mitra Innovation Competition 2026" class="bg-white border-b border-slate-200/70">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-2">
+      <div class="overflow-x-auto overscroll-x-contain">
+        <img src="Befastlogokomdigi.png" alt="Logo Innovation Competition 2026, Jagoon Hosting, GACUDA Spark, dan Komdigi" class="block w-full min-w-[640px] md:min-w-0 max-w-[1100px] h-auto mx-auto">
       </div>
-      <span class="font-bold text-lg tracking-tight">BeFAST</span>
     </div>
+  </section>
 
-    <div class="hidden md:flex items-center gap-8 text-sm font-semibold text-brand-gray">
-      <a href="#tentang-kami" class="hover:text-brand-cyan transition">Tentang Kami</a>
-      <a href="#fitur" class="hover:text-brand-cyan transition">Fitur</a>
-      <a href="#kreator" class="hover:text-brand-cyan transition">Kreator</a>
-      <a href="#testimoni" class="hover:text-brand-cyan transition">Testimoni</a>
-      <a href="#dukungan" class="hover:text-brand-cyan transition">Dukungan</a>
+  <!-- 0. NAVBAR -->
+  <header class="sticky top-0 z-50 border-b border-slate-200/70 bg-white/95 shadow-sm backdrop-blur-md">
+    <nav class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-3" aria-label="Navigasi utama">
+      <a href="#" class="flex items-center gap-2 shrink-0" aria-label="BeFAST, kembali ke atas">
+        <span class="w-8 h-8 rounded-full border-2 border-brand-cyan text-brand-cyan flex items-center justify-center text-xs font-black">
+          <i class="fa-solid fa-bolt"></i>
+        </span>
+        <span class="font-bold text-lg tracking-tight">BeFAST</span>
+      </a>
+
+      <div class="hidden md:flex items-center gap-5 lg:gap-8 text-sm font-semibold text-brand-gray">
+        <a href="#tentang-kami" class="hover:text-brand-cyan transition">Tentang Kami</a>
+        <a href="#fitur" class="hover:text-brand-cyan transition">Fitur</a>
+        <a href="#kreator" class="hover:text-brand-cyan transition">Kreator</a>
+        <a href="#testimoni" class="hover:text-brand-cyan transition">Testimoni</a>
+        <a href="#dukungan" class="hover:text-brand-cyan transition">Dukungan</a>
+      </div>
+
+      <div class="flex items-center gap-2 shrink-0">
+        <a href="https://befast.my.id/" class="px-3 sm:px-5 py-2.5 rounded-full bg-brand-cyan text-white text-xs sm:text-sm font-bold hover:bg-brand-cyanHover transition shadow-md shadow-sky-200 whitespace-nowrap">
+          Buka Dashboard <span aria-hidden="true">&rarr;</span>
+        </a>
+        <button id="mobileNavToggle" type="button" class="md:hidden w-10 h-10 rounded-full border border-slate-200 text-brand-navy hover:bg-slate-50 transition" aria-label="Buka menu navigasi" aria-expanded="false" aria-controls="mobileNavMenu">
+          <i class="fa-solid fa-bars" aria-hidden="true"></i>
+        </button>
+      </div>
+    </nav>
+
+    <div id="mobileNavMenu" class="hidden md:hidden border-t border-slate-100 bg-white px-5 py-3 shadow-lg">
+      <div class="max-w-7xl mx-auto flex flex-col text-sm font-semibold text-brand-gray">
+        <a href="#tentang-kami" class="py-3 border-b border-slate-100 hover:text-brand-cyan transition">Tentang Kami</a>
+        <a href="#fitur" class="py-3 border-b border-slate-100 hover:text-brand-cyan transition">Fitur</a>
+        <a href="#kreator" class="py-3 border-b border-slate-100 hover:text-brand-cyan transition">Kreator</a>
+        <a href="#testimoni" class="py-3 border-b border-slate-100 hover:text-brand-cyan transition">Testimoni</a>
+        <a href="#dukungan" class="py-3 hover:text-brand-cyan transition">Dukungan</a>
+      </div>
     </div>
-
-    <a href="https://befast.my.id/" class="px-6 py-2.5 rounded-full bg-brand-cyan text-white text-sm font-bold hover:bg-brand-cyanHover transition shadow-md shadow-sky-200">
-      Buka Dashboard &rarr;
-    </a>
-  </nav>
+  </header>
 
   <!-- 0. HERO SECTION -->
   <section class="max-w-7xl mx-auto px-6 pt-10 pb-20 flex flex-col lg:flex-row items-center relative z-10">
@@ -230,48 +257,67 @@
     </div>
   </section>
 
-  <!-- 3. CREATOR / PROFIL TIM (Sesuai Referensi Banner "Hi, I'm Sara") -->
-  <section id="kreator" class="max-w-5xl mx-auto px-6 py-20 mt-10">
-    <div class="bg-brand-cyan rounded-[2.5rem] relative pt-12 pb-12 px-8 lg:px-16 flex flex-col md:flex-row items-center gap-10 shadow-2xl shadow-sky-200">
-      
-      <!-- Gambar Kiri (Overlap ke Atas) -->
-      <!-- Ganti dummy gambar tim di bawah ini dengan foto tim kalian (disarankan yang background-nya transparan/putih) -->
-      <div class="w-full md:w-1/3 flex justify-center md:absolute md:bottom-0 md:left-8 z-10 mt-8 md:mt-0">
-        <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Tim Pengembang BeFAST" class="w-64 h-80 object-cover rounded-t-[2.5rem] border-4 border-white shadow-lg object-top">
+  <!-- 3. CREATOR / PROFIL TIM -->
+  <section id="kreator" class="relative overflow-hidden bg-sky-50/70 py-20 md:py-24 scroll-mt-24">
+    <div class="absolute -top-24 -right-20 w-72 h-72 rounded-full bg-sky-100/80 blur-3xl" aria-hidden="true"></div>
+    <div class="absolute -bottom-28 -left-20 w-72 h-72 rounded-full bg-cyan-100/70 blur-3xl" aria-hidden="true"></div>
+    <div class="relative max-w-7xl mx-auto px-6">
+      <div class="max-w-2xl mx-auto text-center mb-12 md:mb-16">
+        <p class="text-brand-cyan text-sm font-bold mb-3 uppercase tracking-[0.18em]">Di balik BeFAST</p>
+        <h2 class="text-3xl md:text-5xl font-extrabold text-brand-navy mb-5">Kenalan dengan Tim BeFAST</h2>
+        <p class="text-brand-gray text-sm md:text-base leading-relaxed">
+          BeFAST dikembangkan oleh tiga pelajar dengan bimbingan guru, berangkat dari keresahan sederhana: mencatat keuangan seharusnya terasa mudah dan dekat dengan keseharian.
+        </p>
       </div>
 
-      <!-- Spacer untuk desktop (karena posisi gambar absolute) -->
-      <div class="hidden md:block md:w-1/3"></div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-7">
+        <article class="group bg-white rounded-[2rem] p-5 sm:p-6 text-center border border-sky-100 shadow-lg shadow-sky-900/5 transition duration-300 hover:-translate-y-2 hover:shadow-xl">
+          <div class="relative mx-auto mb-5 w-36 h-36">
+            <div class="absolute inset-0 rounded-full bg-sky-100 scale-110 group-hover:scale-125 transition duration-300" aria-hidden="true"></div>
+            <img src="anggota1.png" alt="Guru pembimbing tim BeFAST" class="relative w-36 h-36 rounded-full object-cover border-4 border-white shadow-md">
+          </div>
+          <p class="text-xs font-bold uppercase tracking-[0.16em] text-brand-cyan mb-2">Pembimbing</p>
+          <h3 class="text-lg font-extrabold text-brand-navy">Guru Pembimbing</h3>
+          <p class="text-sm text-brand-gray mt-2">Mendampingi dan membimbing pengembangan BeFAST.</p>
+        </article>
 
-      <!-- Konten Tengah & Kanan -->
-      <div class="w-full md:w-2/3 flex flex-col md:flex-row gap-8 z-20">
-        <!-- Teks Tengah -->
-        <div class="md:w-1/2 text-white text-center md:text-left">
-          <p class="text-sm font-bold text-sky-100 mb-2 uppercase tracking-wide">Tim Pengembang</p>
-          <h2 class="text-3xl font-extrabold mb-4">Hi, Kami Tim BeFAST! <span class="text-yellow-300">👋</span></h2>
-          <p class="text-sm text-sky-50 leading-relaxed">
-            Kami adalah 4 pelajar yang membangun aplikasi ini dari nol. Kami menolak UI yang kaku dan lebih memilih membangun ekosistem di mana mencatat keuangan bisa dilakukan sambil santai, semudah mengirim pesan suara.
-          </p>
-        </div>
-        <!-- Teks Kanan (Statistik / Fakta Tim) -->
-        <div class="md:w-1/2 flex flex-col justify-center space-y-5 text-sm font-semibold text-white">
-          <div class="flex items-center gap-4 border-b border-sky-300/50 pb-3">
-            <div class="w-10 h-10 rounded-full border border-sky-200 flex items-center justify-center shrink-0 bg-sky-400/30"><i class="fa-solid fa-users"></i></div>
-            <p>4 Pelajar Independen</p>
+        <article class="group bg-white rounded-[2rem] p-5 sm:p-6 text-center border border-sky-100 shadow-lg shadow-sky-900/5 transition duration-300 hover:-translate-y-2 hover:shadow-xl">
+          <div class="relative mx-auto mb-5 w-36 h-36">
+            <div class="absolute inset-0 rounded-full bg-cyan-100 scale-110 group-hover:scale-125 transition duration-300" aria-hidden="true"></div>
+            <img src="anggota2.png" alt="Ketua dan pencetus ide BeFAST" class="relative w-36 h-36 rounded-full object-cover border-4 border-white shadow-md">
           </div>
-          <div class="flex items-center gap-4 border-b border-sky-300/50 pb-3">
-            <div class="w-10 h-10 rounded-full border border-sky-200 flex items-center justify-center shrink-0 bg-sky-400/30"><i class="fa-solid fa-code"></i></div>
-            <p>100% Buatan Sendiri</p>
+          <p class="text-xs font-bold uppercase tracking-[0.16em] text-brand-cyan mb-2">Ketua Tim</p>
+          <h3 class="text-lg font-extrabold text-brand-navy">Ketua &amp; Penggagas Ide</h3>
+          <p class="text-sm text-brand-gray mt-2">Mencetuskan ide BeFAST dan memimpin tim.</p>
+        </article>
+
+        <article class="group bg-white rounded-[2rem] p-5 sm:p-6 text-center border border-sky-100 shadow-lg shadow-sky-900/5 transition duration-300 hover:-translate-y-2 hover:shadow-xl">
+          <div class="relative mx-auto mb-5 w-36 h-36">
+            <div class="absolute inset-0 rounded-full bg-indigo-100 scale-110 group-hover:scale-125 transition duration-300" aria-hidden="true"></div>
+            <div class="relative w-36 h-36 rounded-full overflow-hidden border-4 border-white shadow-md">
+              <img src="anggota3.png" alt="Anggota tim BeFAST bidang riset dan pengembangan" class="w-full h-full object-cover scale-[2.5]">
+            </div>
           </div>
-          <div class="flex items-center gap-4 border-b border-sky-300/50 pb-3">
-            <div class="w-10 h-10 rounded-full border border-sky-200 flex items-center justify-center shrink-0 bg-sky-400/30"><i class="fa-solid fa-shield-halved"></i></div>
-            <p>Database Supabase Aman</p>
+          <p class="text-xs font-bold uppercase tracking-[0.16em] text-brand-cyan mb-2">Riset &amp; Pengembangan</p>
+          <h3 class="text-lg font-extrabold text-brand-navy">R&amp;D</h3>
+          <p class="text-sm text-brand-gray mt-2">Meneliti kebutuhan pengguna dan mengembangkan solusi BeFAST.</p>
+        </article>
+
+        <article class="group bg-white rounded-[2rem] p-5 sm:p-6 text-center border border-sky-100 shadow-lg shadow-sky-900/5 transition duration-300 hover:-translate-y-2 hover:shadow-xl">
+          <div class="relative mx-auto mb-5 w-36 h-36">
+            <div class="absolute inset-0 rounded-full bg-emerald-100 scale-110 group-hover:scale-125 transition duration-300" aria-hidden="true"></div>
+            <img src="anggota4.png" alt="Anggota tim BeFAST yang menangani pemrograman dan desain UI/UX" class="relative w-36 h-36 rounded-full object-cover border-4 border-white shadow-md">
           </div>
-          <div class="flex items-center gap-4">
-            <div class="w-10 h-10 rounded-full border border-sky-200 flex items-center justify-center shrink-0 bg-sky-400/30"><i class="fa-solid fa-earth-asia"></i></div>
-            <p>Bebas Akses Selamanya</p>
-          </div>
-        </div>
+          <p class="text-xs font-bold uppercase tracking-[0.16em] text-brand-cyan mb-2">Teknis &amp; Produk</p>
+          <h3 class="text-lg font-extrabold text-brand-navy">Pengembang Teknis</h3>
+          <p class="text-sm text-brand-gray mt-2">Menangani pemrograman serta desain UI/UX BeFAST.</p>
+        </article>
+      </div>
+
+      <div class="mt-12 flex flex-wrap justify-center gap-3">
+        <span class="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-xs sm:text-sm font-semibold text-brand-navy border border-sky-100 shadow-sm"><i class="fa-solid fa-users text-brand-cyan" aria-hidden="true"></i> 3 Pelajar &amp; 1 Guru Pembimbing</span>
+        <span class="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-xs sm:text-sm font-semibold text-brand-navy border border-sky-100 shadow-sm"><i class="fa-solid fa-code text-brand-cyan" aria-hidden="true"></i> Dibangun Bersama</span>
+        <span class="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-xs sm:text-sm font-semibold text-brand-navy border border-sky-100 shadow-sm"><i class="fa-solid fa-heart text-brand-cyan" aria-hidden="true"></i> Untuk Literasi Finansial</span>
       </div>
     </div>
   </section>
@@ -457,6 +503,26 @@
 
   <!-- SCRIPT UNTUK ACCORDION FAQ -->
   <script>
+    const mobileNavToggle = document.getElementById('mobileNavToggle');
+    const mobileNavMenu = document.getElementById('mobileNavMenu');
+
+    mobileNavToggle.addEventListener('click', () => {
+      const isExpanded = mobileNavToggle.getAttribute('aria-expanded') === 'true';
+      mobileNavToggle.setAttribute('aria-expanded', String(!isExpanded));
+      mobileNavToggle.setAttribute('aria-label', isExpanded ? 'Buka menu navigasi' : 'Tutup menu navigasi');
+      mobileNavToggle.innerHTML = `<i class="fa-solid ${isExpanded ? 'fa-bars' : 'fa-xmark'}" aria-hidden="true"></i>`;
+      mobileNavMenu.classList.toggle('hidden', isExpanded);
+    });
+
+    mobileNavMenu.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        mobileNavMenu.classList.add('hidden');
+        mobileNavToggle.setAttribute('aria-expanded', 'false');
+        mobileNavToggle.setAttribute('aria-label', 'Buka menu navigasi');
+        mobileNavToggle.innerHTML = '<i class="fa-solid fa-bars" aria-hidden="true"></i>';
+      });
+    });
+
     function toggleFaq(button) {
       // Cari parent terdekat dengan class .faq-item
       const item = button.closest('.faq-item');
