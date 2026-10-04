@@ -116,11 +116,27 @@ function parseNominal(str) {
   let matches = raw.match(/\d{1,3}(?:\.\d{3})+(?:,\d+)?|\d{1,3}(?:,\d{3})+(?:\.\d+)?/g);
   if(matches && matches.length > 0) {
     let maxVal = 0;
-    for (let match of matches) { let cleanNumStr = match.split(',')[0].replace(/\./g, ''); let val = parseInt(cleanNumStr, 10); if (!isNaN(val) && val > maxVal) maxVal = val; }
+    for (let match of matches) { 
+      let val = 0;
+      if (/(?:\.\d{3})/.test(match)) {
+        let clean = match.split(',')[0].replace(/\./g, '');
+        val = parseInt(clean, 10);
+      } else {
+        let clean = match.split('.')[0].replace(/,/g, '');
+        val = parseInt(clean, 10);
+      }
+      if (!isNaN(val) && val > maxVal) maxVal = val; 
+    }
     if (maxVal > 0) return maxVal;
   }
   
-  let text = raw.replace(/ jt /g, 'juta').replace(/ sejuta /g, '1 juta').replace(/ seribu /g, '1 ribu').replace(/ seratus /g, '1 ratus').replace(/ sebelas /g, '11').replace(/ sepuluh /g, '10').replace(/(\d+|satu|dua|tiga|empat|lima|enam|tujuh|delapan|sembilan)?\s*setengah\s*(juta|milyar|miliar|ribu|rb|k)/gi, (m, p1, p2) => {
+  let text = raw.replace(/\bjt\b/gi, 'juta')
+                .replace(/\bsejuta\b/gi, '1 juta')
+                .replace(/\bseribu\b/gi, '1 ribu')
+                .replace(/\bseratus\b/gi, '1 ratus')
+                .replace(/\bsebelas\b/gi, '11')
+                .replace(/\bsepuluh\b/gi, '10')
+                .replace(/(\d+|satu|dua|tiga|empat|lima|enam|tujuh|delapan|sembilan)?\s*setengah\s*(juta|milyar|miliar|ribu|rb|k)/gi, (m, p1, p2) => {
     let base = 0; if (p1) { if (!isNaN(parseFloat(p1))) base = parseFloat(p1); else { const wMap = { 'satu': 1, 'dua': 2, 'tiga': 3, 'empat': 4, 'lima': 5, 'enam': 6, 'tujuh': 7, 'delapan': 8, 'sembilan': 9 }; base = wMap[p1] || 0; } } return `${base === 0 ? 0.5 : base + 0.5} ${p2}`;
   });
   
@@ -139,7 +155,13 @@ function parseNominal(str) {
     else if (cleanT === 'juta') { let groupSum = currentGroup + tempVal; if (groupSum === 0) groupSum = 1; grandTotal += groupSum * 1000000; currentGroup = 0; tempVal = 0; foundNumber = true; }
     else if (cleanT === 'miliar' || cleanT === 'milyar') { let groupSum = currentGroup + tempVal; if (groupSum === 0) groupSum = 1; grandTotal += groupSum * 1000000000; currentGroup = 0; tempVal = 0; foundNumber = true; }
   }
-  grandTotal += currentGroup + tempVal; if (foundNumber && grandTotal > 0) return Math.round(grandTotal); return 0;
+  grandTotal += currentGroup + tempVal; 
+  if (foundNumber && grandTotal > 0) {
+    // Jika user hanya sebut angka kecil (misal "15" atau "20") tanpa kata "ribu", kita asumsikan ribuan
+    if (grandTotal <= 100) grandTotal *= 1000;
+    return Math.round(grandTotal); 
+  }
+  return 0;
 }
 
 function extractTransactionDetails(cmd, type) {
@@ -156,15 +178,15 @@ function extractTransactionDetails(cmd, type) {
   }
   
   let desc = cmd
-    .replace(/\b(pemasukan|pengeluaran|masuk|keluar|beli|bayar|dapet|dapat|catat|tambah|tolong)\b/gi, '')
+    .replace(/\b(pemasukan|pengeluaran|masuk|keluar|beli|membeli|bayar|membayar|dapet|dapat|mendapat|catat|tambah|tolong|tadi|saya|aku)\b/gi, '')
     .replace(/\b(kemarin|kemaren|hari ini|tanggal\s*\d{1,2})\b/gi, '')
     .replace(/\b(bulan|tahun)\s+(lalu|kemarin|ini)\b/gi, '')
-    .replace(/rp\s*\d+([.,]\d+)?/gi, '') 
+    .replace(/rp\s*[.,]?\s*\d+([.,]\d+)?/gi, '') 
     // HANYA HAPUS ANGKA YANG MENJADI NOMINAL HARGA (yang ada titik ribuan atau nominal besar), 
     // biarkan angka kecil seperti "2" atau "10" yang melekat pada porsi tetap ada di deskripsi.
     .replace(/\b\d{1,3}(\.\d{3})+(,\d+)?\b|\b\d{1,3}(,\d{3})+(\.\d+)?\b/g, '')
-    .replace(/\b\d+\s*(ribu|rb|k|juta|jt)\b/gi, '')
-    // BERSIHKAN SLANG NOMINAL UANG
+    .replace(/\b(satu|dua|tiga|empat|lima|enam|tujuh|delapan|sembilan|sepuluh|sebelas|\d+)\s*(ratus|puluh|belas)?\s*(ribu|rb|k|juta|jt)?\b/gi, '')
+    .replace(/\b(sejuta|seribu|seratus)\b/gi, '')
     .replace(/\b(gocap|cepek|gopek|seceng|goceng|ceban|goban|pekgo|tigo)\b/gi, '')
     .replace(/[.,]/g, '')
     .replace(/\s+/g, ' ')
@@ -363,7 +385,6 @@ async function processVoiceCommand(cmd) {
   if (cmd.includes('baca') || cmd.includes('cek') || cmd.includes('spill') || cmd.includes('total')) { executeVoiceReadout(cmd); return; }
 
   // --- FITUR BATCH / MULTI-TRANSACTION PARSING ---
-  // Pecah kalimat berdasarkan kata hubung atau koma (misal: "dan", "terus", "lalu", ",")
   let subCommands = cmd.split(/\s+(?:dan|terus|lalu|serta)\s+|,+/g);
   let successCount = 0;
 
@@ -421,8 +442,23 @@ function applyVoiceCorrections(text) {
     'project': 'gojek',
     'st': 'es teh',
     'grab foot': 'grabfood',
+    'grab food': 'grabfood',
     'go foot': 'gofood',
-    'sopee': 'shopee'
+    'go food': 'gofood',
+    'sopee': 'shopee',
+    'shope': 'shopee',
+    'mekdi': 'mcd',
+    'kfc': 'kfc',
+    'go-jek': 'gojek',
+    'gojekin': 'gojek',
+    'baso': 'bakso',
+    'baskso': 'bakso',
+    'ojack': 'ojek',
+    'oblek': 'ojek',
+    'objek': 'ojek',
+    'tolong': 'tolong',
+    'catat': 'catat',
+    'bensir': 'bensin'
   };
   
   for (const [wrong, right] of Object.entries(corrections)) {

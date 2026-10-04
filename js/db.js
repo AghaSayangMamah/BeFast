@@ -55,7 +55,7 @@ async function addManualTransaction(e) {
   if(!desc || isNaN(a) || a<=0 || !d) return alert("Mohon isi dengan benar!");
   
   const cat = c === 'Otomatis' ? detectCategory(desc, t) : c;
-  
+
   updateSyncStatusUI(false, 'Menyimpan...');
   const { error } = await supabaseClient.from('transactions').insert([{
     id: Date.now().toString(),
@@ -147,7 +147,8 @@ function renderData() {
   const elExp = document.getElementById('cardExpense');
   const elBal = document.getElementById('cardBalance');
   
-  if (elInc) elInc.innerText = `Rp ${inc.toLocaleString('id-ID')}`;
+  const remainingIncome = Math.max(0, inc - exp);
+  if (elInc) elInc.innerText = `Rp ${remainingIncome.toLocaleString('id-ID')}`;
   if (elExp) elExp.innerText = `Rp ${exp.toLocaleString('id-ID')}`;
   if (elBal) elBal.innerText = `Rp ${(inc-exp).toLocaleString('id-ID')}`;
   
